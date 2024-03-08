@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>WinkingApple Register</title>
+	<link rel='stylesheet' href='register.css'>
+	<script src='session_locator.js'></script>
+</head>
+<body>
+	<div id='register-pane'>
+		<h1>WinkingApple Register</h1>
+		<form id='form'>
+			<input name='name' type='text' placeholder='Name' required minLength='3' maxLength='32'>
+			<input name='username' type='text' placeholder='Username' required minLength='3' maxLength='16'>
+		</form>
+		<input type='button' value='register' onclick='register()'>
+	</div>
+</body>
+<footer>
+	<script src='register.js'></script>
+</footer>
+</html>

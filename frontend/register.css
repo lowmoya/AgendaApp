@@ -1,0 +1,23 @@
+#register-pane {
+	text-align: center;
+	border-width: 4px;
+	border-style: solid;
+	width: 50%;
+	margin: 10% auto;
+	padding: 5% 0;
+}
+
+input {
+	width: 50%;
+	margin: .5% auto;
+	font-size: 16px;
+	display: inline-block;
+	text-align: left;
+}
+
+.invalid {
+	background-color: lightpink;
+	border-color: red;
+	border-width: 2px;
+	border-style: solid;
+}

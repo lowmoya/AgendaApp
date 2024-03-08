@@ -1,0 +1,38 @@
+#general-login-pane {
+	text-align: center;
+	border-width: 4px;
+	border-style: solid;
+	width: 40%;
+	margin: 10% auto;
+	padding: 5% 0;
+}
+#email-login-pane {
+	text-align: center;
+	border-width: 4px;
+	border-style: solid;
+	width: 40%;
+	margin: 10% auto;
+	padding: 5% 0;
+}
+.disabled {
+	display: none;
+}
+
+#email-buttons {
+	margin-top: 10%;
+}
+
+input {
+	width: 50%;
+	margin: .5% auto;
+	font-size: 16px;
+	display: inline-block;
+	text-align: left;
+}
+
+.invalid {
+	background-color: lightpink;
+	border-color: red;
+	border-width: 2px;
+	border-style: solid;
+}
