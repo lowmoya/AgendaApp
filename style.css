@@ -1,0 +1,215 @@
+body {
+    display: flex;
+    margin-top: 50px;
+    justify-content: center;
+    background-color: #FFFCFF;
+  }
+  button {
+    width: 75px;
+    cursor: pointer;
+    box-shadow: 0px 0px 2px gray;
+    border: none;
+    outline: none;
+    padding: 5px;
+    border-radius: 5px;
+    color: white;
+  }
+  
+  #header {
+    padding: 10px;
+    color: #d36c6c;
+    font-size: 26px;
+    font-family: sans-serif;
+    display: flex;
+    justify-content: space-between;
+  }
+  #header button {
+    background-color:#92a1d1;
+  }
+  #container {
+    width: 770px;
+  }
+  #weekdays {
+    width: 100%;
+    display: flex;
+    color: #247BA0;
+  }
+  #weekdays div {
+    width: 100px;
+    padding: 10px;
+  }
+  #calendar {
+    width: 100%;
+    margin: auto;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .day {
+    width: 100px;
+    padding: 10px;
+    height: 100px;
+    cursor: pointer;
+    box-sizing: border-box;
+    background-color: white;
+    margin: 5px;
+    box-shadow: 0px 0px 3px #CBD4C2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .day:hover {
+    background-color: #e8faed;
+  }
+  
+  .day + #currentDay {
+    background-color:#e8f4fa;
+  }
+  .event {
+    font-size: 10px;
+    padding: 3px;
+    background-color: #58bae4;
+    color: white;
+    border-radius: 5px;
+    max-height: 55px;
+    overflow: hidden;
+  }
+  .padding {
+    cursor: default !important;
+    background-color: #FFFCFF !important;
+    box-shadow: none !important;
+  }
+  #newEventModal, #deleteEventModal {
+    display: none;
+    z-index: 20;
+    padding: 25px;
+    background-color: #e8f4fa;
+    box-shadow: 0px 0px 3px black;
+    border-radius: 5px;
+    width: 350px;
+    top: 100px;
+    left: calc(50% - 175px);
+    position: absolute;
+    font-family: sans-serif;
+  }
+
+  .modal {
+    display: none; /* Hide the modal by default */
+    position: fixed; /* Use fixed positioning to display it above the page content */
+    z-index: 100; /* Make sure it sits above other content */
+    left: 50%; /* Center the modal horizontally */
+    top: 50%; /* Center the modal vertically */
+    transform: translate(-50%, -50%); /* Adjust the position to truly center the modal */
+    width: 300px; /* Set a fixed width for the modal */
+    background-color: #fff; /* Set a background color for the modal */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add some shadow for depth */
+    border-radius: 8px; /* Optionally round the corners */
+    padding: 20px; /* Add some padding for content inside the modal */
+  }
+
+  
+  /*#dayEventsModal .modal-content,
+  #newNoteModal .modal-content {
+    padding: 20px; 
+  }
+/*
+  #dayEventsModal ul,
+  #newNoteModal ul {
+    list-style-type: none; 
+    padding: 0; 
+  }
+
+  #dayEventsModal li,
+  #newNoteModal li {
+    padding: 10px 0; 
+    border-bottom: 1px solid #eee; 
+  }
+
+  #dayEventsModal li:last-child,
+  #newNoteModal li:last-child {
+    border-bottom: none; 
+  }
+
+  #dayEventsModal button,
+  #newNoteModal button {
+    margin-top: 10px; 
+    background-color: #92a1d1; 
+    color: white; 
+  }
+
+  .modal button.close {
+    background-color: #d36c6c; 
+  }
+  */
+
+  input[type="text"],
+  textarea {
+    width: 100%; /* Ensure inputs take up the full width of the modal */
+    padding: 10px; /* Add some padding for text inputs */
+    margin-top: 5px; /* Add some space above inputs */
+    margin-bottom: 15px; /* Add some space below inputs */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    border-radius: 3px; /* Optionally round the corners of the inputs */
+    border: 1px solid #ccc; /* Add a subtle border to inputs */
+  }
+
+  #modalBackDrop.active {
+    display: block; /* Show the backdrop when active */
+  }
+
+  .modal {
+    /* Existing styles */
+    transition: opacity 0.5s, visibility 0.5s;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .modal.show {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .event-button {
+    display: block;
+    width: 100%;
+    margin: 5px 0;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: left;
+  }
+
+  #eventTitleInput {
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 25px;
+    border-radius: 3px;
+    outline: none;
+    border: none;
+    box-shadow: 0px 0px 3px gray;
+  }
+  #eventTitleInput.error {
+    border: 2px solid red;
+  }
+  #cancelButton, #deleteButton {
+    background-color: #d36c6c;
+  }
+  #saveButton, #closeButton {
+    background-color: #92a1d1;
+  }
+  #eventText {
+    font-size: 14px;
+  }
+  #modalBackDrop {
+    display: none;
+    top: 0px;
+    left: 0px;
+    z-index: 10;
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    background-color: rgba(0,0,0,0.8);
+  }
+
+  
