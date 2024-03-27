@@ -1,0 +1,3 @@
+
+alert('home page loaded');
+

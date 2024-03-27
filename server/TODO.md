@@ -1,0 +1,2 @@
+- Review email validation
+- Automatically filter API calls by CWT token in header
