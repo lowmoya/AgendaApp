@@ -78,7 +78,7 @@ body {
     background-color: #FFFCFF !important;
     box-shadow: none !important;
   }
-  #newEventModal, #deleteEventModal {
+  #newEventModal, #editEventModal {
     display: none;
     z-index: 20;
     padding: 25px;
@@ -92,6 +92,10 @@ body {
     font-family: sans-serif;
   }
 
+  .notes-container {
+    white-space: pre-wrap; /* CSS property to preserve white spaces and line breaks */
+  }
+  
   .modal {
     display: none; /* Hide the modal by default */
     position: fixed; /* Use fixed positioning to display it above the page content */
@@ -196,7 +200,7 @@ body {
     background-color: #d36c6c;
   }
   #saveButton, #closeButton {
-    background-color: #92a1d1;
+    background-color: #17338e;
   }
   #eventText {
     font-size: 14px;

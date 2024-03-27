@@ -8,10 +8,13 @@ const deleteEventModal = document.getElementById('deleteEventModal');
 const backDrop =  document.getElementById('modalBackDrop');
 const eventTitleInput = document.getElementById('eventTitleInput');
 const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+let currentEventIndex = null; 
+let currentDate = null;
 
 function openModal(date) {
     clicked = date;
 
+    console.log(clicked);
     const eventsForDay = events[clicked] || [];
     newEventModal.style.display = 'block'; // Always show the modal to add a new event
 
@@ -23,6 +26,7 @@ function openModal(date) {
     eventsForDay.forEach((event, index) => {
         const eventElement = document.createElement('button');
         eventElement.classList.add('event-button');
+        console.log(event);
         eventElement.innerText = event.title;
         eventElement.addEventListener('click', (e) => {
             e.stopPropagation(); // Prevent the openModal event
@@ -37,34 +41,47 @@ function openModal(date) {
 function showEditEventModal(day, eventIndex, event) {
     const editEventModal = document.getElementById('editEventModal');
     const editEventTitleInput = document.getElementById('editEventTitleInput');
+    const editNoteInput = document.getElementById('noteInput'); 
     const updateButton = document.getElementById('updateButton');
+    const notesContainer = document.getElementById('listOfNotes'); // Get the notes container
 
     newEventModal.style.display = 'none';
-    
-    backDrop.style.display = 'block'
-    
+    backDrop.style.display = 'block';
+
+ 
     // Set the current event details in the input fields
     editEventTitleInput.value = event.title;
+    currentEventIndex = eventIndex;
+    editNoteInput.value = event.notes;
+
+    notesContainer.innerHTML = '';
+
 
     // Show the edit event modal
     editEventModal.style.display = 'block';
     backDrop.style.display = 'block';
+    editEventModal.style.opacity = 1;
+    editEventModal.style.visibility = 'visible';
 
-    // Update the event when the update button is clicked
+    // Handle the update button click
     updateButton.onclick = () => {
-        // Get the updated event title from the input
         const updatedTitle = editEventTitleInput.value;
-
-        // Update the event in the events array
+        const updatedNote = editNoteInput.value.trim(); // Get the updated note text
+    
+        // Update the event title
         events[day][eventIndex].title = updatedTitle;
-
-        // Save the updated events to localStorage
-        localStorage.setItem('events', JSON.stringify(events));
-
+    
+        // Overwrite the existing note with the new note
+        if (events[day] && events[day][eventIndex]) {
+            events[day][eventIndex].notes = updatedNote; // Directly set the note to the new content
+        }
+    
+        localStorage.setItem('events', JSON.stringify(events)); // Save the updated events to localStorage
+    
         // Close the edit event modal and refresh the calendar
         editEventModal.style.display = 'none';
         backDrop.style.display = 'none';
-        load();
+        load(); // Refresh the calendar view to reflect changes
     };
 
     document.getElementById('cancelEditButton').addEventListener('click', () => {
@@ -79,6 +96,7 @@ function editEvent(day, eventIndex, event) {
 
     // Display the modal for editing
     newEventModal.style.display = 'block';
+
 
     // Temporarily remove the default save button event listener
     const saveButtonOriginal = document.getElementById('saveButton').cloneNode(true);
@@ -99,23 +117,40 @@ function editEvent(day, eventIndex, event) {
 }
 
 function openNoteModal(day, eventIndex) {
-    const noteModal = document.getElementById('noteModal'); // Ensure this modal exists for adding notes
-    const saveNoteButton = document.getElementById('saveNoteButton'); // Ensure this button exists in your note modal
-
+    const noteModal = document.getElementById('editEventModal');
+    const noteInput = document.getElementById('noteInput'); // This is your textarea for notes
     noteModal.style.display = 'block';
 
-    saveNoteButton.onclick = () => {
-        const noteInput = document.getElementById('noteInput'); // Ensure this input field exists in your note modal
-        const note = noteInput.value;
-        // Add the note to the event
-        if (!events[day][eventIndex].notes) {
-            events[day][eventIndex].notes = []; // Initialize notes array if it doesn't exist
-        }
-        events[day][eventIndex].notes.push(note);
+    // Load existing note if present, directly into the textarea
+    const existingNote = events[day] && events[day][eventIndex] && events[day][eventIndex].notes ? events[day][eventIndex].notes : "";
+    noteInput.value = existingNote;
 
+    // Save button logic
+    document.getElementById('saveNoteButton').onclick = () => {
+        // Save changes to the note
+        const updatedNote = noteInput.value.trim(); // Get the updated note content
+    
+        if (!events[day]) {
+            events[day] = [];
+        }
+        if (!events[day][eventIndex]) {
+            events[day][eventIndex] = { notes: [] };
+        }
+    
+        // Replace the entire note content
+        events[day][eventIndex].notes = [updatedNote];
+    
+        // Persist changes
         localStorage.setItem('events', JSON.stringify(events));
+    
+        // Close modal
         noteModal.style.display = 'none';
-        openDayModal(day); // Refresh the day modal to show updated info
+    };
+
+    // Cancel button logic
+    document.getElementById('cancelNoteButton').onclick = () => {
+        // Discard changes and close modal
+        noteModal.style.display = 'none';
     };
 }
 
@@ -130,6 +165,9 @@ function load() {
     const day = date.getDate();
     const month = date.getMonth();
     const year = date.getFullYear();
+
+    //setting global date
+    currentDate = date;
 
 
     const firstDayofMonth = new Date(year, month, 1);
@@ -173,6 +211,8 @@ function load() {
                     daySquare.appendChild(eventDiv);
                 });
             }
+
+            console.log(dayString);
         
             daySquare.addEventListener('click', () => openModal(dayString));
             // noteIcon.addEventListener('click', () => openNote(eventForday));
@@ -194,13 +234,22 @@ function load() {
 
 }
 
-function closeModal() {
+function closeEditModal() {
     eventTitleInput.classList.remove('error');
     newEventModal.style.display = 'none';
-    deleteEventModal.style.display = 'none';
+    editEventModal.style.display = 'none';
     backDrop.style.display = 'none';
     eventTitleInput.value = '';
     clicked = null;
+    load();
+}
+
+function closeModal() {
+    eventTitleInput.classList.remove('error');
+    newEventModal.style.display = 'none';
+    backDrop.style.display = 'none';
+    eventTitleInput.value = '';
+  
     load();
 }
 
@@ -209,14 +258,18 @@ function saveEvent() {
         eventTitleInput.classList.remove('error');
 
         if (!events[clicked]) {
-            events[clicked] = []; // Initialize if no events for this day
+            events[clicked] = [];
         }
 
         events[clicked].push({
             title: eventTitleInput.value,
+            notes: [] // Initialize notes as an array
         });
 
         localStorage.setItem('events', JSON.stringify(events));
+
+        const eventIndex = events[clicked].length - 1;
+        showEditEventModal(clicked, eventIndex, events[clicked][eventIndex]);
         closeModal();
     } else {
         eventTitleInput.classList.add('error');
@@ -235,6 +288,25 @@ function deleteEvent(day, eventIndex) {
 
     localStorage.setItem('events', JSON.stringify(events));
     closeModal();
+}
+
+function addNote() {
+    const noteInput = document.getElementById('noteInput');
+    const note = noteInput.value.trim();
+
+    if (note) {
+        if (events[clicked] && events[clicked][currentEventIndex]) {
+            events[clicked][currentEventIndex].notes.push(note);
+
+            localStorage.setItem('events', JSON.stringify(events));
+            noteInput.value = '';
+            showEditEventModal(clicked, currentEventIndex, events[clicked][currentEventIndex]); // Refresh the modal to display the newly added note
+        } else {
+            console.error('Event or event date not found');
+        }
+    } else {
+        console.error('No note entered');
+    }
 }
 
 
@@ -256,14 +328,10 @@ function initButtons() {
 
 }
 
-function addNote() {
-    clicked = eventForDay;
-
-
-}
-
 document.addEventListener('DOMContentLoaded', function() {
     // Your code here will run after the DOM is fully loaded
     initButtons();
     load();
 });
+
+
