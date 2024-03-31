@@ -26,7 +26,6 @@ function openModal(date) {
     eventsForDay.forEach((event, index) => {
         const eventElement = document.createElement('button');
         eventElement.classList.add('event-button');
-        console.log(event);
         eventElement.innerText = event.title;
         eventElement.addEventListener('click', (e) => {
             e.stopPropagation(); // Prevent the openModal event
@@ -41,7 +40,9 @@ function openModal(date) {
 function showEditEventModal(day, eventIndex, event) {
     const editEventModal = document.getElementById('editEventModal');
     const editEventTitleInput = document.getElementById('editEventTitleInput');
-    const editNoteInput = document.getElementById('noteInput'); 
+    const editNoteInput = document.getElementById('noteInput');
+    const startTimeInput = document.getElementById('startTime');
+    const endTimeInput = document.getElementById('endTime');
     const updateButton = document.getElementById('updateButton');
     const notesContainer = document.getElementById('listOfNotes'); // Get the notes container
 
@@ -54,6 +55,12 @@ function showEditEventModal(day, eventIndex, event) {
     currentEventIndex = eventIndex;
     editNoteInput.value = event.notes;
 
+    // Here, set the start and end time fields with the event's times
+    startTimeInput.value = event.startTime || ''; 
+    endTimeInput.value = event.endTime || '';
+    
+
+
     notesContainer.innerHTML = '';
 
 
@@ -65,20 +72,19 @@ function showEditEventModal(day, eventIndex, event) {
 
     // Handle the update button click
     updateButton.onclick = () => {
-        const updatedTitle = editEventTitleInput.value;
+        const updatedTitle = editEventTitleInput.value.trim();
         const updatedNote = editNoteInput.value.trim(); // Get the updated note text
+        const updatedStartTime = startTimeInput.value;
+        const updatedEndTime = endTimeInput.value;
     
-        // Show the event title
-        events[day][eventIndex].title = updatedTitle;
-
-        // Store the times of the event
-        events[day][eventIndex].startTime = document.getElementById('startTime').value; 
-        events[day][eventIndex].endTime = document.getElementById('endTime').value;
 
     
         // Overwrite the existing note with the new note
         if (events[day] && events[day][eventIndex]) {
-            events[day][eventIndex].notes = updatedNote; // Directly set the note to the new content
+            events[day][eventIndex].title = updatedTitle;
+            events[day][eventIndex].notes = updatedNote;
+            events[day][eventIndex].startTime = updatedStartTime;
+            events[day][eventIndex].endTime = updatedEndTime;
         }
     
         localStorage.setItem('events', JSON.stringify(events)); // Save the updated events to localStorage
@@ -193,7 +199,6 @@ function load() {
 
     for(let i = 1; i <= paddingDays + daysInMonth; i++){
         const daySquare = document.createElement('div');
-        // const noteIcon = document.createElement('div');
 
         daySquare.classList.add('day');
 
@@ -202,7 +207,6 @@ function load() {
         if (i > paddingDays) {
             daySquare.innerText = i - paddingDays;
             const eventForDay = events[dayString];
-            // const notesForEvent = notes.find(e => e.events === eventForDay);
 
             if (i - paddingDays === day && nav === 0) {
                 daySquare.id = 'currentDay';
@@ -221,14 +225,12 @@ function load() {
             console.log(dayString);
         
             daySquare.addEventListener('click', () => openModal(dayString));
-            // noteIcon.addEventListener('click', () => openNote(eventForday));
 
         } else {
             daySquare.classList.add('padding');
         }
 
         calendar.appendChild(daySquare);
-        // calendar.appendChild(noteForDay);
 
         daySquare.addEventListener('click', () => {
             console.log(`Opening modal for ${dayString}`);
