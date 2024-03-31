@@ -16,19 +16,19 @@ function openModal(date) {
 
     console.log(clicked);
     const eventsForDay = events[clicked] || [];
-    newEventModal.style.display = 'block'; // Always show the modal to add a new event
+    newEventModal.style.display = 'block';
 
     // Display existing events in the modal or some other part of your UI
-    // You might need to clear the previous list of events displayed in the modal or UI element before adding the new ones
-    const eventsList = document.getElementById('eventsList'); // Assuming you have a list element in your modal or UI to display events
-    eventsList.innerHTML = ''; // Clear previous events
+    const eventsList = document.getElementById('eventsList'); 
+    eventsList.innerHTML = ''; 
 
     eventsForDay.forEach((event, index) => {
         const eventElement = document.createElement('button');
         eventElement.classList.add('event-button');
         eventElement.innerText = event.title;
         eventElement.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent the openModal event
+            // Prevent the openModal event
+            e.stopPropagation(); 
             showEditEventModal(clicked, index, event);
         });
         eventsList.appendChild(eventElement);
@@ -44,7 +44,7 @@ function showEditEventModal(day, eventIndex, event) {
     const startTimeInput = document.getElementById('startTime');
     const endTimeInput = document.getElementById('endTime');
     const updateButton = document.getElementById('updateButton');
-    const notesContainer = document.getElementById('listOfNotes'); // Get the notes container
+    const notesContainer = document.getElementById('listOfNotes'); 
 
     newEventModal.style.display = 'none';
     backDrop.style.display = 'block';
@@ -87,12 +87,14 @@ function showEditEventModal(day, eventIndex, event) {
             events[day][eventIndex].endTime = updatedEndTime;
         }
     
-        localStorage.setItem('events', JSON.stringify(events)); // Save the updated events to localStorage
+        localStorage.setItem('events', JSON.stringify(events));
     
+
         // Close the edit event modal and refresh the calendar
         editEventModal.style.display = 'none';
         backDrop.style.display = 'none';
-        load(); // Refresh the calendar view to reflect changes
+        // Refresh the calendar view to reflect changes
+        load(); 
     };
 
     document.getElementById('cancelEditButton').addEventListener('click', () => {
@@ -103,7 +105,7 @@ function showEditEventModal(day, eventIndex, event) {
 
 function editEvent(day, eventIndex, event) {
     // Pre-fill the event details in the modal
-    eventTitleInput.value = event.title; // Assuming `event.title` contains the event name
+    eventTitleInput.value = event.title; 
 
     // Display the modal for editing
     newEventModal.style.display = 'block';
@@ -129,7 +131,7 @@ function editEvent(day, eventIndex, event) {
 
 function openNoteModal(day, eventIndex) {
     const noteModal = document.getElementById('editEventModal');
-    const noteInput = document.getElementById('noteInput'); // This is your textarea for notes
+    const noteInput = document.getElementById('noteInput');
     noteModal.style.display = 'block';
 
     // Load existing note if present, directly into the textarea
@@ -138,8 +140,8 @@ function openNoteModal(day, eventIndex) {
 
     // Save button logic
     document.getElementById('saveNoteButton').onclick = () => {
-        // Save changes to the note
-        const updatedNote = noteInput.value.trim(); // Get the updated note content
+        // Get the updated note
+        const updatedNote = noteInput.value.trim(); 
     
         if (!events[day]) {
             events[day] = [];
@@ -217,7 +219,9 @@ function load() {
                     const eventDiv = document.createElement('div');
                     eventDiv.classList.add('event');
                     eventDiv.innerText = event.title;
-                    eventDiv.innerText = `${event.title} (${event.startTime} - ${event.endTime})`;
+                    if (event.startTime && event.endTime){
+                        eventDiv.innerText = `${event.title} (${event.startTime} - ${event.endTime})`;
+                    }
                     daySquare.appendChild(eventDiv);
                 });
             }
@@ -270,10 +274,7 @@ function saveEvent() {
         }
 
         events[clicked].push({
-            title: eventTitleInput.value,
-            startTime: document.getElementById('startTime').value,
-            endTime: document.getElementById('endTime').value,
-            notes: [] // Initialize notes as an array
+            title: eventTitleInput.value
         });
 
         localStorage.setItem('events', JSON.stringify(events));
@@ -290,9 +291,9 @@ function deleteEvent(day, eventIndex) {
     // Modify this function to remove a specific event
     // eventIndex is the index of the event to be removed
     if (events[clicked] && events[clicked].length > 0) {
-        events[clicked].splice(eventIndex, 1); // Remove the specific event
+        events[clicked].splice(eventIndex, 1); 
         if (events[clicked].length === 0) {
-            delete events[clicked]; // Remove the property if no events left for this day
+            delete events[clicked]; 
         }
     }
 
@@ -310,7 +311,7 @@ function addNote() {
 
             localStorage.setItem('events', JSON.stringify(events));
             noteInput.value = '';
-            showEditEventModal(clicked, currentEventIndex, events[clicked][currentEventIndex]); // Refresh the modal to display the newly added note
+            showEditEventModal(clicked, currentEventIndex, events[clicked][currentEventIndex]); 
         } else {
             console.error('Event or event date not found');
         }
@@ -339,7 +340,6 @@ function initButtons() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Your code here will run after the DOM is fully loaded
     initButtons();
     load();
 });
