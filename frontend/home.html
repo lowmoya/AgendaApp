@@ -40,13 +40,18 @@
       <button id="updateButton">Update</button>
       <button id="cancelEditButton" onclick="closeModal()">Cancel</button>
 
-      <h2>Notes:</h2>
-      <div id = "listOfNotes">
-    
-      </div>
+	  <div id="listOfNotes"></div>
+
+      <h2>Times:</h2>
+      <label for="startTime">Start Time:</label>
+	  <input type="time" id="startTime" name="startTime" required>
+
+	  <label for="endTime">End Time:</label>
+      <input type="time" id="endTime" name="endTime" required>
+      
   
       <h2>Add a New Note</h2>
-      <input id="noteInput" placeholder="Note..." />
+      <textarea id="noteInput" placeholder="Note..." ></textarea>
       <button id="saveNoteButton" onclick="addNote()">Save Note</button>
       <button id="cancelNoteButton" onclick="closeModal()">Cancel</button>
 
@@ -63,10 +68,10 @@
       <ul id="eventsList"></ul> <!-- List of events for the selected day -->
     
       <h2>New Event</h2>
-      <div>Date: <span id="eventDateDisplay"></span></div>
       <input id="eventTitleInput" placeholder="Event Title" />
-      <button id="saveButton">Save</button>
+	  <button id="saveButton">Save</button>
       <button id="cancelButton">Cancel</button>
+	  
     </div>
   </div>
 

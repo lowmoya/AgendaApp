@@ -68,8 +68,13 @@ function showEditEventModal(day, eventIndex, event) {
         const updatedTitle = editEventTitleInput.value;
         const updatedNote = editNoteInput.value.trim(); // Get the updated note text
     
-        // Update the event title
+        // Show the event title
         events[day][eventIndex].title = updatedTitle;
+
+        // Store the times of the event
+        events[day][eventIndex].startTime = document.getElementById('startTime').value; 
+        events[day][eventIndex].endTime = document.getElementById('endTime').value;
+
     
         // Overwrite the existing note with the new note
         if (events[day] && events[day][eventIndex]) {
@@ -106,7 +111,7 @@ function editEvent(day, eventIndex, event) {
     saveButtonOriginal.addEventListener('click', () => {
         // Update the event with new details
         events[day][eventIndex].title = eventTitleInput.value;
-
+        
         // Save the updated events to localStorage
         localStorage.setItem('events', JSON.stringify(events));
 
@@ -208,6 +213,7 @@ function load() {
                     const eventDiv = document.createElement('div');
                     eventDiv.classList.add('event');
                     eventDiv.innerText = event.title;
+                    eventDiv.innerText = `${event.title} (${event.startTime} - ${event.endTime})`;
                     daySquare.appendChild(eventDiv);
                 });
             }
@@ -263,6 +269,8 @@ function saveEvent() {
 
         events[clicked].push({
             title: eventTitleInput.value,
+            startTime: document.getElementById('startTime').value,
+            endTime: document.getElementById('endTime').value,
             notes: [] // Initialize notes as an array
         });
 
@@ -287,7 +295,7 @@ function deleteEvent(day, eventIndex) {
     }
 
     localStorage.setItem('events', JSON.stringify(events));
-    closeModal();
+    closeEditModal();
 }
 
 function addNote() {
@@ -296,7 +304,7 @@ function addNote() {
 
     if (note) {
         if (events[clicked] && events[clicked][currentEventIndex]) {
-            events[clicked][currentEventIndex].notes.push(note);
+            events[clicked][currentEventIndex].notes = note;
 
             localStorage.setItem('events', JSON.stringify(events));
             noteInput.value = '';
