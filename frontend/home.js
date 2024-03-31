@@ -88,7 +88,7 @@ function showEditEventModal(day, eventIndex, event) {
         }
     
         localStorage.setItem('events', JSON.stringify(events)); // Save the updated events to localStorage
-    
+
         // Close the edit event modal and refresh the calendar
         editEventModal.style.display = 'none';
         backDrop.style.display = 'none';
@@ -150,7 +150,7 @@ function openNoteModal(day, eventIndex) {
     
         // Replace the entire note content
         events[day][eventIndex].notes = [updatedNote];
-    
+		
         // Persist changes
         localStorage.setItem('events', JSON.stringify(events));
     
@@ -222,8 +222,6 @@ function load() {
                 });
             }
 
-            console.log(dayString);
-        
             daySquare.addEventListener('click', () => openModal(dayString));
 
         } else {

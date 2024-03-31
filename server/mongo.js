@@ -16,6 +16,7 @@ async function initAPI() {
 	await client.connect();
 	console.log('INF\t| Connected to MongoDB');
 	database = client.db(database_name);
-	module.exports.auth_info = database.collection('auth_info');
-	module.exports.acc_info = database.collection('account_info');
+	module.exports.auth = database.collection('authentication');
+	module.exports.account = database.collection('account');
+	module.exports.calendar = database.collection('calendar');
 }

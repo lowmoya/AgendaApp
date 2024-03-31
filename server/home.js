@@ -1,8 +1,9 @@
+const mongo = require('./mongo');
+
 module.exports = {
 	homeAPI: homeAPI
 };
 
-function homeAPI()
+function homeAPI(req, res, id, body)
 {
-	console.log('homeAPI accessed');
 }

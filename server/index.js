@@ -14,6 +14,7 @@ const port = 4000;
 
 const pages = [
 	'/',
+	'/favicon.ico',
 	'/session_locator.js',
 	'/home',
 	'/home.js',
@@ -26,7 +27,8 @@ const pages = [
 	'/register.css',
 ];
 const page_bindings = [
-	{ file: 'frontend/home.html',			type: 'text/html' },
+	{ file: 'frontend/login.html',			type: 'text/html' },
+	{ file: 'icon.ico',						type: 'image/vnd.microsoft.icon' },
 	{ file: 'frontend/session_locator.js',	type: 'application/javascript' },
 	{ file: 'frontend/home.html',			type: 'text/html' },
 	{ file: 'frontend/home.js',				type: 'application/javascript' },
@@ -106,20 +108,18 @@ async function requestHandler(req, res) {
 		// Past this point needs info on user's ID and account info status,
 		// acquire them here. If no user ID available, end with unauthorized
 		// action.
-		// Interesting bug, fixing would be easy but not sure if relevent.
-		// As the ID check only checks if there's been modifications in the
-		// cwt packet, dropping the tables after logging in gives you a
-		// 'floating' account that is treated as unregistered but can be
-		// used after that even though it couldn't be logged in with.
 		const id = req.headers.session != undefined ?
 			auth.validateCWT(req.headers.session) : null;
-		if (id == null) {
+
+		const auth_info = await mongo.auth.findOne({ _id: id })
+		console.log(auth_info);
+		if (id == null  || auth_info == null) {
 			res.statusCode = 401;
 			res.end();
 			return;
 		}
 
-		const account_info = await mongo.acc_info.findOne({ _id: id });
+		const account_info = await mongo.account.findOne({ _id: id });
 
 
 		// If its a registration request, there should be no existing

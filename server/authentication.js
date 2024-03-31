@@ -56,10 +56,10 @@ async function googleLogin(req, res, body)
 		return;
 	}
 
-	var auth_info = await mongo.auth_info.findOne({ google_id: google_account.id });
+	var auth_info = await mongo.auth.findOne({ google_id: google_account.id });
 	if (auth_info == null) {
-		await mongo.auth_info.insertOne({ google_id: google_account.id });
-		auth_info = await mongo.auth_info.findOne({ google_id: google_account.id });
+		await mongo.auth.insertOne({ google_id: google_account.id });
+		auth_info = await mongo.auth.findOne({ google_id: google_account.id });
 		res.setHeader('location', '/register');
 	} else {
 		res.setHeader('location', '/home');
@@ -81,17 +81,17 @@ async function emailLogin(req, res, body)
 		return;
 	}
 
-	var auth_info = await mongo.auth_info.findOne({email: body.email});
+	var auth_info = await mongo.auth.findOne({email: body.email});
 	if (auth_info == null) {
 		// Create new account or fail if password is not a mach
 		let salt = crypto.randomBytes(8).toString('hex');
-		await mongo.auth_info.insertOne({
+		await mongo.auth.insertOne({
 			email: body.email,
 			password: saltedHash(body.password, salt),
 			salt: salt,
 		});
 
-		auth_info = await mongo.auth_info.findOne({email: body.email});
+		auth_info = await mongo.auth.findOne({email: body.email});
 		res.setHeader('location', '/register');
 	} else if (auth_info.password != hash(body.password, auth_info.salt)) {
 		// Account exists, bad password
@@ -122,8 +122,15 @@ async function sessionLogin(req, res, body)
 		return;
 	}
 
+	var auth_info = await mongo.auth.findOne({ _id: id });
+	if (auth_info == null) {
+		res.statusCode = 401;
+		res.end();
+		return;
+	}
+
 	// Constrict to register page
-	var account_info = await mongo.acc_info.findOne({ _id: id });
+	var account_info = await mongo.account.findOne({ _id: id });
 	if (account_info == null) {
 		res.statusCode = 403;
 		res.end();
@@ -168,7 +175,7 @@ async function registerAPI(req, res, id, body)
 	
 
 	// Check if the username is in use
-	const accounts = await mongo.acc_info.findOne({ username: body.username });
+	const accounts = await mongo.account.findOne({ username: body.username });
 	if (accounts != null) {
 		res.statusCode = 409;
 		res.end();
@@ -178,10 +185,14 @@ async function registerAPI(req, res, id, body)
 	
 	// Save info into account info database
 	// Could also prepare other databases for storage here
-	await mongo.acc_info.insertOne({
+	mongo.account.insertOne({
 		_id: id,
 		username: body.username,
 		name: body.name
+	});
+	mongo.calendar.insertOne({
+		_id: id,
+		events: []
 	});
 	res.statusCode = 200;
 	res.end();
