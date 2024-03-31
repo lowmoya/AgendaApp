@@ -37,10 +37,6 @@
     <div id="editEventModal" class="modal">
       <h2>Edit Event</h2>
       <input id="editEventTitleInput" placeholder="Event Title" />
-      <button id="updateButton">Update</button>
-      <button id="cancelEditButton" onclick="closeModal()">Cancel</button>
-
-	  <div id="listOfNotes"></div>
 
       <h2>Times:</h2>
       <label for="startTime">Start Time:</label>
@@ -57,13 +53,13 @@
   
       <h2>Add a New Note</h2>
       <textarea id="noteInput" placeholder="Note..." ></textarea>
-      <button id="saveNoteButton" onclick="addNote()">Save Note</button>
-      <button id="cancelNoteButton" onclick="closeModal()">Cancel</button>
 
-      <h2>Delete Event</h2>
-      <button id="deleteButton" onclick="deleteEvent()">Delete</button>
+	
+      <button id="deleteButton" onclick="deleteEvent()">Delete Event</button>
+	  <button id="updateButton">Update</button>
       <button id="closeButton" onclick="closeEditModal()">Close</button>
-  
+
+      
       
     </div>
 

@@ -13,8 +13,6 @@ let currentDate = null;
 
 function openModal(date) {
     clicked = date;
-
-    console.log(clicked);
     const eventsForDay = events[clicked] || [];
     newEventModal.style.display = 'block';
 
@@ -44,7 +42,6 @@ function showEditEventModal(day, eventIndex, event) {
     const startTimeInput = document.getElementById('startTime');
     const endTimeInput = document.getElementById('endTime');
     const updateButton = document.getElementById('updateButton');
-    const notesContainer = document.getElementById('listOfNotes'); 
 
     newEventModal.style.display = 'none';
     backDrop.style.display = 'block';
@@ -58,10 +55,6 @@ function showEditEventModal(day, eventIndex, event) {
     // Here, set the start and end time fields with the event's times
     startTimeInput.value = event.startTime || ''; 
     endTimeInput.value = event.endTime || '';
-    
-
-
-    notesContainer.innerHTML = '';
 
 
     // Show the edit event modal
@@ -96,11 +89,6 @@ function showEditEventModal(day, eventIndex, event) {
         // Refresh the calendar view to reflect changes
         load(); 
     };
-
-    document.getElementById('cancelEditButton').addEventListener('click', () => {
-        document.getElementById('editEventModal').style.display = 'none';
-        backDrop.style.display = 'none';
-    });
 }
 
 function editEvent(day, eventIndex, event) {
@@ -127,44 +115,6 @@ function editEvent(day, eventIndex, event) {
         closeModal();
         load();
     });
-}
-
-function openNoteModal(day, eventIndex) {
-    const noteModal = document.getElementById('editEventModal');
-    const noteInput = document.getElementById('noteInput');
-    noteModal.style.display = 'block';
-
-    // Load existing note if present, directly into the textarea
-    const existingNote = events[day] && events[day][eventIndex] && events[day][eventIndex].notes ? events[day][eventIndex].notes : "";
-    noteInput.value = existingNote;
-
-    // Save button logic
-    document.getElementById('saveNoteButton').onclick = () => {
-        // Get the updated note
-        const updatedNote = noteInput.value.trim(); 
-    
-        if (!events[day]) {
-            events[day] = [];
-        }
-        if (!events[day][eventIndex]) {
-            events[day][eventIndex] = { notes: [] };
-        }
-    
-        // Replace the entire note content
-        events[day][eventIndex].notes = [updatedNote];
-    
-        // Persist changes
-        localStorage.setItem('events', JSON.stringify(events));
-    
-        // Close modal
-        noteModal.style.display = 'none';
-    };
-
-    // Cancel button logic
-    document.getElementById('cancelNoteButton').onclick = () => {
-        // Discard changes and close modal
-        noteModal.style.display = 'none';
-    };
 }
 
 function load() {

@@ -125,39 +125,7 @@ body {
   }
 
   
-  /*#dayEventsModal .modal-content,
-  #newNoteModal .modal-content {
-    padding: 20px; 
-  }
-/*
-  #dayEventsModal ul,
-  #newNoteModal ul {
-    list-style-type: none; 
-    padding: 0; 
-  }
-
-  #dayEventsModal li,
-  #newNoteModal li {
-    padding: 10px 0; 
-    border-bottom: 1px solid #eee; 
-  }
-
-  #dayEventsModal li:last-child,
-  #newNoteModal li:last-child {
-    border-bottom: none; 
-  }
-
-  #dayEventsModal button,
-  #newNoteModal button {
-    margin-top: 10px; 
-    background-color: #92a1d1; 
-    color: white; 
-  }
-
-  .modal button.close {
-    background-color: #d36c6c; 
-  }
-  */
+  
 
   input[type="text"],
   textarea {
@@ -212,6 +180,9 @@ body {
   }
   #cancelButton, #deleteButton {
     background-color: #d36c6c;
+  }
+  #updateButton{
+    background-color: #58cd98;
   }
   #saveButton, #closeButton {
     background-color: #17338e;
