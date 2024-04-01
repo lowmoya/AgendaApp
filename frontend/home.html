@@ -35,7 +35,7 @@
 
     <!-- New modal specifically for editing existing events -->
     <div id="editEventModal" class="modal">
-      <h2>Edit Event</h2>
+      <h2>Event Details</h2>
       <input id="editEventTitleInput" placeholder="Event Title" />
 
       <h2>Times:</h2>
@@ -47,17 +47,15 @@
       
 	  <h2>Set Alarm:</h2>
 	  <input type="time" id="alarmTime">
-	  <button onclick="setAlarm()">Set Alarm</button>
 	  <div id="alarmMessage"></div>
 
   
       <h2>Add a New Note</h2>
       <textarea id="noteInput" placeholder="Note..." ></textarea>
 
-	
+	  <button id="updateButton">Save Event</button>
       <button id="deleteButton" onclick="deleteEvent()">Delete Event</button>
-	  <button id="updateButton">Update</button>
-      <button id="closeButton" onclick="closeEditModal()">Close</button>
+      <button id="closeButton" onclick="closeEditModal()">Cancel</button>
 
       
       
@@ -70,8 +68,8 @@
     
       <h2>New Event</h2>
       <input id="eventTitleInput" placeholder="Event Title" />
-	  <button id="saveButton">Save</button>
-      <button id="cancelButton">Cancel</button>
+	  <button id="saveButton">Add</button>
+      <button id="cancelButton">Close</button>
 	  
     </div>
   </div>
