@@ -112,7 +112,6 @@ async function requestHandler(req, res) {
 			auth.validateCWT(req.headers.session) : null;
 
 		const auth_info = await mongo.auth.findOne({ _id: id })
-		console.log(auth_info);
 		if (id == null  || auth_info == null) {
 			res.statusCode = 401;
 			res.end();

@@ -12,7 +12,8 @@ module.exports = {
 	initAPI: initAPI,
 	loginAPI: loginAPI,
 	registerAPI: registerAPI,
-	validateCWT: validateCWT
+	validateCWT: validateCWT,
+	hash: hash
 };
 
 
