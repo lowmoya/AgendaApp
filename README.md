@@ -6,8 +6,8 @@ Setup Instructions:
 Extra Setup for Mac or Linux:
 1) `chmod +x start.sh`
 
-Mac or Linux run instructions:
+Mac or Linux run instructions (within the root directory of the project, not server/):
 1) `./start.sh`
 
-Windows:
+Windows run instructions (within the root directory of the project, not server/):
 1) `node server/index.js`
