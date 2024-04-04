@@ -1,31 +1,41 @@
 <!DOCTYPE html>
+<html>
+
 <head>
+	<script src='session_locator.js'></script>
+
 	<title>WinkingApple Login</title>
 	<link rel='stylesheet' href='login.css'>
-	<script src='login.js'></script>
-	<script src='session_locator.js'></script>
+
+	<!-- Download the used font -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Madimi+One&display=swap"
+			rel="stylesheet">
 </head>
 <body>
-	<div id='general-login-pane'>
-		<h1>WinkingApple Login</h1>
-		<input type='button' value='Login with Google' onclick='googleLogin()'>
-		<input type='button' value='Login with email' onclick='switchPanes("general-login-pane","email-login-pane")'>
-	</div>
-
-	<div id='email-login-pane' class='disabled'>
-		<h1>WinkingApple Login</h1>
-
-		<input id='email' type='email' placeholder='Email' required>
-		<input id='password' type='password' placeholder='Password' required>
-
-		<!--<input id='email' type='email' placeholder='Email' required maxLength='64'
-			   pattern='^([\w-]+(\.(?!@))?)+@([\w-]+\.)+[a-zA-Z]{2,}$'>
-		<input id='password' type='password' placeholder='Password'
-		pattern='^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[! @#$%^&*+=<{([|\])}>,.:;?"\x27/\\_-])[\w~`! @#$%^&*+=<{([|\])}>,.:;?"\x27/\\_-]{8,64}$'>-->
-
-		<div id='email-buttons'>
-			<input type='button' value='login/register' onclick='emailLogin()'>
-			<input type='button' value='back' onclick='switchPanes("email-login-pane","general-login-pane")'>
+	<div id='welcoming-pane' >
+		<div id='title'>
+			<img id='apple' src='apple.png' loading='lazy' draggable='false' />
+			<p>inking</p>
+		</div>
+		<p style='text-align:center;font-size:60px;font-style:italic'>Login/Register</p>
+	
+		<div id='buttons'>
+			<button id='google-button' onclick='googleLogin()'>Google</button>
+			<button id='email-button' onclick='emailPaneEnable(true)'>Email</button>
 		</div>
 	</div>
+	<div id='email-pane' class='hidden'>
+		<input id='email' type='email' placeholder='Email' required />
+		<input id='password' type='password' placeholder='Password'
+				oninput='checkPassword()' required />
+		<br>
+		<button style='font-size: 40px;' onclick='emailLogin()'>Okay</button>
+		<button style='font-size: 40px;' onclick='emailPaneEnable(false)'>Back</button>
+	</div>
 </body>
+<footer>
+</footer>
+	<script src='login.js'></script>
+</html>

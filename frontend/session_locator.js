@@ -16,8 +16,7 @@ async function assertSessionLocation()
 
 	if (resp.status == 200) {
 		if (window.location.pathname == '/login' ||
-				window.location.pathname == '/register' ||
-				window.location.pathname == '/') {
+				window.location.pathname == '/register') {
 			window.location = '/home';
 		}
 	} else if (resp.status == 403) {

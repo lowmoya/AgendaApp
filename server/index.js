@@ -25,10 +25,15 @@ const pages = [
 	'/register',
 	'/register.js',
 	'/register.css',
+
+	/* Resources */
+	'/apple.png',
+	'/email_background.png',
+	'/login_background.png',
 ];
 const page_bindings = [
-	{ file: 'frontend/login.html',			type: 'text/html' },
-	{ file: 'icon.ico',						type: 'image/vnd.microsoft.icon' },
+	{ file: 'frontend/home.html',			type: 'text/html' },
+	{ file: 'favicon.ico',					type: 'image/x-icon' },
 	{ file: 'frontend/session_locator.js',	type: 'application/javascript' },
 	{ file: 'frontend/home.html',			type: 'text/html' },
 	{ file: 'frontend/home.js',				type: 'application/javascript' },
@@ -39,6 +44,11 @@ const page_bindings = [
 	{ file: 'frontend/register.html',		type: 'text/html' },
 	{ file: 'frontend/register.js',			type: 'application/javascript' },
 	{ file: 'frontend/register.css',		type: 'text/css' },
+
+	/* Resources */
+	{ file: 'frontend/resources/apple.png',	type: 'image/png' },
+	{ file: 'frontend/resources/email_background.png',	type: 'image/png' },
+	{ file: 'frontend/resources/login_background.png',	type: 'image/png' },
 ];
 
 
@@ -154,7 +164,7 @@ async function requestHandler(req, res) {
 
 
 function supplyPage(res, file, type) {
-	fs.readFile(file, 'utf-8', (err, data) => {
+	fs.readFile(file, (err, data) => {
 		if (err) {
 			supplyMissingPage(res);
 			console.error(`ERR	| File '${file}' missing.`);

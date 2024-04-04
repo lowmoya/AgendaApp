@@ -1,3 +1,9 @@
+const emailPane = document.getElementById('email-pane');
+const emailField = document.getElementById('email');
+const passwordField = document.getElementById('password');
+const googleButton = document.getElementById('google-button');
+const emailButton = document.getElementById('email-button');
+
 
 // Start up behaviors
 async function onLoad()
@@ -58,7 +64,7 @@ async function onLoad()
 }
 
 
-// Login callsq
+// Login call
 function googleLogin()
 {
 	var oauth2Endpoint = 'https://accounts.google.com/o/oauth2/v2/auth';
@@ -91,27 +97,73 @@ function googleLogin()
 	form.submit();
 }
 
+function checkPassword()
+{
+	var passwordHasLowercase = false;
+	var passwordHasUppercase = false;
+	var passwordHasNumber = false;
+	var passwordHasSymbol = false;
+	for (c of passwordField.value) {
+		if (c >= 'a' && c <= 'z')
+			passwordHasLowercase = true;
+		else if (c >= 'A' && c <= 'Z')
+			passwordHasUppercase = true;
+		else if (c  >= '0' && c <= '9')
+			passwordHasNumber = true;
+		else
+			passwordHasSymbol = true;
+	}
+
+	console.log(passwordField.value);
+	console.log(passwordField.value.length);
+	var passwordMessage = undefined;
+	if (passwordField.value.length < 8)
+		passwordMessage = 'Must be at least 8 characters';
+	else if (passwordField.value.length > 64)
+		passwordMessage = 'Cannot be longer than 64 characters';
+	else if (!passwordHasLowercase)
+		passwordMessage = 'Must have at least one lowercase letter';
+	else if (!passwordHasUppercase)
+		passwordMessage = 'Must have at least one uppercase letter';
+	else if (!passwordHasNumber)
+		passwordMessage = 'Must have at least one number';
+	else if (!passwordHasSymbol)
+		passwordMessage = 'Must have at least one symbol';
+	else
+		passwordField.classList.remove('invalid');
+
+	if (passwordMessage != undefined) {
+		passwordField.classList.add('invalid');
+		passwordField.setCustomValidity(passwordMessage);
+		invalid = 1;
+
+		return false;
+	}
+
+	return true;
+}
+
 async function emailLogin()
 {
-	var emailField = document.getElementById('email');
-	var passwordField = document.getElementById('password');
 
 
 	// Input validity checking
 	var invalid = 0; 
-	if (emailField.reportValidity()) {
+
+
+
+	if (emailField.checkValidity()) {
 		emailField.classList.remove('invalid');
 	} else {
 		emailField.classList.add('invalid');
 		invalid = 1;
 	}
-	
-	if (passwordField.reportValidity()) {
-		passwordField.classList.remove('invalid');
-	} else {
-		passwordField.classList.add('invalid');
+
+	if (!checkPassword()) {
+		passwordField.reportValidity();
 		invalid = 1;
 	}
+	
 
 	if (invalid) {
 		return;
@@ -141,10 +193,17 @@ async function emailLogin()
 }
 
 // Util functionality
-function switchPanes(active, inactive)
+function emailPaneEnable(on)
 {
-	document.getElementById(active).classList.add('disabled');
-	document.getElementById(inactive).classList.remove('disabled');
+	if (on) {
+		emailPane.classList.remove('hidden');
+		googleButton.disabled = true;
+		emailButton.disabled = true;
+	} else {
+		emailPane.classList.add('hidden');
+		googleButton.disabled = false;
+		emailButton.disabled = false;
+	}
 }
 
 onLoad();
