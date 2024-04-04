@@ -72,9 +72,9 @@ button:active {
 /* Email pane */
 
 #email-pane {
-	background-image: url('email_background.png');
+	/*background-image: url('email_background.png');
 	background-size: cover;
-	background-position: center;
+	background-position: center;*/
 	padding: 160px 20px;
 	margin: auto;
 	text-align: center;
@@ -87,6 +87,15 @@ button:active {
 	left: 50%;
 	transform: translate(-50%, -50%);
 
+}
+
+#email-pane > img {
+	position: absolute;
+	top: 0;
+	left: 0;
+	max-width: 100%;
+	height: auto;
+	z-index: -1;
 }
 
 #email-pane > input {
