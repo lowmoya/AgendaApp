@@ -8,7 +8,26 @@ module.exports = {
 async function homeAPI(req, res, id, body)
 {
 	// Get calendar info, make sure the supplied variables are valid
-	var calendar = (await mongo.calendar.findOne({ _id: id })).month_year;
+	var calendar = (await mongo.calendar.findOne({ _id: id }));
+
+	if (calendar == null) {
+		result = await mongo.calendar.insertOne({
+			_id: id,
+			month_year: {}
+		});
+		if (!result.acknowledged) {
+			console.error("ERR |\tCalendar refusing creation:"
+					+ result);
+			res.statusCode = 500;
+		}
+		calendar = {};
+	} else {
+		calendar = calendar.month_year;
+	}
+	
+
+
+
 
 
 	// Perform the requested action on the dataset

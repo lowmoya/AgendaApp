@@ -191,10 +191,10 @@ async function registerAPI(req, res, id, body)
 		username: body.username,
 		name: body.name
 	});
-	console.log(await mongo.calendar.insertOne({
+	mongo.calendar.insertOne({
 		_id: id,
 		month_year: {}
-	}));
+	});
 	res.statusCode = 200;
 	res.end();
 	return;
