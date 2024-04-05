@@ -45,33 +45,34 @@ function openModal(monthYear, day) {
     backDrop.style.display = 'block';
 }
 
-function saveEvent() {
+function addEvent() {
     if (eventTitleInput.value) {
         eventTitleInput.classList.remove('error');
 
-        clicked.events.push({
-            title: eventTitleInput.value
-        });
+        if (clicked.events.length == 0)
+            showEditEventModal(clicked, 0, {title: eventTitleInput.value});
 
-        localStorage.setItem('events', JSON.stringify(events));
-
-        const eventIndex = clicked.events.length - 1;
-        showEditEventModal(clicked, eventIndex, clicked.events[eventIndex]);
+        else
+            showEditEventModal(clicked, clicked.events.length, {title: eventTitleInput.value});
+        
+        
         closeModal();
+
     } else {
         eventTitleInput.classList.add('error');
     }
 }
 
-function deleteEvent(day, eventIndex) {
+function deleteEvent() {
     // Modify this function to remove a specific event
     // eventIndex is the index of the event to be removed
+    console.log("Before: ", currentEventIndex);
     if (clicked.events && clicked.events.length > 0) {
-        clicked.events.splice(eventIndex, 1); 
+        clicked.events.splice(currentEventIndex, 1); 
         if (clicked.events.length === 0) {
             delete events[clicked.monthYear][clicked.day]; 
         }
-
+        console.log("After: ", currentEventIndex);
 		
 		fetch('/home', {
 			method: 'POST',
@@ -83,7 +84,7 @@ function deleteEvent(day, eventIndex) {
 				'type': 'delete',
 				'monthYear': clicked.monthYear,
 				'day': clicked.day,
-				'index': eventIndex,
+				'index': currentEventIndex,
 			})
 		});
     }
@@ -98,7 +99,7 @@ function closeModal() {
     backDrop.style.display = 'none';
     eventTitleInput.value = '';
   
-    load();
+    load(shouldSync = false);
 }
 
 
@@ -106,9 +107,24 @@ function closeModal() {
 
 
 
+// This converts the time so that it doesn't show in military time, but 12-hour clock time
+function convertTo12HourFormat(time) {
+    let [hours, minutes] = time.split(':').map(num => parseInt(num, 10));
+    let period = 'AM';
 
+    if (hours >= 12) {
+        period = 'PM';
+        hours = hours % 12;
+    }
+    if (hours === 0) {
+        hours = 12; // Convert "0" hours to "12"
+    }
 
+    // Ensure double digits for minutes
+    minutes = minutes < 10 ? '0' + minutes : minutes;
 
+    return `${hours}:${minutes} ${period}`;
+}
 
 function showEditEventModal(clicked, eventIndex, event) {
     const editEventModal = document.getElementById('editEventModal');
@@ -117,6 +133,8 @@ function showEditEventModal(clicked, eventIndex, event) {
     const startTimeInput = document.getElementById('startTime');
     const endTimeInput = document.getElementById('endTime');
     const updateButton = document.getElementById('updateButton');
+    const imageInput = document.getElementById('image');
+    
 
     newEventModal.style.display = 'none';
     backDrop.style.display = 'block';
@@ -127,9 +145,9 @@ function showEditEventModal(clicked, eventIndex, event) {
     currentEventIndex = eventIndex;
     editNoteInput.value = event.notes || '';
 
-    // Here, set the start and end time fields with the event's times
-    startTimeInput.value = event.startTime || ''; 
-    endTimeInput.value = event.endTime || '';
+    // Start and end time fields with the event's times
+    startTimeInput.value = convertTo12HourFormat(event.startTime || '');
+    endTimeInput.value = convertTo12HourFormat(event.endTime || '');
 
 
     // Show the edit event modal
@@ -140,26 +158,82 @@ function showEditEventModal(clicked, eventIndex, event) {
 
     // Handle the update button click
     updateButton.onclick = () => {
+        const alarmSelect = document.getElementById('alarmTimeSelect');
         const updatedTitle = editEventTitleInput.value.trim();
-        const updatedNote = editNoteInput.value.trim(); // Get the updated note text
-        const updatedStartTime = startTimeInput.value;
+        const updatedNote = editNoteInput.value.trim();
+        const eventStartTime = new Date(event.startTime); 
+
+        let alarmType = alarmSelect.value;
+        let alarmTime; 
+
+        const updatedStartTime = startTimeInput.value; 
         const updatedEndTime = endTimeInput.value;
     
+        // Determine if the custom alarm inputs should be shown or hidden
+        const isCustom = alarmType === 'custom';
+        document.getElementById('alarmHeading').style.display = isCustom ? 'block' : 'none';
+        document.getElementById('customAlarmDate').style.display = isCustom ? 'block' : 'none';
+        document.getElementById('customAlarmTime').style.display = isCustom ? 'block' : 'none';
+    
+        if (alarmType === 'custom') {
+            const customAlarmDate = document.getElementById('customAlarmDate').value;
+            const customAlarmTime = document.getElementById('customAlarmTime').value;
+    
+            // Check if both date and time inputs are provided
+            if (customAlarmDate && customAlarmTime) {
+                // Construct a full ISO string from date and time
+                const isoString = `${customAlarmDate}T${customAlarmTime}:00.000`; // Adding seconds and timezone part to ensure ISO format
+                alarmTime = new Date(isoString);
+    
+                // Check if the constructed date is valid
+                if (isNaN(alarmTime.getTime())) {
+                    console.error("Constructed alarmTime is invalid", isoString);
+                    // Handle the invalid date case, perhaps by notifying the user or setting a default alarmTime
+                    return; // Exit the function or handle this scenario appropriately
+                }
+            } 
+        }else {
+            const minutesBeforeEvent = parseInt(alarmType, 10); 
+            alarmTime = new Date(eventStartTime.getTime() - minutesBeforeEvent * 60000);
+        }
+    
+        console.log("Alarm Time:", alarmTime);
+
+        // Store alarmTime in the event object
+        event.alarmTime = alarmTime; 
+    
+        if (events[clicked.monthYear] == undefined) {
+            events[clicked.monthYear] = {};
+            events[clicked.monthYear][clicked.day] = [];
+        } else if(events[clicked.monthYear][clicked.day] == undefined){
+            events[clicked.monthYear][clicked.day] = [];
+        }
 
     
-        // Overwrite the existing note with the new note
-		event.title = updatedTitle;
-		event.notes = updatedNote;
-		event.startTime = updatedStartTime;
-		event.endTime = updatedEndTime;
-    
-        localStorage.setItem('events', JSON.stringify(events)); // Save the updated events to localStorage
+        
+        // Update the event with the new alarm info
+        events[clicked.monthYear][clicked.day][currentEventIndex] = {
+            title: updatedTitle,
+            notes: updatedNote,
+            image: imageInput,
+            startTime: updatedStartTime,
+            endTime: updatedEndTime,
+            alarm: {
+                type: alarmType,
+                time: alarmTime 
+            }
+        };
+
+        // Save the updated events to localStorage
+        localStorage.setItem('events', JSON.stringify(events)); 
 
         // Close the edit event modal and refresh the calendar
         editEventModal.style.display = 'none';
         backDrop.style.display = 'none';
+
+
         // Refresh the calendar view to reflect changes
-        load(); 
+        load(shouldSync = false); 
 
 
 		// Send backend the edited event
@@ -187,18 +261,43 @@ function closeEditModal() {
     backDrop.style.display = 'none';
     eventTitleInput.value = '';
     clicked = {};
-    load();
+    load(shouldSync = false);
+}
+
+function checkForAlarms() {
+    const now = new Date();
+    Object.values(events).forEach(monthYear => {
+        Object.values(monthYear).forEach(dayEvents => {
+            dayEvents.forEach(event => {
+                if (event.alarm) {
+                    const alarmTime = new Date(event.alarm.time); 
+                    if (now >= alarmTime) {
+                        console.log("ITS TIME");
+                        alert(`Alarm for event: ${event.title}`);
+
+                        // TEMP WAY TO STOP ALARM
+                        delete event.alarm; 
+                        localStorage.setItem('events', JSON.stringify(events));
+                    }
+                }
+            });
+        });
+    });
 }
 
 
 
+// Continue setting the interval as before
+setInterval(checkForAlarms, 6000);
 
 
 
 
 
 
-async function load() {
+
+
+async function load(shouldSync = true) {
     const date = new Date();
 
     if (nav !== 0){
@@ -214,29 +313,31 @@ async function load() {
     currentDate = date;
 
 	
-	// Check if this month is out of sync
-	// Look into cleaning this up
-	var currentHash = new TextEncoder().encode(JSON.stringify(
-		events[(month + 1) + '_' + year] || {}));
-	currentHash = await crypto.subtle.digest('SHA-256', currentHash);
-	currentHash = btoa(String.fromCharCode(...(new Uint8Array(currentHash))))
-	const syncResponse = await fetch('/home', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			'session': localStorage.session
-		},
-		body: JSON.stringify({
-			type: 'sync',
-			monthYear: (month + 1) + '_' + year,
-			hash: currentHash
-		})
-	});
-	if (syncResponse.status == 200) {
-		// This month is out of sync, load the data it transferred and save it
-		events[(month + 1) + '_' + year] = await syncResponse.json();
-        localStorage.setItem('events', JSON.stringify(events));
-	}
+	//Check if this month is out of sync
+	//Look into cleaning this up
+    if(shouldSync){
+        var currentHash = new TextEncoder().encode(JSON.stringify(
+            events[(month + 1) + '_' + year] || {}));
+        currentHash = await crypto.subtle.digest('SHA-256', currentHash);
+        currentHash = btoa(String.fromCharCode(...(new Uint8Array(currentHash))))
+        const syncResponse = await fetch('/home', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'session': localStorage.session
+            },
+            body: JSON.stringify({
+                type: 'sync',
+                monthYear: (month + 1) + '_' + year,
+                hash: currentHash
+            })
+        });
+        if (syncResponse.status == 200) {
+            // This month is out of sync, load the data it transferred and save it
+            events[(month + 1) + '_' + year] = await syncResponse.json();
+            localStorage.setItem('events', JSON.stringify(events));
+        }
+    }
 
 
 
@@ -278,7 +379,7 @@ async function load() {
 				eventDiv.classList.add('event');
 				eventDiv.innerText = event.title;
 				if (event.startTime && event.endTime){
-					eventDiv.innerText = `${event.title} (${event.startTime} - ${event.endTime})`;
+					eventDiv.innerText = `${event.title} (${convertTo12HourFormat(event.startTime)} - ${convertTo12HourFormat(event.endTime)})`;
 				}
 				daySquare.appendChild(eventDiv);
 			});
@@ -308,7 +409,7 @@ function initButtons() {
         load();
     });
 
-    document.getElementById('saveButton').addEventListener('click', saveEvent);
+    document.getElementById('saveButton').addEventListener('click', addEvent);
     document.getElementById('cancelButton').addEventListener('click', closeModal);
     document.getElementById('deleteButton').addEventListener('click', deleteEvent);
     document.getElementById('closeButton').addEventListener('click', closeModal);
@@ -319,5 +420,3 @@ document.addEventListener('DOMContentLoaded', function() {
     initButtons();
     load();
 });
-
-
