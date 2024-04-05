@@ -193,7 +193,7 @@ async function registerAPI(req, res, id, body)
 	});
 	mongo.calendar.insertOne({
 		_id: id,
-		events: []
+		month_year: {}
 	});
 	res.statusCode = 200;
 	res.end();
