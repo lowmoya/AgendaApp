@@ -45,6 +45,43 @@ function openModal(monthYear, day) {
     backDrop.style.display = 'block';
 }
 
+function exportEvents() 
+{
+    const startDate = document.getElementById('sDate').value;
+    const endDate = document.getElementById('eDate').value;
+
+    // get all events and store them
+    // only store the events that are included in user's provided range
+    const eventsList = [];
+    // UPDATE
+    events.forEach(event => {
+        const date = new Date(event.date); 
+        if (date >= new Date(startDate) && date <= new Date(endDate)) {
+            eventsList.push(event);
+        }
+    });
+
+    // format the txt file
+    let txt = '';
+    eventsList.forEach(event => {
+        txt += `Title: ${event.title}\nDate: ${event.date}\nNotes: ${event.notes}\n\n`;
+    });
+
+    const txtBlob = new Blob([txt], {type: 'text/plain'});
+
+    // download url
+    const url = document.createElement('a');
+    url.href = URL.createObjectURL(txtBlob);
+    url.download = 'MyEvents.txt';
+
+    document.body.appendChild(url);
+    url.click();
+
+    // delete temporary link to download
+    document.body.removeChild(url);
+    URL.revokeObjectURL(url.href);
+}
+
 function addEvent() {
     if (eventTitleInput.value) {
         eventTitleInput.classList.remove('error');
@@ -413,10 +450,12 @@ function initButtons() {
     document.getElementById('cancelButton').addEventListener('click', closeModal);
     document.getElementById('deleteButton').addEventListener('click', deleteEvent);
     document.getElementById('closeButton').addEventListener('click', closeModal);
+    document.getElementById('exportButton').addEventListener('click', exportEvents);
 
 }
 
 document.addEventListener('DOMContentLoaded', function() {
     initButtons();
     load();
+    exportEvents();
 });

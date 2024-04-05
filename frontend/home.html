@@ -52,6 +52,15 @@
 
       <div id="calendar"></div>
 
+      <div id="exportEvents">
+        <div id="exportTitle">Export Events</div>
+        <p>Select the date range for the events you would like to export</p>
+        <label for="startDate" id="startDate">Start Date:</label>
+        <input type="date" id="sDate">
+        <label for="endDate" id="endDate">End Date:</label>
+        <input type="date" id="eDate">
+        <button id="exportButton">Export Events</button>
+      </div>
       
     </div>
 
@@ -59,6 +68,14 @@
     <div id="editEventModal" class="modal">
       <h2>Event Details</h2>
       <input id="editEventTitleInput" placeholder="Event Title" />
+
+      <label for="eventCat">Category:</label>
+      <select id="eventCat">
+          <option value="work">Work</option>
+          <option value="personal">Personal</option>
+          <option value="school">School</option>
+          <!-- Add more options as needed -->
+      </select>
 
       <h2>Times:</h2>
       <label for="startTime">Start Time:</label>
