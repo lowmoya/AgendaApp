@@ -1,12 +1,33 @@
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Listen for changes on the alarm time selection dropdown
+    document.getElementById('alarmTimeSelect').addEventListener('change', function() {
+        const isCustomSelected = this.value === 'custom';
+
+        // Set the display of the custom alarm input fields based on the selection
+        document.getElementById('alarmHeading').style.display = isCustomSelected ? 'block' : 'none';
+        document.getElementById('customAlarmDate').style.display = isCustomSelected ? 'block' : 'none';
+        document.getElementById('customAlarmTime').style.display = isCustomSelected ? 'block' : 'none';
+
+        // Optionally, you can set a meaningful heading when custom is selected
+        if (isCustomSelected) {
+            document.getElementById('alarmHeading').textContent = 'Set Custom Alarm:';
+        }
+    });
+  });
+
+</script>
+
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Winking Apple</title>
+    <title>Calendar App</title>
 
     <link rel="stylesheet" href="home.css">
-	<script src='session_locator.js'></script>
+	  <script src='session_locator.js'></script>
   </head>
   <body>
     
@@ -41,20 +62,36 @@
 
       <h2>Times:</h2>
       <label for="startTime">Start Time:</label>
-	  <input type="time" id="startTime" name="startTime" required>
+	    <input type="time" id="startTime" name="startTime" required>
 
-	  <label for="endTime">End Time:</label>
+	    <label for="endTime">End Time:</label>
       <input type="time" id="endTime" name="endTime" required>
+
+      <h2>Set an Alarm:</h2>
+      <select id="alarmTimeSelect">
+        <option value="5">5 mins before</option>
+        <option value="10">10 mins before</option>
+        <option value="15">15 mins before</option>
+        <option value="60">60 mins before</option>
+        <option value="custom">Customize</option>
+      </select>
       
-	  <h2>Set Alarm:</h2>
-	  <input type="time" id="alarmTime">
-	  <div id="alarmMessage"></div>
+      <h4 id="alarmHeading"></h4>
+      <label for="customAlarmDate" style="display: none;">Alarm Date:</label>
+      <input type="date" id="customAlarmDate" style="display: none;">
+
+      <label for="customAlarmTime" style="display: none;">Alarm Time:</label>
+      <input type="time" id="customAlarmTime" style="display: none;">
 
   
       <h2>Add a New Note</h2>
       <textarea id="noteInput" placeholder="Note..." ></textarea>
+      <label for="image">Upload a new picture:</label>
+      <input type="file" id="image" name="image" accept="image/png, image/jpeg" />
+      <div id="imagePreview"></div>
 
-	  <button id="updateButton">Save Event</button>
+      <h2> </h2>
+	    <button id="updateButton">Save Event</button>
       <button id="deleteButton" onclick="deleteEvent()">Delete Event</button>
       <button id="closeButton" onclick="closeEditModal()">Cancel</button>
 
