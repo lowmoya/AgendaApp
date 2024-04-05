@@ -248,7 +248,7 @@ function showEditEventModal(clicked, eventIndex, event) {
 				'monthYear': clicked.monthYear,
 				'day': clicked.day,
 				'index': eventIndex,
-				'event': event
+				'event': events[clicked.monthYear][clicked.day][eventIndex]
 			})
 		});
     };
