@@ -85,6 +85,103 @@ function exportEvents()
     URL.revokeObjectURL(url.href);
 }
 
+function searchEvents() {
+  const searchModal = document.getElementById("searchModal");
+  const closeButton = document.getElementById("closeSearchButton");
+  const startDate = document.getElementById("searchStart").value;
+  const endDate = document.getElementById("searchEnd").value;
+  const searchQuery = document.getElementById("searchInput").value;
+  const startDateObj = new Date(startDate);
+  const endDateObj = new Date(endDate);
+
+  if (startDateObj > endDateObj) {
+    alert("End date cannot be earlier than start date");
+    return;
+  }
+
+  fetch("/home", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      session: localStorage.session,
+    },
+    body: JSON.stringify({
+      type: "search",
+      startDate: startDate,
+      endDate: endDate,
+      searchQuery: searchQuery,
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Received search response:", data);
+
+      const eventsList = data.events;
+
+      // Show the search results modal
+      searchModal.style.display = "block";
+      backDrop.style.display = "block";
+      searchModal.style.opacity = 1;
+      searchModal.style.visibility = "visible";
+
+      const eventsListElement = document.getElementById("searchResultsList");
+      // Clear previous results
+      eventsListElement.innerHTML = "";
+      eventsList.forEach((event) => {
+        const listItem = document.createElement("li");
+        listItem.innerHTML = `${event.month}/${event.day}/${event.year}: ${event.title}`;
+        eventsListElement.appendChild(listItem);
+      });
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+
+  // Close search results modal
+  closeButton.onclick = () => {
+    searchModal.style.display = "none";
+    backDrop.style.display = "none";
+  };
+}
+
+function shareEvents() {
+	const cancelButton = document.getElementById("cancelShare");
+	const confirmButton = document.getElementById("confirmShare");
+	const username = document.getElementById("shareUser").value;
+	const startDate = document.getElementById("shareStart").value;
+  	const endDate = document.getElementById("shareEnd").value;
+
+	// Show the search results modal
+	shareModal.style.display = "block";
+	backDrop.style.display = "block";
+	shareModal.style.opacity = 1;
+	shareModal.style.visibility = "visible";
+
+	confirmButton.onclick = () =>
+	{
+		fetch("/home", {
+			method: "POST",
+			headers: {
+			  "Content-Type": "application/json",
+			  Session: localStorage.session,
+			},
+			body: JSON.stringify({
+			  type: "share",
+			  username: username,
+			  startDate: startDate,
+			  endDate: endDate
+			}),
+		  });
+		}
+		// Close share modal
+		cancelButton.onclick = () => {
+			shareModal.style.display = "none";
+			backDrop.style.display = "none";
+		  };
+	}
+
+	 
+
 function addEvent() {
     if (eventTitleInput.value) {
         eventTitleInput.classList.remove('error');
@@ -99,7 +196,6 @@ function addEvent() {
         
         
         closeModal();
-
     } else {
         eventTitleInput.classList.add('error');
     }
@@ -157,11 +253,6 @@ function closeModal() {
   
     load(shouldSync = false);
 }
-
-
-
-
-
 
 // This converts the time so that it doesn't show in military time, but 12-hour clock time
 function convertTo12HourFormat(time) {
@@ -318,8 +409,6 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
 			localStorage.setItem('alarms', JSON.stringify(alarms));
 		}
 
-    
-        
         // Update the event with the new alarm info
         events[clicked.monthYear][clicked.day][currentEventIndex] = {
             title: updatedTitle,
@@ -364,13 +453,13 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
 }
 
 function closeEditModal() {
-    eventTitleInput.classList.remove('error');
-    newEventModal.style.display = 'none';
-    editEventModal.style.display = 'none';
-    backDrop.style.display = 'none';
-    eventTitleInput.value = '';
-    clicked = {};
-    load(shouldSync = false);
+  eventTitleInput.classList.remove("error");
+  newEventModal.style.display = "none";
+  editEventModal.style.display = "none";
+  backDrop.style.display = "none";
+  eventTitleInput.value = "";
+  clicked = {};
+  load((shouldSync = false));
 }
 
 function checkForAlarms() {
@@ -392,17 +481,8 @@ function checkForAlarms() {
 		localStorage.setItem('alarms', JSON.stringify(alarms));
 }
 
-
-
 // Continue setting the interval as before
 setInterval(checkForAlarms, 6000);
-
-
-
-
-
-
-
 
 async function load(shouldSync = true) {
     const date = new Date();
@@ -419,7 +499,6 @@ async function load(shouldSync = true) {
     // Setting global date
     currentDate = date;
 
-	
 	//Check if this month is out of sync
 	//Look into cleaning this up
     if (shouldSync) {
@@ -531,6 +610,8 @@ function initButtons() {
     document.getElementById('deleteButton').addEventListener('click', deleteEvent);
     document.getElementById('closeButton').addEventListener('click', closeModal);
     document.getElementById('exportButton').addEventListener('click', exportEvents);
+	document.getElementById('searchButton').addEventListener('click', searchEvents);
+	document.getElementById('shareButton').addEventListener('click', shareEvents);
 
 }
 

@@ -194,7 +194,8 @@ async function registerAPI(req, res, id, body)
 	mongo.calendar.insertOne({
 		_id: id,
 		month_year: {},
-		alarms: []
+		alarms: [],
+		share_requests: []
 	});
 	res.statusCode = 200;
 	res.end();
@@ -232,8 +233,6 @@ function validateCWT(cwt) {
 		var decrypted = decipher.update(cwt.slice(0, -16));
 		decrypted = Buffer.concat([decrypted, decipher.final()]);
 		packet = JSON.parse(decrypted);
-
-		console.log(packet);
 
 		if (packet.expiration == undefined || packet.account_id == undefined ||
 				packet.hash == undefined || packet.expiration < Date.now() ||
