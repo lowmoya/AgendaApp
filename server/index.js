@@ -189,7 +189,15 @@ function supplyMissingPage(res) {
 async function initialize() {
 	await mongo.initAPI();
 	await auth.initAPI();
-	server = http.createServer(requestHandler);
+	// Wrapped in try to prevent any missed malformed data exceptions from
+	// crashing the server.
+	server = http.createServer((req, res) => {
+		try {
+			requestHandler(req, res);
+		} catch (error) {
+			console.error(error);
+		}
+	});
 	server.listen(port, () => {
 		console.log(`INF	| Server running at http//${hostname}:${port}/`);
 	});

@@ -187,6 +187,10 @@ body {
   #saveButton, #closeButton {
     background-color: #17338e;
   }
+  #deleteButton, #closeButton, #updateButton {
+	  width: 100px;
+	  height: 30px;
+  }
   #eventText {
     font-size: 14px;
   }

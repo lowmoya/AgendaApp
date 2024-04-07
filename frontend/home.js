@@ -1,7 +1,9 @@
 let nav = 0;
 let clicked = {};
-let events = localStorage.getItem('events') ? JSON.parse(localStorage.getItem('events')) : {};
-let alarms = localStorage.getItem('alarms') || [];
+let events = localStorage.getItem('events')
+	? JSON.parse(localStorage.getItem('events')) : {};
+let alarms = localStorage.getItem('alarms')
+	? JSON.parse(localStorage.getItem('alarms')) : [];
 
 const calendar = document.getElementById('calendar');
 const newEventModal =  document.getElementById('newEventModal');
@@ -88,10 +90,12 @@ function addEvent() {
         eventTitleInput.classList.remove('error');
 
         if (clicked.events.length == 0)
-            showEditEventModal(clicked, 0, {title: eventTitleInput.value});
+            showEditEventModal(clicked, 0, {title: eventTitleInput.value},
+				newEvent=true);
 
         else
-            showEditEventModal(clicked, clicked.events.length, {title: eventTitleInput.value});
+            showEditEventModal(clicked, clicked.events.length,
+				{title: eventTitleInput.value}, newEvent=true);
         
         
         closeModal();
@@ -102,15 +106,28 @@ function addEvent() {
 }
 
 function deleteEvent() {
-    // Modify this function to remove a specific event
-    // eventIndex is the index of the event to be removed
-    console.log("Before: ", currentEventIndex);
+	// Adjust alarms list
+	for (let i = alarms.length - 1; i > -1; --i) {
+		if (alarms[i].eventMonthYear != clicked.monthYear
+				|| alarms[i].eventDay != clicked.day)
+			continue;
+
+		// For same day alarms, adjust other alarms event index, or
+		// delete the alarm if it belonds to this event
+		if (alarms[i].eventIndex > currentEventIndex)
+			--alarms[i].eventIndex;
+		else if (alarms[i].eventIndex == currentEventIndex)
+			alarms.splice(i, 1);
+	}
+	localStorage.setItem('alarms', JSON.stringify(alarms));
+
+
+	// Remove event
     if (clicked.events && clicked.events.length > 0) {
         clicked.events.splice(currentEventIndex, 1); 
         if (clicked.events.length === 0) {
             delete events[clicked.monthYear][clicked.day]; 
         }
-        console.log("After: ", currentEventIndex);
 		
 		fetch('/home', {
 			method: 'POST',
@@ -126,6 +143,7 @@ function deleteEvent() {
 			})
 		});
     }
+
 
     localStorage.setItem('events', JSON.stringify(events));
     closeEditModal();
@@ -164,7 +182,7 @@ function convertTo12HourFormat(time) {
     return `${hours}:${minutes} ${period}`;
 }
 
-function showEditEventModal(clicked, eventIndex, event) {
+function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
     const editEventModal = document.getElementById('editEventModal');
     const editEventTitleInput = document.getElementById('editEventTitleInput');
     const editNoteInput = document.getElementById('noteInput');
@@ -177,6 +195,9 @@ function showEditEventModal(clicked, eventIndex, event) {
     newEventModal.style.display = 'none';
     backDrop.style.display = 'block';
 
+	// Only present delete button on editing events
+	document.getElementById('deleteButton').style.visibility = newEvent
+		? 'hidden' : 'visible';
  
     // Set the current event details in the input fields
     editEventTitleInput.value = event.title;
@@ -184,8 +205,48 @@ function showEditEventModal(clicked, eventIndex, event) {
     editNoteInput.value = event.notes || '';
 
     // Start and end time fields with the event's times
-    startTimeInput.value = convertTo12HourFormat(event.startTime || '');
-    endTimeInput.value = convertTo12HourFormat(event.endTime || '');
+    startTimeInput.value = event.startTime || '';
+	endTimeInput.value = event.endTime || '';
+
+	// Set the alarm-related fields
+    const alarmSelect = document.getElementById('alarmTimeSelect');
+	const alarmDate = document.getElementById('customAlarmDate');
+	const alarmTime = document.getElementById('customAlarmTime');
+	if (newEvent || event.alarm.type != 'custom') {
+		alarmSelect.value = newEvent ? 'none' : event.alarm.type;
+
+		// Hide custom event panel
+        document.getElementById('alarmHeading').style.display = 'none';
+        document.getElementById('customAlarmDate').style.display = 'none';
+        document.getElementById('customAlarmTime').style.display = 'none';
+
+		// Set default values for custom alarm
+		const eventDate = clicked.monthYear.split('_');
+		alarmDate.value = eventDate[1] + '-'
+			+ (eventDate[0] < 10 ? '0' + eventDate[0] : eventDate[0]) + '-'
+			+ (clicked.day < 10 ? '0' + clicked.day : clicked.day);
+		alarmTime.value = '12:00';
+	} else {
+		// Load values for custom event panel
+		alarmSelect.value = 'custom';
+		const date = new Date(event.alarm.time);
+		console.log(date);
+		alarmDate.value = date.getFullYear() + '-'
+			+ (date.getMonth() < 9 ? '0' + (date.getMonth() + 1)
+				: date.getMonth() + 1)
+			+ '-' + (date.getDate() < 10 ? '0' + date.getDate() : date.getDate());
+		alarmTime.value =
+			(date.getHours() < 10 ? '0' + date.getHours() : date.getHours())
+			+ ':' + (date.getMinutes() < 10 ? '0' + date.getMinutes()
+				: date.getMinutes());
+		
+		// Show custom event panel
+		document.getElementById('alarmHeading').style.display = 'block';
+		document.getElementById('customAlarmDate').style.display = 'block';
+		document.getElementById('customAlarmTime').style.display = 'block';
+
+	}
+
 
 
     // Show the edit event modal
@@ -196,7 +257,6 @@ function showEditEventModal(clicked, eventIndex, event) {
 
     // Handle the update button click
     updateButton.onclick = () => {
-        const alarmSelect = document.getElementById('alarmTimeSelect');
         const updatedTitle = editEventTitleInput.value.trim();
         const updatedNote = editNoteInput.value.trim();
         const eventStartTime = new Date(event.startTime); 
@@ -230,22 +290,33 @@ function showEditEventModal(clicked, eventIndex, event) {
                     return; // Exit the function or handle this scenario appropriately
                 }
             } 
-        }else {
+        } else if (alarmType != 'none') {
             const minutesBeforeEvent = parseInt(alarmType, 10); 
             alarmTime = new Date(eventStartTime.getTime() - minutesBeforeEvent * 60000);
         }
-    
-        console.log("Alarm Time:", alarmTime);
 
-        // Store alarmTime in the event object
-        event.alarmTime = alarmTime; 
-    
-        if (events[clicked.monthYear] == undefined) {
-            events[clicked.monthYear] = {};
-            events[clicked.monthYear][clicked.day] = [];
-        } else if(events[clicked.monthYear][clicked.day] == undefined){
-            events[clicked.monthYear][clicked.day] = [];
-        }
+
+
+		// Adjust alarms list
+		if (alarmTime != undefined) {
+			//	Move insertion index to either the index of this alarm, if it
+			//	already exists, or to the end of the list
+			let index = 0;
+			while (index < alarms.length
+					&& (alarms[index].eventMonthYear != clicked.monthYear
+						|| alarms[index].eventDay != clicked.day
+						|| alarms[index].eventIndex != currentEventIndex))
+				++index;
+
+			// Insert alarm
+			alarms[index] = {
+				eventMonthYear: clicked.monthYear,
+				eventDay: clicked.day,
+				eventIndex: currentEventIndex,
+				date: alarmTime
+			};
+			localStorage.setItem('alarms', JSON.stringify(alarms));
+		}
 
     
         
@@ -304,23 +375,21 @@ function closeEditModal() {
 
 function checkForAlarms() {
     const now = new Date();
-    Object.values(events).forEach(monthYear => {
-        Object.values(monthYear).forEach(dayEvents => {
-            dayEvents.forEach(event => {
-                if (event.alarm) {
-                    const alarmTime = new Date(event.alarm.time); 
-                    if (now >= alarmTime) {
-                        console.log("ITS TIME");
-                        alert(`Alarm for event: ${event.title}`);
+	var changed = false;
+	for (let i = alarms.length - 1; i > -1; --i) {
+		const alarm = alarms[i];
 
-                        // TEMP WAY TO STOP ALARM
-                        delete event.alarm; 
-                        localStorage.setItem('events', JSON.stringify(events));
-                    }
-                }
-            });
-        });
-    });
+		if (now < new Date(alarm.date))
+			continue;
+
+        alert('Alarm for event: ' + events[alarm.eventMonthYear]
+				[alarm.eventDay][alarm.eventIndex].title);
+		alarms.splice(i, 1);
+		changed = true;
+	}
+
+	if (changed)
+		localStorage.setItem('alarms', JSON.stringify(alarms));
 }
 
 
@@ -353,12 +422,14 @@ async function load(shouldSync = true) {
 	
 	//Check if this month is out of sync
 	//Look into cleaning this up
-    if(shouldSync){
-        var currentHash = new TextEncoder().encode(JSON.stringify(
-            events[(month + 1) + '_' + year] || {}));
+    if (shouldSync) {
+        var currentHash = new TextEncoder().encode(JSON.stringify({
+			events: events[(month + 1) + '_' + year] || {},
+			alarms: alarms
+		}));
         currentHash = await crypto.subtle.digest('SHA-256', currentHash);
         currentHash = btoa(String.fromCharCode(...(new Uint8Array(currentHash))))
-        const syncResponse = await fetch('/home', {
+        var syncResponse = await fetch('/home', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -367,12 +438,20 @@ async function load(shouldSync = true) {
             body: JSON.stringify({
                 type: 'sync',
                 monthYear: (month + 1) + '_' + year,
+				// Date five seconds back to avoid deleting alarms before
+				// they're seen
+				date: new Date(date - 5),
                 hash: currentHash
             })
         });
         if (syncResponse.status == 200) {
             // This month is out of sync, load the data it transferred and save it
-            events[(month + 1) + '_' + year] = await syncResponse.json();
+			const syncBody = await syncResponse.json();
+
+			alarms = syncBody.alarms;
+            localStorage.setItem('alarms', JSON.stringify(alarms));
+
+            events[(month + 1) + '_' + year] = syncBody.events;
             localStorage.setItem('events', JSON.stringify(events));
         }
     }
