@@ -1,7 +1,13 @@
+html {
+	height: 100%;
+}
+
 body {
 	display: flex;
 	user-select: none;
 	
+	height: 100%;
+	margin: 0;
 	background: #DADFDB;
 	background-image: url('login_background.png');
 	background-size: cover;
@@ -42,8 +48,9 @@ button:active {
 
 #register-pane {
 	background-image: url('email_background.png');
-	background-size: cover;
+	background-size: contain;
 	background-position: center;
+	background-repeat: no-repeat;
 	padding: 160px 20px;
 	margin: auto;
 	text-align: center;
