@@ -18,7 +18,7 @@ module.exports = {
 
 
 /* Constants */
-const cwt_duration = 31 * 24 * 60 * 60;
+const cwt_duration = 31 * 24 * 60 * 60 * 1000;
 const email_validator = /^([\w-]+(\.(?!@))?)+@([\w-]+\.)+[a-zA-Z]{2,}$/;
 const password_validator = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[! @#$%^&*+=<{([|\])}>,.:;?"'/\\_-])[\w~`! @#$%^&*+=<{([|\])}>,.:;?"'/\\_-]{8,64}$/;
 
@@ -193,7 +193,9 @@ async function registerAPI(req, res, id, body)
 	});
 	mongo.calendar.insertOne({
 		_id: id,
-		month_year: {}
+		month_year: {},
+		alarms: [],
+		share_requests: []
 	});
 	res.statusCode = 200;
 	res.end();

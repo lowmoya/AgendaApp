@@ -30,7 +30,6 @@
 	  <script src='session_locator.js'></script>
   </head>
   <body>
-    
     <div id="container">
       <div id="header">
         <div id="monthDisplay"></div>
@@ -38,7 +37,40 @@
             <button id="backButton">Back</button>
             <button id="nextButton">Next</button>
         </div>
+
       </div>
+	  
+	  <div id="searchEngine">
+        <label for="startDate" >Start Date:</label>
+        <input type="date" id="searchStart">
+        <label for="endDate">End Date:</label>
+        <input type="date" id="searchEnd">
+		<input type = "search" id="searchInput">
+	  	<button id="searchButton">Search</button>
+		<button id="shareButton">Share</button>
+	  </div>
+	  
+	  <div id="searchModal" class="modal">
+		<div class="searchResults">
+			<h2>Search Results</h2>
+			<ul id="searchResultsList"></ul>
+		</div>
+		<button id="exportSearchButton">Export</button>
+      	<button id="closeSearchButton">Close</button>
+	  </div>
+
+	  <div id="shareModal" class="modal">
+		Username <input type="text" id="shareUser"> <br>
+		<label for="startDate" >Start Date:</label>
+        <input type="date" id="shareStart"> <br>
+        <label for="endDate">End Date:</label>
+        <input type="date" id="shareEnd"> <br>
+		<button id="confirmShare">Share</button>
+      	<button id="cancelShare">Cancel</button>
+	  </div>
+
+	  
+	  
 
       <div id="weekdays">
         <div>Sunday</div>
@@ -91,6 +123,7 @@
         <option value="15">15 mins before</option>
         <option value="60">60 mins before</option>
         <option value="custom">Customize</option>
+		<option value="none" selected="selected">None</option>
       </select>
       
       <h4 id="alarmHeading"></h4>
@@ -109,8 +142,8 @@
 
       <h2> </h2>
 	    <button id="updateButton">Save Event</button>
-      <button id="deleteButton" onclick="deleteEvent()">Delete Event</button>
       <button id="closeButton" onclick="closeEditModal()">Cancel</button>
+      <button id="deleteButton" onclick="deleteEvent()">Delete Event</button>
 
       
       
