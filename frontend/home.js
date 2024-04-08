@@ -47,25 +47,87 @@ function openModal(monthYear, day) {
 
 function exportEvents() 
 {
-    const startDate = document.getElementById('sDate').value;
-    const endDate = document.getElementById('eDate').value;
+    // Code below references fae's (export search results)
+    // const startDate = document.getElementById('sDate').value;
+    // const endDate = document.getElementById('eDate').value;
+    const startStr = document.getElementById('sDate').value;
+    const endStr = document.getElementById('eDate').value;
+    const startSegments = startStr.split("-");
+    const endSegments = endStr.split("-");
 
-    // get all events and store them
-    // only store the events that are included in user's provided range
-    const eventsList = [];
-    // UPDATE
-    events.forEach(event => {
-        const date = new Date(event.date); 
-        if (date >= new Date(startDate) && date <= new Date(endDate)) {
-            eventsList.push(event);
-        }
-    });
-
-    // format the txt file
+    let start, end;
+    // store list of events that are included in user's date range
+    let eventsList = [];
     let txt = '';
-    eventsList.forEach(event => {
-        txt += `Title: ${event.title}\nDate: ${event.date}\nNotes: ${event.notes}\n\n`;
-    });
+
+    currentDate = new Date();
+
+    if (startSegments.length != 3) 
+    {
+      start = {
+        year: currentDate.getFullYear() - 5,
+        month: currentDate.getMonth() + 1,
+        day: currentDate.getDate(),
+      };
+    } 
+    else 
+    {
+      start = {
+        year: parseInt(startSegments[0]),
+        month: parseInt(startSegments[1]),
+        day: parseInt(startSegments[2]),
+      };
+    }
+
+    if (endSegments.length != 3) 
+    {
+      end = {
+        year: currentDate.getFullYear() + 5,
+        month: currentDate.getMonth() + 1,
+        day: currentDate.getDate(),
+      };
+    } 
+    else 
+    {
+      end = {
+        year: parseInt(endSegments[0]),
+        month: parseInt(endSegments[1]),
+        day: parseInt(endSegments[2]),
+      };
+    }
+    
+    // begin event iteration
+    for (let year = start.year; year <= end.year; ++year) 
+    {
+        for (let month = 0; month <= 12; ++month) 
+        { // check if before or after start month
+            if (year == start.year && month < start.month)
+                continue;
+            // Skip if no contents
+            if (year == end.year && month > end.month)
+                break; 
+            
+            const monthEvents = events[month + "_" + year];
+            
+            // vvvvvvv monthEvents might be undefined vvvvvvv
+            if (monthEvents == undefined) continue;
+            
+            for (let day = 0; day <= 31; ++day) 
+            {
+                // check if before or after start day
+                if (year == start.year && month == start.month) if (day < start.day) continue;
+                if (year == end.year && month == end.month) if (day > end.day) break;
+                // Skip if no content
+                if (monthEvents[day] == undefined) continue;
+                
+                // add info about events on current date to the txt file
+                for (let i = 0; i < monthEvents[day].length; i++) 
+                {   
+                    txt += `Date: ${month}/${day}/${year}\nTitle: ${monthEvents[day][i].title}\nNotes: ${monthEvents[day][i].notes}\n\n`;
+                }
+            }
+        }
+    }
 
     const txtBlob = new Blob([txt], {type: 'text/plain'});
 
@@ -81,6 +143,7 @@ function exportEvents()
     document.body.removeChild(url);
     URL.revokeObjectURL(url.href);
 }
+
 
 function addEvent() {
     if (eventTitleInput.value) {
@@ -457,5 +520,4 @@ function initButtons() {
 document.addEventListener('DOMContentLoaded', function() {
     initButtons();
     load();
-    exportEvents();
 });
