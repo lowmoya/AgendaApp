@@ -13,6 +13,7 @@ const eventTitleInput = document.getElementById('eventTitleInput');
 const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 let currentEventIndex = null; 
 let currentDate = null;
+let eventModalImageLoaded = false;
 
 function openModal(monthYear, day) {
 	// Create a container for this event if there isn't one already
@@ -399,6 +400,19 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
 	}
 
 
+	// Set image inputs
+	const imageSelector = document.getElementById('image');
+	const imageDisplay = document.getElementById('image-display');
+	if (event.image == undefined) {
+		imageDisplay.style.display = 'none';
+		imageSelector.value = '';
+		eventModalImageLoaded = false;
+	} else {
+		imageDisplay.src = event.image;
+		imageDisplay.style.display = 'block';
+		eventModalImageLoaded = true;
+	}
+
 
     // Show the edit event modal
     editEventModal.style.display = 'block';
@@ -469,11 +483,12 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
 			localStorage.setItem('alarms', JSON.stringify(alarms));
 		}
 
+
         // Update the event with the new alarm info
         events[clicked.monthYear][clicked.day][currentEventIndex] = {
             title: updatedTitle,
             notes: updatedNote,
-            image: imageInput,
+            image: eventModalImageLoaded ? imageDisplay.src : undefined,
             startTime: updatedStartTime,
             endTime: updatedEndTime,
             alarm: {
@@ -562,6 +577,7 @@ async function load(shouldSync = true) {
 	//Check if this month is out of sync
 	//Look into cleaning this up
     if (shouldSync) {
+		// Check if should sync alarm and events
         var currentHash = new TextEncoder().encode(JSON.stringify({
 			events: events[(month + 1) + '_' + year] || {},
 			alarms: alarms
@@ -583,6 +599,8 @@ async function load(shouldSync = true) {
                 hash: currentHash
             })
         });
+
+		// Sync alarm and events
         if (syncResponse.status == 200) {
             // This month is out of sync, load the data it transferred and save it
 			const syncBody = await syncResponse.json();
@@ -593,6 +611,28 @@ async function load(shouldSync = true) {
             events[(month + 1) + '_' + year] = syncBody.events;
             localStorage.setItem('events', JSON.stringify(events));
         }
+
+
+		// Check for share requests
+		/*const shareResponse = await fetch(...);
+		if (shareResponse.status == 200) {
+			const shareRequests = await shareResponse.json();
+			for (request of shareRequests) {
+				// Prompt user do you accept this
+				// If yes copy and
+				await fetch('shareAnswer', body {
+					index: 0,
+					accept: true
+				});
+				// else
+				await fetch('shareAnswer', body {
+					index: 0,
+					accept: false
+				});
+
+
+			}
+		}*/
     }
 
 
@@ -654,6 +694,22 @@ async function load(shouldSync = true) {
     }
 }
 
+
+function loadEditModalImage() {
+	const selector = document.getElementById('image');
+	const display = document.getElementById('image-display');
+
+	const reader = new FileReader();
+	reader.onload = () => {
+		display.src = reader.result;
+		display.style.display = 'block';
+	 	eventModalImageLoaded = true;
+	};
+
+	reader.readAsDataURL(selector.files[0]);
+}
+
+
 function initButtons() {
     document.getElementById('nextButton').addEventListener('click', () => {
         nav++;
@@ -672,6 +728,7 @@ function initButtons() {
     document.getElementById('exportButton').addEventListener('click', exportEvents);
 	document.getElementById('searchButton').addEventListener('click', searchEvents);
 	document.getElementById('shareButton').addEventListener('click', shareEvents);
+	document.getElementById('image').addEventListener('change', loadEditModalImage);
 
 }
 
