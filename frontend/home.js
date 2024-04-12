@@ -4,6 +4,8 @@ let events = localStorage.getItem('events')
 	? JSON.parse(localStorage.getItem('events')) : {};
 let alarms = localStorage.getItem('alarms')
 	? JSON.parse(localStorage.getItem('alarms')) : [];
+let weeklyNotes = localStorage.getItem('weeklyNotes')
+    ? JSON.parse(localStorage.getItem('weeklyNotes')) : {};
 
 const calendar = document.getElementById('calendar');
 const newEventModal =  document.getElementById('newEventModal');
@@ -11,12 +13,13 @@ const deleteEventModal = document.getElementById('deleteEventModal');
 const backDrop =  document.getElementById('modalBackDrop');
 const eventTitleInput = document.getElementById('eventTitleInput');
 const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
 let currentEventIndex = null; 
 let currentDate = null;
 let eventModalImageLoaded = false;
 
 function openModal(monthYear, day) {
-	// Create a container for this event if there isn't one already
+	// Create a container for this event
 	if (events[monthYear] == undefined) {
 		events[monthYear] = {};
 		events[monthYear][day] = [];
@@ -30,7 +33,7 @@ function openModal(monthYear, day) {
 
     newEventModal.style.display = 'block';
 
-    // Display existing events in the modal or some other part of your UI
+    // Display existing events in the modal
     const eventsList = document.getElementById('eventsList'); 
     eventsList.innerHTML = ''; 
 
@@ -234,15 +237,81 @@ function shareEvents() {
 			  startDate: startDate,
 			  endDate: endDate
 			}),
-		  });
-		}
+		});
+
 		// Close share modal
 		cancelButton.onclick = () => {
 			shareModal.style.display = "none";
 			backDrop.style.display = "none";
-		  };
+		};
 	}
+}
 
+// Below are the functions for the weekly note modal functionality
+function getWeekNumber(date) {
+    const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+    const firstDayOfWeek = firstDayOfMonth.getDay();
+    const offsetDate = date.getDate() + firstDayOfWeek - 1;
+    return Math.ceil(offsetDate / 7);
+}
+
+function getWeeklyNote() {
+    const editWeeklyNoteInput = document.getElementById('weeklyNoteInput');
+    const weeklyNoteModal = document.getElementById('weeklyNoteModal');
+
+    // Open the weekly note modal
+    document.getElementById('openWeeklyNoteModal').addEventListener('click', () => {
+        weeklyNoteModal.style.display = 'block';
+        weeklyNoteModal.style.opacity = 1;
+        weeklyNoteModal.style.visibility = 'visible';
+        backDrop.style.display = 'block';
+        weekOfNote.style.display = 'block';
+    });
+
+    // Submit the weekly note
+    document.getElementById('submitWeeklyNote').addEventListener('click', () => {
+        const updatedWeeklyNote = editWeeklyNoteInput.value.trim();
+        const weekOfNote = document.getElementById('weekOfNote').value;
+
+
+        // Determine the current week
+        const date = new Date(weekOfNote);
+        console.log(date);
+        const monthYear = (date.getMonth() + 1) + '_' + date.getFullYear();
+        console.log(monthYear);
+        const weekNumber = getWeekNumber(date);
+        console.log(weekNumber);
+    
+        
+        // Initialize if necessary
+        if (!weeklyNotes[monthYear][weekly_note]) {
+            console.log("No week numbers");
+            weeklyNotes[monthYear]['weekly_note'] = {};
+        }
+        if (!weeklyNotes[monthYear][weekly_note][weekNumber]) {
+            console.log("Nothing is initialized under the note for the week");
+            weeklyNotes[monthYear][weekly_note][weekNumber] = [];
+        }
+    
+        // Add the note to the 'WeeklyNote' array for the week
+        // NEED HELP STORING
+        weeklyNotes[monthYear][weekly_note][weekNumber].push(updatedWeeklyNote); 
+        console.log(weeklyNotes[monthYear][weekly_note][weekNumber]);
+        console.log(updatedWeeklyNote);
+
+        weeklyNoteModal.style.display = 'none';
+        backDrop.style.display = 'none';
+    });
+
+    // Cancel the note input and close the modal
+    document.getElementById('cancelWeeklyNote').addEventListener('click', () => {
+        weeklyNoteModal.style.display = 'none';
+        backDrop.style.display = 'none';
+    });
+}
+
+
+// Adding the event to the list
 function addEvent() {
     if (eventTitleInput.value) {
         eventTitleInput.classList.remove('error');
@@ -262,6 +331,7 @@ function addEvent() {
     }
 }
 
+// Deleting the event off the list
 function deleteEvent() {
 	// Adjust alarms list
 	for (let i = alarms.length - 1; i > -1; --i) {
@@ -315,6 +385,7 @@ function closeModal() {
     load(shouldSync = false);
 }
 
+
 // This converts the time so that it doesn't show in military time, but 12-hour clock time
 function convertTo12HourFormat(time) {
     let [hours, minutes] = time.split(':').map(num => parseInt(num, 10));
@@ -324,8 +395,9 @@ function convertTo12HourFormat(time) {
         period = 'PM';
         hours = hours % 12;
     }
+    // Convert "0" hours to "12"
     if (hours === 0) {
-        hours = 12; // Convert "0" hours to "12"
+        hours = 12; 
     }
 
     // Ensure double digits for minutes
@@ -341,9 +413,7 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
     const startTimeInput = document.getElementById('startTime');
     const endTimeInput = document.getElementById('endTime');
     const updateButton = document.getElementById('updateButton');
-    const imageInput = document.getElementById('image');
     
-
     newEventModal.style.display = 'none';
     backDrop.style.display = 'block';
 
@@ -396,8 +466,20 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
 		document.getElementById('alarmHeading').style.display = 'block';
 		document.getElementById('customAlarmDate').style.display = 'block';
 		document.getElementById('customAlarmTime').style.display = 'block';
-
 	}
+
+    alarmSelect.addEventListener('change', function() {
+        const isCustomSelected = this.value === 'custom';
+
+        // Set the display of the custom alarm input fields based on the selection
+        document.getElementById('alarmHeading').style.display = isCustomSelected ? 'block' : 'none';
+        document.getElementById('customAlarmDate').style.display = isCustomSelected ? 'block' : 'none';
+        document.getElementById('customAlarmTime').style.display = isCustomSelected ? 'block' : 'none';
+
+        if (isCustomSelected) {
+            document.getElementById('alarmHeading').textContent = 'Set Custom Alarm:';
+        }
+    });
 
 
 	// Set image inputs
@@ -412,7 +494,6 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
 		imageDisplay.style.display = 'block';
 		eventModalImageLoaded = true;
 	}
-
 
     // Show the edit event modal
     editEventModal.style.display = 'block';
@@ -451,12 +532,12 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
                 // Check if the constructed date is valid
                 if (isNaN(alarmTime.getTime())) {
                     console.error("Constructed alarmTime is invalid", isoString);
-                    // Handle the invalid date case, perhaps by notifying the user or setting a default alarmTime
-                    return; // Exit the function or handle this scenario appropriately
+                    return;
                 }
             } 
         } else if (alarmType != 'none') {
             const minutesBeforeEvent = parseInt(alarmType, 10); 
+            console.log(minutesBeforeEvent);
             alarmTime = new Date(eventStartTime.getTime() - minutesBeforeEvent * 60000);
         }
 
@@ -544,12 +625,14 @@ function checkForAlarms() {
 		const alarm = alarms[i];
 
 		if (now < new Date(alarm.date))
+            console.log(now);
 			continue;
 
         alert('Alarm for event: ' + events[alarm.eventMonthYear]
 				[alarm.eventDay][alarm.eventIndex].title);
 		alarms.splice(i, 1);
 		changed = true;
+        console.log(now);
 	}
 
 	if (changed)
@@ -670,7 +753,7 @@ async function load(shouldSync = true) {
 			let eventForDay = [];
 			if (events[monthYear] != undefined && events[monthYear][i - paddingDays] != undefined)
 				eventForDay = events[monthYear][i - paddingDays];
-			eventForDay.forEach(event => {
+			    eventForDay.forEach(event => {
 				const eventDiv = document.createElement('div');
 				eventDiv.classList.add('event');
 				eventDiv.innerText = event.title;
@@ -734,5 +817,6 @@ function initButtons() {
 
 document.addEventListener('DOMContentLoaded', function() {
     initButtons();
+    getWeeklyNote();
     load();
 });
