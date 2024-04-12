@@ -81,7 +81,8 @@ async function emailLogin(req, res, body)
 		res.end();
 		return;
 	}
-
+	body.email = body.email.toLowerCase();
+	console.log(body.password);
 	var auth_info = await mongo.auth.findOne({email: body.email});
 	if (auth_info == null) {
 		// Create new account or fail if password is not a mach
@@ -94,7 +95,8 @@ async function emailLogin(req, res, body)
 
 		auth_info = await mongo.auth.findOne({email: body.email});
 		res.setHeader('location', '/register');
-	} else if (auth_info.password != hash(body.password, auth_info.salt)) {
+	} else if (auth_info.password != saltedHash(body.password, auth_info.salt)) {
+		console.log(auth_info.password, saltedHash(body.password, auth_info.salt));
 		// Account exists, bad password
 		res.statusCode = 400;
 		res.end();

@@ -209,9 +209,8 @@ function searchEvents() {
 function shareEvents() {
 	const cancelButton = document.getElementById("cancelShare");
 	const confirmButton = document.getElementById("confirmShare");
-	const username = document.getElementById("shareUser").value;
-	const startDate = document.getElementById("shareStart").value;
-  	const endDate = document.getElementById("shareEnd").value;
+	
+	
 
 	// Show the search results modal
 	shareModal.style.display = "block";
@@ -219,9 +218,29 @@ function shareEvents() {
 	shareModal.style.opacity = 1;
 	shareModal.style.visibility = "visible";
 
+
 	confirmButton.onclick = () =>
 	{
-		fetch("/home", {
+		const username = document.getElementById("shareUser").value;
+		const startDate = document.getElementById("shareStart").value;
+  		const endDate = document.getElementById("shareEnd").value;
+		const startDateObj = new Date(startDate);
+		const endDateObj = new Date(endDate);
+
+		if (startDateObj > endDateObj) {
+			alert("End date cannot be earlier than start date");
+			console.log("end date cannot be earlier");
+			return;
+		}
+	
+		if (startDate == "" || endDate == "")
+		{
+			alert("Please select a valid date range");
+			console.log("invalid date range");
+			return;
+		}
+
+		fetch("/share", {
 			method: "POST",
 			headers: {
 			  "Content-Type": "application/json",
@@ -234,13 +253,20 @@ function shareEvents() {
 			  endDate: endDate
 			}),
 		  });
-		}
-		// Close share modal
-		cancelButton.onclick = () => {
-			shareModal.style.display = "none";
-			backDrop.style.display = "none";
-		  };
+
+		shareModal.style.display = "none";
+		backDrop.style.display = "none";
+		alert("Share request to: " + username +" was sent.");
 	}
+
+	// Close share modal
+	cancelButton.onclick = () => 
+	{
+		shareModal.style.display = "none";
+		backDrop.style.display = "none";
+	};
+		
+}
 
 function addEvent() {
     if (eventTitleInput.value) {
@@ -593,6 +619,88 @@ async function load(shouldSync = true) {
             events[(month + 1) + '_' + year] = syncBody.events;
             localStorage.setItem('events', JSON.stringify(events));
         }
+
+		// Check for share requests
+		const shareResponse = await fetch('/share', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'session': localStorage.session
+            },
+            body: JSON.stringify({
+                type: 'sharePull',
+            })
+        });
+
+		if (shareResponse.status == 200)
+		{
+			const shareRequests = await shareResponse.json();
+			console.log(shareRequests);
+			for (const request of shareRequests)
+			{
+				let end = request.events.length - 1;
+				const startDate = request.events[0].month + "/" + request.events[0].day + "/" + request.events[0].year;
+				const endDate = request.events[end].month + "/" + request.events[end].day + "/" + request.events[end].year;
+				const confirmation = confirm(request.username +" wants to share events " + startDate + " to " +
+				endDate +" with you, do you wish to proceed?");
+
+				if (confirmation)
+				{
+				
+					await fetch('/share', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+							'session': localStorage.session
+						},
+						body: JSON.stringify({
+							type: 'shareAnswer',
+							index: 0,
+							accept:true
+
+						})
+					});
+					//alert("Share request accepted!")
+				
+					for (eventInfo of request.events)
+					{
+						const mY = eventInfo.month+"_"+eventInfo.year
+						if(events[mY] == undefined)
+						{
+							events[mY] = {};
+							events[mY][eventInfo.day] = [];
+						}
+						else if (events[mY][eventInfo.day] == undefined)
+						{
+							events[mY][eventInfo.day] = [];
+						}
+						events[mY][eventInfo.day].push(eventInfo.event);
+					}
+        
+					localStorage.setItem("events", JSON.stringify(events))
+				}
+				else
+				{
+					await fetch('/share', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+							'session': localStorage.session
+						},
+						body: JSON.stringify({
+							type: 'shareAnswer',
+							index: 0,
+							accept:false
+
+						})
+					});
+					alert("Share request denied.")
+				}
+			}
+			
+		}
+
+
     }
 
 

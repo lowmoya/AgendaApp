@@ -1,8 +1,11 @@
 const mongo = require('./mongo');
 const { hash } = require('./authentication');
+const { ConnectionCheckOutFailedEvent } = require('mongodb');
 
 module.exports = {
-	homeAPI: homeAPI
+	homeAPI: homeAPI,
+	shareAPI: shareAPI
+
 };
 
 async function homeAPI(req, res, id, body)
@@ -11,14 +14,12 @@ async function homeAPI(req, res, id, body)
 	var calendar = (await mongo.calendar.findOne({ _id: id }));
 	var alarms;
 
-	// Get account info 
-	//var account = await mongo.account.findOne({username: username});
-
 	if (calendar == null) {
 		result = await mongo.calendar.insertOne({
 			_id: id,
 			month_year: {},
-			alarms: []
+			alarms: [],
+			share_requests: []
 		});
 		if (!result.acknowledged) {
 			console.error("ERR |\tCalendar refusing creation:"
@@ -29,6 +30,7 @@ async function homeAPI(req, res, id, body)
 		alarms = [];
 	} else {
 		alarms = calendar.alarms;
+		share_requests = calendar.share_requests
 		calendar = calendar.month_year;
 	}
 	
@@ -241,3 +243,166 @@ async function homeAPI(req, res, id, body)
 	res.statusCode = 200;
 	res.end();
 }
+
+async function shareAPI(req, res, id, body)
+{
+	// Get calendar info, make sure the supplied variables are valid
+	var calendar = (await mongo.calendar.findOne({ _id: id }));
+	var alarms;
+
+	// Get account info 
+	var targetAccount = (await mongo.account.findOne({username: body.username}));
+	var originAccount = (await mongo.account.findOne({ _id: id }));
+	
+
+	var calendarTarget; 
+
+	if (calendar == null) {
+		result = await mongo.calendar.insertOne({
+			_id: id,
+			month_year: {},
+			alarms: [],
+			share_requests: []
+		});
+		if (!result.acknowledged) {
+			console.error("ERR |\tCalendar refusing creation:"
+					+ result);
+			res.statusCode = 500;
+		}
+		calendar = {};
+		alarms = [];
+	} else {
+		alarms = calendar.alarms;
+		share_requests = calendar.share_requests;
+		calendar = calendar.month_year;
+	}
+
+	if (body.type == "share")
+	{
+		if (targetAccount == null) {
+			// User not found
+			res.statusCode = 404;
+			res.end();
+			return;
+		} else {
+			// add to other users share request 
+			let eventsList = [];
+			const startStr = body.startDate.split("-");
+			const endStr = body.endDate.split("-");
+			
+			start = {
+				year: parseInt(startStr[0]),
+				month: parseInt(startStr[1]),
+				day: parseInt(startStr[2]),
+			};
+			end = {
+				year: parseInt(endStr[0]),
+				month: parseInt(endStr[1]),
+				day: parseInt(endStr[2]),
+			};
+	
+			for (let year = start.year; year <= end.year; ++year) {
+				for (let month = 0; month <= 12; ++month) {
+					// check if before or after start month
+					if (year == start.year && month < start.month)
+						continue;
+					if (year == end.year && month > end.month)
+						break;
+					// Skip if no contents
+					const monthEvents = calendar[month + "_" + year];
+					if (monthEvents == undefined) continue;
+	
+					for (let day = 0; day <= 31; ++day) {
+						// check if before or after start day
+						if (year == start.year && month == start.month) if (day < start.day) continue;
+						if (year == end.year && month == end.month) if (day > end.day) break;
+						// Skip if no content
+						if (monthEvents[day] == undefined) continue;
+						for (let i = 0; i < monthEvents[day].length; i++) {
+							let event = monthEvents[day][i];
+								eventsList.push({
+									year: year,
+									month: month,
+									day: day,
+									event: event
+								});
+							}
+						}
+					}
+				}
+
+			calendarTarget = (await mongo.calendar.findOne({_id: targetAccount._id}));
+		
+			calendarTarget.share_requests.push(
+				{
+					username: originAccount.username,
+					startDate: body.startDate,
+					endDate: body.endDate,
+					events: eventsList
+				}
+			)
+	
+	
+			mongo.calendar.updateOne(
+					{_id: targetAccount._id},
+					{$set: {share_requests: calendarTarget.share_requests}});
+			res.statusCode = 200;
+			//return;
+		}
+
+	}
+	else if (body.type == 'sharePull') {
+		if (share_requests.length == 0)
+		{
+			res.statusCode = 204;
+			res.end();
+		}
+		else {
+			res.statusCode = 200;
+			res.setHeader('Content-Type', 'application/json');
+			res.end(JSON.stringify(share_requests));
+		}
+	}
+	else if (body.type == 'shareAnswer')
+	{
+		if(body.accept == true)
+		{
+			for (eventInfo of share_requests[body.index].events)
+			{
+				const mY = eventInfo.month+"_"+eventInfo.year
+				if(calendar[mY] == undefined)
+				{
+					calendar[mY] = {};
+					calendar[mY][eventInfo.day] = [];
+				}
+				else if (calendar[mY][eventInfo.day] == undefined)
+				{
+					calendar[mY][eventInfo.day] = [];
+				}
+				//calendar[mY][eventInfo.day].alarm.type = 'none';
+				calendar[mY][eventInfo.day].push(eventInfo.event);
+			}
+			share_requests.splice(body.index,1);
+
+			res.setHeader('Content-Type', 'application/json');
+			res.code = 200;
+		}
+		else
+		{
+			share_requests.splice(body.index,1);
+		}
+		mongo.calendar.updateOne({ _id: id }, {
+			$set: { month_year: calendar, share_requests: share_requests}
+		});
+		res.code = 200;
+		res.end();
+	}
+}
+
+	
+
+
+	
+
+
+

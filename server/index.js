@@ -61,11 +61,13 @@ const apis = [
 	'/login',
 	'/register',
 	'/home',
+	'/share'
 ];
 const api_bindings = [
 	auth.loginAPI,
 	auth.registerAPI,
 	home.homeAPI,
+	home.shareAPI
 ]
 
 
