@@ -227,6 +227,60 @@ async function homeAPI(req, res, id, body)
 		res.statusCode = 200;
 		res.setHeader("Content-Type", "application/json");
 		res.end(JSON.stringify(response));
+	} else if (body.type == 'share') {
+		const account = (await mongo.account.findOne({ username: body.username}));
+		if (account == null) {
+			// 404 and exit
+		}
+
+		// build event structure
+		const eventCopy = {};
+
+
+		// add to other users share request
+		const calendarTarget = (await mongo.calendar.findOne({
+			_id: account._id
+		}));
+	
+		calendarTarget.share_requests.push({
+			username,
+			startDate,
+			endDate,
+			events
+		});
+
+		mongo.calendar.updateOne(
+			FILTER,
+			ACTION
+		);
+
+		mongo.calendar.updateOne(
+			{ _id: account._id },
+			{ $set: { share_requests: calendarTarget.share_requests }
+		});
+
+
+		// 200 and exit
+
+	} else if (body.type == 'sharePull') {
+		// Respond with either 204 empty or 200 with the array
+	} else if (body.type == 'shareAnswer') {
+		// Take a share index and a boolean for accept
+		// If accept, update the calendar with the information from the share
+		// and then delete the share request
+		// If reject, just delete the share request
+		
+
+
+		for (monthYear in targetCalendar) {
+			for (day in targetCalendar[monthYear]) {
+				for (event of targetCalendar[monthYear][day]) {
+					calendar[monthYear][day].push(event);
+					// doesn't take into consideration alarms
+					// could handle alarm behavior here
+				}
+			}
+		}
 	} else {
 		// Bad type
 		res.statusCode = 400;
