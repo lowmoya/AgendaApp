@@ -321,37 +321,49 @@ function getWeeklyNote() {
     // Submit the weekly note
     document.getElementById('submitWeeklyNote').addEventListener('click', () => {
         const updatedWeeklyNote = editWeeklyNoteInput.value.trim();
-        const weekOfNote = document.getElementById('weekOfNote').value;
+        const date = new Date(weekOfNote.value);
 
-
-        // Determine the current week
-        const date = new Date(weekOfNote);
-        console.log(date);
         const monthYear = (date.getMonth() + 1) + '_' + date.getFullYear();
-        console.log(monthYear);
         const weekNumber = getWeekNumber(date);
-        console.log(weekNumber);
-    
-        
-        // Initialize if necessary
-        if (!weeklyNotes[monthYear][weekly_note]) {
-            console.log("No week numbers");
-            weeklyNotes[monthYear]['weekly_note'] = {};
-        }
-        if (!weeklyNotes[monthYear][weekly_note][weekNumber]) {
-            console.log("Nothing is initialized under the note for the week");
-            weeklyNotes[monthYear][weekly_note][weekNumber] = [];
-        }
-    
-        // Add the note to the 'WeeklyNote' array for the week
-        // NEED HELP STORING
-        weeklyNotes[monthYear][weekly_note][weekNumber].push(updatedWeeklyNote); 
-        console.log(weeklyNotes[monthYear][weekly_note][weekNumber]);
-        console.log(updatedWeeklyNote);
 
+        const firstDayOfWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 1); // Adjust for first day of week assuming Sunday is start
+        const day = firstDayOfWeek.getDate();
+
+        if (!weeklyNotes[monthYear]) {
+            weeklyNotes[monthYear] = {};
+        }
+        if (!weeklyNotes[monthYear][day]) {
+            weeklyNotes[monthYear][day] = [];
+        }
+
+        weeklyNotes[monthYear][day].push({ note: updatedWeeklyNote, weekNumber: weekNumber });
+
+        // Save to local storage (optional, if you want to cache or use locally)
+        localStorage.setItem('weeklyNotes', JSON.stringify(weeklyNotes));
+
+        // Send the note to the server
+        fetch('/home', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Session': localStorage.session
+            },
+            body: JSON.stringify({
+                type: 'weeklyNote',
+                monthYear: monthYear,
+                day: day,
+                note: updatedWeeklyNote,
+                weekNumber: weekNumber
+            })
+        }).then(response => response.json())
+          .then(data => console.log("Data saved successfully", data))
+          .catch(error => console.error("Failed to save data", error));
+
+        // Close the modal after submission
         weeklyNoteModal.style.display = 'none';
         backDrop.style.display = 'none';
     });
+
 
     // Cancel the note input and close the modal
     document.getElementById('cancelWeeklyNote').addEventListener('click', () => {
@@ -456,6 +468,8 @@ function convertTo12HourFormat(time) {
     return `${hours}:${minutes} ${period}`;
 }
 
+const alarmTime = document.getElementById('customAlarmTime');
+
 function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
     const editEventModal = document.getElementById('editEventModal');
     const editEventTitleInput = document.getElementById('editEventTitleInput');
@@ -478,12 +492,12 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
 
     // Start and end time fields with the event's times
     startTimeInput.value = event.startTime || '';
+    console.log("START TIMEEEE", startTimeInput.value);
 	endTimeInput.value = event.endTime || '';
 
 	// Set the alarm-related fields
     const alarmSelect = document.getElementById('alarmTimeSelect');
 	const alarmDate = document.getElementById('customAlarmDate');
-	const alarmTime = document.getElementById('customAlarmTime');
 	if (newEvent || event.alarm.type != 'custom') {
 		alarmSelect.value = newEvent ? 'none' : event.alarm.type;
 
@@ -555,12 +569,11 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
     updateButton.onclick = () => {
         const updatedTitle = editEventTitleInput.value.trim();
         const updatedNote = editNoteInput.value.trim();
-        const eventStartTime = new Date(event.startTime); 
+        const updatedStartTime = startTimeInput.value; 
 
         let alarmType = alarmSelect.value;
         let alarmTime; 
 
-        const updatedStartTime = startTimeInput.value; 
         const updatedEndTime = endTimeInput.value;
     
         // Determine if the custom alarm inputs should be shown or hidden
@@ -569,7 +582,7 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
         document.getElementById('customAlarmDate').style.display = isCustom ? 'block' : 'none';
         document.getElementById('customAlarmTime').style.display = isCustom ? 'block' : 'none';
     
-        if (alarmType === 'custom') {
+        if (isCustom) {
             const customAlarmDate = document.getElementById('customAlarmDate').value;
             const customAlarmTime = document.getElementById('customAlarmTime').value;
     
@@ -579,16 +592,29 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
                 const isoString = `${customAlarmDate}T${customAlarmTime}:00.000`; // Adding seconds and timezone part to ensure ISO format
                 alarmTime = new Date(isoString);
     
-                // Check if the constructed date is valid
-                if (isNaN(alarmTime.getTime())) {
-                    console.error("Constructed alarmTime is invalid", isoString);
-                    return;
-                }
+                const localISODate = `${alarmTime.getFullYear()}-${(alarmTime.getMonth() + 1).toString().padStart(2, '0')}-${alarmTime.getDate().toString().padStart(2, '0')}`;
+                const localISOTime = `${alarmTime.getHours().toString().padStart(2, '0')}:${alarmTime.getMinutes().toString().padStart(2, '0')}`;
+                alarmTime = `${localISODate}T${localISOTime}:00.000`;
             } 
-        } else if (alarmType != 'none') {
+        } else if (alarmType != 'none' && !isCustom) {
+            const today = new Date(); 
+            // Split the time and convert to numbers
+            const [hours, minutes] = updatedStartTime.split(':').map(Number); 
+
+            // Create a new Date object with today's date and the specified time
+            const startTimeDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes);
+
+            // Get the mins before event and convert to milliseconds
             const minutesBeforeEvent = parseInt(alarmType, 10); 
-            console.log(minutesBeforeEvent);
-            alarmTime = new Date(eventStartTime.getTime() - minutesBeforeEvent * 60000);
+            const msBeforeEvent = minutesBeforeEvent * 60000; 
+
+            // Subtract the milliseconds to get the alarm time
+            alarmTime = new Date(startTimeDate.getTime() - msBeforeEvent);
+
+            // Manually format the date to local ISO string with zero milliseconds
+            const localISODate = `${alarmTime.getFullYear()}-${(alarmTime.getMonth() + 1).toString().padStart(2, '0')}-${alarmTime.getDate().toString().padStart(2, '0')}`;
+            const localISOTime = `${alarmTime.getHours().toString().padStart(2, '0')}:${alarmTime.getMinutes().toString().padStart(2, '0')}`;
+            alarmTime = `${localISODate}T${localISOTime}:00.000`;
         }
 
 
@@ -620,7 +646,7 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
             title: updatedTitle,
             notes: updatedNote,
             image: eventModalImageLoaded ? imageDisplay.src : undefined,
-            startTime: updatedStartTime,
+            startTime: eventStartTime,
             endTime: updatedEndTime,
             alarm: {
                 type: alarmType,
@@ -670,20 +696,19 @@ function closeEditModal() {
 
 function checkForAlarms() {
     const now = new Date();
-	var changed = false;
-	for (let i = alarms.length - 1; i > -1; --i) {
-		const alarm = alarms[i];
+    var changed = false;
 
-		if (now < new Date(alarm.date))
-            console.log(now);
-			continue;
+    for (let i = alarms.length - 1; i > -1; --i) {
+        const alarm = alarms[i];
+        const alarmDate = new Date(alarm.date); // Convert string to Date object
 
-        alert('Alarm for event: ' + events[alarm.eventMonthYear]
-				[alarm.eventDay][alarm.eventIndex].title);
-		alarms.splice(i, 1);
-		changed = true;
-        console.log(now);
-	}
+        if (now >= alarmDate) {
+            alert('Alarm for event: ' + events[alarm.eventMonthYear]
+                [alarm.eventDay][alarm.eventIndex].title);
+            alarms.splice(i, 1);
+            changed = true;
+        }
+    }
 
 	if (changed)
 		localStorage.setItem('alarms', JSON.stringify(alarms));
