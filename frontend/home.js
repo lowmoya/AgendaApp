@@ -157,8 +157,11 @@ function searchEvents() {
   const startDate = document.getElementById("searchStart").value;
   const endDate = document.getElementById("searchEnd").value;
   const searchQuery = document.getElementById("searchInput").value;
+  const exportButton = document.getElementById("exportSearchButton");
   const startDateObj = new Date(startDate);
   const endDateObj = new Date(endDate);
+
+  let txt = '';
 
   if (startDateObj > endDateObj) {
     alert("End date cannot be earlier than start date");
@@ -194,14 +197,43 @@ function searchEvents() {
       // Clear previous results
       eventsListElement.innerHTML = "";
       eventsList.forEach((event) => {
-        const listItem = document.createElement("li");
-        listItem.innerHTML = `${event.month}/${event.day}/${event.year}: ${event.title}`;
-        eventsListElement.appendChild(listItem);
+        const button = document.createElement("button");
+		button.innerText = `${event.month}/${event.day}/${event.year}: ${event.title}`;
+		button.addEventListener("click", () => {
+			const monthYear = event.month+"_"+event.year
+			searchModal.style.display = "none";
+    		backDrop.style.display = "none";
+			openModal(monthYear,event.day);
+			console.log("Button clicked:", event);
+		});
+		eventsListElement.appendChild(button);
       });
+
+	  exportButton.onclick = () =>
+		{
+			eventsList.forEach((event) => {
+				txt += `Date: ${event.month}/${event.day}/${event.year}\nTitle: ${event.title}\nNotes: ${event.notes}\n\n`;
+			});
+			const txtBlob = new Blob([txt], {type: 'text/plain'});
+			// download url
+			const url = document.createElement('a');
+			url.href = URL.createObjectURL(txtBlob);
+			url.download = 'MyEvents.txt';
+
+			document.body.appendChild(url);
+			url.click();
+
+			// delete temporary link to download
+			document.body.removeChild(url);
+			URL.revokeObjectURL(url.href);
+		}
+
     })
     .catch((error) => {
       console.error("Error:", error);
     });
+
+	
 
   // Close search results modal
   closeButton.onclick = () => {
@@ -216,11 +248,12 @@ function shareEvents() {
 	
 	
 
-	// Show the search results modal
+	// Show the share modal
 	shareModal.style.display = "block";
 	backDrop.style.display = "block";
 	shareModal.style.opacity = 1;
 	shareModal.style.visibility = "visible";
+	console.log(events);
 
 
 	confirmButton.onclick = () =>
