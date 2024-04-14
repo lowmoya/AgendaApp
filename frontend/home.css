@@ -157,12 +157,22 @@ body {
   .event-button {
     display: block;
     width: 100%;
-    margin: 5px 0;
+    margin: auto;
     padding: 10px;
     background-color: #f0f0f0;
     border: 1px solid #ddd;
     border-radius: 5px;
-    text-align: left;
+    justify-content: right;
+  }
+
+  .event-button > p
+  {
+    color: black;
+    background-color: whitesmoke;
+    padding: 0 10%;
+    height: 50%;
+    width: 15%;
+    text-align: center;
   }
 
   #eventTitleInput {

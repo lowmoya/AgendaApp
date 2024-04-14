@@ -15,6 +15,12 @@ let currentEventIndex = null;
 let currentDate = null;
 let eventModalImageLoaded = false;
 
+var categories = localStorage.categories != undefined ? JSON.parse(localStorage.categories) : {
+    'work': '#FF0000',
+    'personal': '#00FF00',
+    'school': '#0000FF'
+};
+
 function openModal(monthYear, day) {
 	// Create a container for this event if there isn't one already
 	if (events[monthYear] == undefined) {
@@ -37,12 +43,15 @@ function openModal(monthYear, day) {
     clicked.events.forEach((event, index) => {
         const eventElement = document.createElement('button');
         eventElement.classList.add('event-button');
-        eventElement.innerText = event.title;
+        const eventText = document.createElement('p');
+        eventText.innerText = event.title;
+        eventElement.appendChild(eventText);
         eventElement.addEventListener('click', (e) => {
             // Prevent the openModal event
             e.stopPropagation(); 
             showEditEventModal(clicked, index, event);
         });
+        eventElement.style.backgroundColor = categories[event.category];
         eventsList.appendChild(eventElement);
     });
 
@@ -334,6 +343,27 @@ function convertTo12HourFormat(time) {
     return `${hours}:${minutes} ${period}`;
 }
 
+function processCategories()
+{
+    const categoryDropdown = document.getElementById('eventCat');
+    categoryDropdown.addEventListener('change', function() {
+        console.log("CATEGORY CHANGED");
+        const chosenCat = categoryDropdown.value;
+        // check if the user would like to create a custom category
+        if (chosenCat === 'custom')
+        {
+            const newCatSection = document.getElementById('newCategory');
+            newCatSection.value = '';
+            newCatSection.style.display = 'block';
+        }
+        else
+        {
+            const newCatSection = document.getElementById('newCategory');
+            newCatSection.style.display = 'none';
+        }
+    });
+}
+
 function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
     const editEventModal = document.getElementById('editEventModal');
     const editEventTitleInput = document.getElementById('editEventTitleInput');
@@ -343,6 +373,7 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
     const updateButton = document.getElementById('updateButton');
     const imageInput = document.getElementById('image');
     
+    processCategories();
 
     newEventModal.style.display = 'none';
     backDrop.style.display = 'block';
@@ -355,6 +386,20 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
     editEventTitleInput.value = event.title;
     currentEventIndex = eventIndex;
     editNoteInput.value = event.notes || '';
+
+    // const categoryDropdown = document.getElementById('eventCat');
+    // categoryDropdown.addEventListener('change', function() {
+    //     const chosenCat = categoryDropdown.value;
+    //     let catColor;
+    //     if(categoryColors[chosenCat.toLowerCase()])
+    //     {
+    //         catColor = categoryColors[chosenCat.toLowerCase()];
+    //     }
+    //     else
+    //     {
+    //         catColor = document.getElementById('newCategoryColor').value;
+    //     }
+    // });
 
     // Start and end time fields with the event's times
     startTimeInput.value = event.startTime || '';
@@ -399,6 +444,29 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
 
 	}
 
+    // set category
+    const categorySelector = document.getElementById('eventCat');
+    var categoryFound = false;
+    
+    if (event.category != undefined)
+    {
+        for (key in categories)
+        {
+            if (key.toLowerCase() == event.category.toLowerCase())
+            {
+                categoryFound = true;
+                break;
+            }
+        }
+    }
+
+    categorySelector.value = categoryFound ? event.category.toLowerCase() : 'personal';
+
+    // category colors
+    const catColor = document.getElementById('categoryColor');
+    
+    // default color
+    catColor.value = "#444444";
 
 	// Set image inputs
 	const imageSelector = document.getElementById('image');
@@ -484,9 +552,11 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
 		}
 
 
+
         // Update the event with the new alarm info
         events[clicked.monthYear][clicked.day][currentEventIndex] = {
             title: updatedTitle,
+            category : categorySelector.value,
             notes: updatedNote,
             image: eventModalImageLoaded ? imageDisplay.src : undefined,
             startTime: updatedStartTime,
@@ -580,7 +650,8 @@ async function load(shouldSync = true) {
 		// Check if should sync alarm and events
         var currentHash = new TextEncoder().encode(JSON.stringify({
 			events: events[(month + 1) + '_' + year] || {},
-			alarms: alarms
+			alarms: alarms,
+            categories: categories
 		}));
         currentHash = await crypto.subtle.digest('SHA-256', currentHash);
         currentHash = btoa(String.fromCharCode(...(new Uint8Array(currentHash))))
@@ -607,6 +678,9 @@ async function load(shouldSync = true) {
 
 			alarms = syncBody.alarms;
             localStorage.setItem('alarms', JSON.stringify(alarms));
+
+            categories = syncBody.categories;
+            localStorage.setItem('categories', JSON.stringify(categories));
 
             events[(month + 1) + '_' + year] = syncBody.events;
             localStorage.setItem('events', JSON.stringify(events));
@@ -667,18 +741,22 @@ async function load(shouldSync = true) {
                 daySquare.id = 'currentDay';
             }
         
-			let eventForDay = [];
-			if (events[monthYear] != undefined && events[monthYear][i - paddingDays] != undefined)
-				eventForDay = events[monthYear][i - paddingDays];
-			eventForDay.forEach(event => {
-				const eventDiv = document.createElement('div');
-				eventDiv.classList.add('event');
-				eventDiv.innerText = event.title;
-				if (event.startTime && event.endTime){
-					eventDiv.innerText = `${event.title} (${convertTo12HourFormat(event.startTime)} - ${convertTo12HourFormat(event.endTime)})`;
-				}
-				daySquare.appendChild(eventDiv);
-			});
+			let eventForDay;
+            if (events[monthYear] != undefined && events[monthYear][i - paddingDays] != undefined)
+                eventForDay = events[monthYear][i - paddingDays];
+            else
+                eventForDay = [];
+
+            eventForDay.forEach(event => {
+                const eventDiv = document.createElement('div');
+                eventDiv.classList.add('event');
+                eventDiv.innerText = event.title;
+                eventDiv.style.backgroundColor = categories[event.category];
+                if (event.startTime && event.endTime){
+                    eventDiv.innerText = `${event.title} (${convertTo12HourFormat(event.startTime)} - ${convertTo12HourFormat(event.endTime)})`;
+                }
+                daySquare.appendChild(eventDiv);
+            });
 
 			daySquare.addEventListener('click', () => openModal(monthYear,
 					i - paddingDays));
@@ -729,7 +807,67 @@ function initButtons() {
 	document.getElementById('searchButton').addEventListener('click', searchEvents);
 	document.getElementById('shareButton').addEventListener('click', shareEvents);
 	document.getElementById('image').addEventListener('change', loadEditModalImage);
+	document.getElementById('image-display').addEventListener('error', function() {
+        const imageSelector = document.getElementById('image');
+	    const imageDisplay = document.getElementById('image-display');
+        imageDisplay.style.display = 'none';
+		imageSelector.value = '';
+		eventModalImageLoaded = false;
+    });
+    document.getElementById('submitCategory').addEventListener('click', function() {
+        const newName = document.getElementById('newCategoryName').value.trim().toLowerCase();
+        const categoryDropdown = document.getElementById('eventCat');
+        const newCatSection = document.getElementById('newCategory');
+        const color = document.getElementById('categoryColor');
 
+        // check if name is in categories
+        var categoryFound = false;
+        for (key in categories)
+        {
+            console.log(key, newName);
+            if (key.toLowerCase() == newName)
+            {
+                categoryDropdown.value = newName;
+                newCatSection.style.display = 'none';
+                return;
+            }
+        }
+
+        // add new category to dropwdown
+        if(newName)
+        {
+            const option = document.createElement('option');
+            option.value = newName;
+            option.textContent = newName;
+            categoryDropdown.insertBefore(option, categoryDropdown.querySelector('option[value="custom"]'));
+            categoryDropdown.value = newName;
+            newCatSection.style.display = 'none';
+            categories[newName] = color.value;
+            localStorage.setItem('categories', JSON.stringify(categories));
+            fetch('/home', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Session': localStorage.session
+                },
+                body: JSON.stringify({
+                    'type': 'insertCategory',
+                    'label': newName,
+                    'color': color.value
+                })
+            });
+        }
+    });
+    
+    const catDropdown = document.getElementById('eventCat');
+    for (key in categories) {
+        if (key == 'work' || key == 'personal' || key == 'school')
+          continue;
+        const option = document.createElement('option');
+        option.value = key.toLowerCase();
+        option.textContent = key;
+        catDropdown.insertBefore(option, catDropdown.querySelector('option[value="custom"]'));
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {

@@ -103,11 +103,18 @@
 
       <label for="eventCat">Category:</label>
       <select id="eventCat">
-          <option value="work">Work</option>
           <option value="personal">Personal</option>
           <option value="school">School</option>
-          <!-- Add more options as needed -->
+          <option value="work">Work</option>
+          <option value="custom">Custom</option>
       </select>
+
+      <div id="newCategory" style="display: none;">
+        <label for="newCategoryName">Category Name:</label>
+        <input type="text" id="newCategoryName" placeholder="Enter category name"/>
+        <input type="color" id ="categoryColor" value="#444444"/>
+        <button id="submitCategory">Submit</button>
+      </div> 
 
       <h2>Times:</h2>
       <label for="startTime">Start Time:</label>
