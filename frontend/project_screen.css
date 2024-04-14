@@ -1,58 +1,138 @@
-body {
-	display: flex;
-	user-select: none;
 
-	background-image: url('project_background.png');
-	background-size: cover;
-	background-position: top;
-	background-repeat: no-repeat;
-}
+/* desktop view */
+@media only screen and (min-width: 1024px) {
+  body {
+    display: flex;
+    user-select: none;
 
-.projects-box {
-  position: relative;
-  display: inline-block;
-  align-items: center; 
-  justify-content: center;
-}
-
-#box {
-  width: 770px;
-  margin: 19px 0 0 49px;
-  height: 600px;
-  position: relative;
-
-  top: 99px;
-  left: 150px;
- 
-  align-items: center; 
-  justify-content: center;
-}
-
-.text-title {
-  position: absolute;
-  top: 10%;
-  left: 99%;
-  transform: translate(-50%, -50%);
-  color: #334264;
-  font: bold 80px 'Madimi One', sans-serif;
-  text-shadow: 0px 6px 2px rgba(0, 0, 0, .25), 
-              -2px 0px white, 2px 0px white, 0px -2px white, 0px 2px white;;
-}
-
-#apple {
-  position: absolute;
-  width: 80px;
-  margin-left: 25px;
-  top: 20px;
-  left: 0px;
+    background-image: url('project_background.png');
+    background-size: cover;
+    background-position: top;
+    background-repeat: no-repeat;
+    overflow: hidden;
   }
 
-#return-home {
-  position: relative;
-  max-width: 100%;
-  margin: 10px 10px 20px 10px;
-  height: auto;
+  .projects-box {
+    position: relative;
+    display: inline-block;
+    align-items: center; 
+    justify-content: center;
+  }
 
-  top: 399px;
-  left: 280px;
+  /* inside this box is where search results will go */
+  #box {
+    width: 770px;
+    margin: 19px 0 0 49px;
+    height: 600px;
+    position: relative;
+
+    top: 99px;
+    left: 150px;
+  
+    align-items: center; 
+    justify-content: center;
+  }
+
+  .text-title {
+    position: absolute;
+    top: 10%;
+    left: 99%;
+    transform: translate(-50%, -50%);
+    color: #3A483B;
+    font: bold 80px 'Madimi One', sans-serif;
+    text-shadow: 0px 6px 2px rgba(0, 0, 0, .25), 
+                -2px 0px white, 2px 0px white, 0px -2px white, 0px 2px white;;
+  }
+
+  #apple {
+    position: absolute;
+    width: 80px;
+    margin-left: 25px;
+    top: 20px;
+    left: 0px;
+    }
+
+  #return-home {
+    position: relative;
+    max-width: 100%;
+    margin: 10px 10px 20px 10px;
+    height: auto;
+    top: 399px;
+    left: 300px;
+  }
+  
+  #magnif-glass {
+    position: absolute;
+    width: 45px;
+    max-width: 100%;
+    margin-left: 8px;
+    height: auto;
+    top: 28px;
+    left: 115px;
+  }
+}
+
+/* mobile view */
+@media only screen and (max-width: 764px){
+  body {
+    display: flex;
+    user-select: none;
+    background-color: #DADFDB;
+    background-image: url("projects_tree.png");
+    background-position: right top;
+    height: 100vh;
+    background-size: cover;
+    background-repeat: no-repeat;
+    overflow: hidden;
+  }
+
+  /* inside this box is where search results will go */
+  #box {
+    width: 104%;
+    height: 635px;
+    position: relative;
+    top: 90px;
+    left: 0px;
+    align-items: center; 
+    justify-content: center;
+  }
+  
+  .text-title {
+    position: absolute;
+    top:45px;
+    right: -90px;
+    transform: translate(-50%, -50%);
+    color: #3A483B;
+    font: 60px 'Madimi One', sans-serif;
+    text-shadow: 0px 6px 2px rgba(0, 0, 0, .25), 
+                -2px 0px white, 2px 0px white, 0px -2px white, 0px 2px white;;
+  }
+  
+  #apple {
+    position: absolute;
+    width:65px;
+    margin-left: 0px;
+    top: 0px;
+    left: 0px;
+    }
+  
+  #return-home {
+    position: absolute;
+    max-width: 48px;
+    height: auto;
+    z-index: 3;
+    top: 110px;
+    left: 0px;
+    margin-left: 5px;
+  }
+
+  #magnif-glass {
+    position: absolute;
+    width: 40px;
+    max-width: 100%;
+    margin-left: 8px;
+    height: auto;
+    top: 60px;
+    left: 0px;
+  }
 }

@@ -2,7 +2,7 @@
 <html>
   
 <head> 
-
+  <meta charset="UTF-8">
   <title>Home Page</title>
   <link rel="stylesheet" href="main_home.css">
   
@@ -12,8 +12,31 @@
 	<link href="https://fonts.googleapis.com/css2?family=Madimi+One&display=swap"
 			rel="stylesheet">
 
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <style>
+    /* desktop only so hide mobile stuff*/
+    #mobile-weekly {
+        display: none; 
+    }
+    #add-button{
+      display: none;
+    }
+
+    /* mobile */
+    @media only screen and (max-width: 764px) {
+        #desktop-weekly {
+            display: none; 
+        }
+        #mobile-weekly {
+            display: block;
+        }
+        #add-button{
+          display: block;
+        }
+
+    }
+</style>
 </head>
 
 <body>
@@ -21,14 +44,16 @@
     <img id = 'tree_body' src = "main_tree.png" loading="lazy" draggable = 'false'/>
     <img id = 'leaves' src = "leaves.png" loading = "lazy" dragabble = 'false'/>
   </div>
-
+  
   <div class = 'container'>
-    <img id = 'weekly-view' src = "weekly-view.png" draggable = 'false'>
-    
+    <img id = 'desktop-weekly' src = "weekly-view.png" draggable = 'false'>
+    <img id = 'mobile-weekly' src = "weekly-view-mobile.png" draggable = 'false'>
+
     <div class = 'weekly-arrows'>
       <img id = 'last-week' src = "left-arrow.png" draggable = 'false'>
       <img id = 'next-week' src = "right-arrow.png" draggable = 'false'>
     </div>
+    
     <div class = 'weekday'>
       <img id = 'day1' src = 'cloud.png' draggable ='false'>
       <img id = 'day2' src = 'cloud.png' draggable ='false'>
@@ -41,13 +66,14 @@
   
   <div class = 'top-text'> 
     <div id = 'month-text'>Month</div>
-    <div id = 'year-text'> Year</div>
+    <div id = 'year-text'>Year</div>
   </div>
 
   <div class = 'clickables'>
     <img id = 'magnif-glass' src = "search.png" draggable = 'false'>
     <img id = 'apple' src = "apple.png" draggable = 'false'>
     <img id = 'to-reports' src = "left-arrow-acorn.png" draggable = 'false'>
+    <img id = 'add-button' src = "add.png" draggable = 'false'>
   </div>
 </body>
 
