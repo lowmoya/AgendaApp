@@ -20,8 +20,8 @@ async function homeAPI(req, res, id, body)
 			_id: id,
 			month_year: {},
 			alarms: [],
-			share_requests: []
-			categories: { work: "red", personal: "green", school: "blue"}
+			share_requests: [],
+			categories: { work: "red", personal: "green", school: "blue" }
 		});
 		if (!result.acknowledged) {
 			console.error("ERR |\tCalendar refusing creation:"
@@ -51,7 +51,7 @@ async function homeAPI(req, res, id, body)
 		// Insert event
 		calendar[body.monthYear][body.day][body.index] = body.event;
 
-		if (body.event.alarm.time != undefined) {
+		if (body?.event?.alarm?.time != undefined) {
 			// Move insert index to the index of this alarm, or if it is a new
 			// alarm, the end of the list
 			let index = 0;

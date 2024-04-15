@@ -4,8 +4,6 @@ let events = localStorage.getItem('events')
 	? JSON.parse(localStorage.getItem('events')) : {};
 let alarms = localStorage.getItem('alarms')
 	? JSON.parse(localStorage.getItem('alarms')) : [];
-let weeklyNotes = localStorage.getItem('weeklyNotes')
-    ? JSON.parse(localStorage.getItem('weeklyNotes')) : {};
 
 const calendar = document.getElementById('calendar');
 const newEventModal =  document.getElementById('newEventModal');
@@ -213,7 +211,6 @@ function searchEvents() {
 			searchModal.style.display = "none";
     		backDrop.style.display = "none";
 			openModal(monthYear,event.day);
-			console.log("Button clicked:", event);
 		});
 		eventsListElement.appendChild(button);
       });
@@ -262,7 +259,6 @@ function shareEvents() {
 	backDrop.style.display = "block";
 	shareModal.style.opacity = 1;
 	shareModal.style.visibility = "visible";
-	console.log(events);
 
 
 	confirmButton.onclick = () =>
@@ -310,6 +306,7 @@ function shareEvents() {
 function getWeekNumber(date) {
     const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
     const firstDayOfWeek = firstDayOfMonth.getDay();
+
     const offsetDate = date.getDate() + firstDayOfWeek - 1;
     return Math.ceil(offsetDate / 7);
 }
@@ -330,25 +327,27 @@ function getWeeklyNote() {
     // Submit the weekly note
     document.getElementById('submitWeeklyNote').addEventListener('click', () => {
         const updatedWeeklyNote = editWeeklyNoteInput.value.trim();
-        const date = new Date(weekOfNote.value);
+		const datePieces = weekOfNote.value.split('-');
+        const date = new Date(parseInt(datePieces[0]),
+			parseInt(datePieces[1]) - 1, parseInt(datePieces[2]));
 
         const monthYear = (date.getMonth() + 1) + '_' + date.getFullYear();
         const weekNumber = getWeekNumber(date);
+		const weekId = 'w' + weekNumber;
 
-        const firstDayOfWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 1); // Adjust for first day of week assuming Sunday is start
-        const day = firstDayOfWeek.getDate();
-
-        if (!weeklyNotes[monthYear]) {
-            weeklyNotes[monthYear] = {};
-        }
-        if (!weeklyNotes[monthYear][day]) {
-            weeklyNotes[monthYear][day] = [];
-        }
-
-        weeklyNotes[monthYear][day].push({ note: updatedWeeklyNote, weekNumber: weekNumber });
+        //const firstDayOfWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 1); // Adjust for first day of week assuming Sunday is start
+        //const day = firstDayOfWeek.getDate();
+		if (!events[monthYear]) {
+			events[monthYear] = {};
+			events[monthYear][weekId] = [];
+		} else if (!events[monthYear][weekId]){
+			events[monthYear][weekId] = [];
+		}
+		var weeklyHome = events[monthYear][weekId];
 
         // Save to local storage (optional, if you want to cache or use locally)
-        localStorage.setItem('weeklyNotes', JSON.stringify(weeklyNotes));
+        weeklyHome.push({ note: updatedWeeklyNote });
+        localStorage.setItem('events', JSON.stringify(events));
 
         // Send the note to the server
         fetch('/home', {
@@ -358,17 +357,15 @@ function getWeeklyNote() {
                 'Session': localStorage.session
             },
             body: JSON.stringify({
-                type: 'weeklyNote',
-                monthYear: monthYear,
-                day: day,
-                note: updatedWeeklyNote,
-                weekNumber: weekNumber
+				'type': 'insert',
+				'monthYear': monthYear,
+				'day': weekId,
+				'index': weeklyHome.length - 1,
+				'event': weeklyHome[weeklyHome.length - 1]
             })
-        }).then(response => response.json())
-          .then(data => console.log("Data saved successfully", data))
-          .catch(error => console.error("Failed to save data", error));
+        })
 
-        // Close the modal after submission
+		// Close the modal after submission
         weeklyNoteModal.style.display = 'none';
         backDrop.style.display = 'none';
     });
@@ -482,7 +479,6 @@ function processCategories()
 {
     const categoryDropdown = document.getElementById('eventCat');
     categoryDropdown.addEventListener('change', function() {
-        console.log("CATEGORY CHANGED");
         const chosenCat = categoryDropdown.value;
         // check if the user would like to create a custom category
         if (chosenCat === 'custom')
@@ -537,7 +533,6 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
 
     // Start and end time fields with the event's times
     startTimeInput.value = event.startTime || '';
-    console.log("START TIMEEEE", startTimeInput.value);
 	endTimeInput.value = event.endTime || '';
 
 	// Set the alarm-related fields
@@ -561,7 +556,6 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
 		// Load values for custom event panel
 		alarmSelect.value = 'custom';
 		const date = new Date(event.alarm.time);
-		console.log(date);
 		alarmDate.value = date.getFullYear() + '-'
 			+ (date.getMonth() < 9 ? '0' + (date.getMonth() + 1)
 				: date.getMonth() + 1)
@@ -718,7 +712,7 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
             category : categorySelector.value,
             notes: updatedNote,
             image: eventModalImageLoaded ? imageDisplay.src : undefined,
-            startTime: eventStartTime,
+            startTime: updatedStartTime,
             endTime: updatedEndTime,
             alarm: {
                 type: alarmType,
@@ -861,7 +855,6 @@ async function load(shouldSync = true) {
 		if (shareResponse.status == 200)
 		{
 			const shareRequests = await shareResponse.json();
-			console.log(shareRequests);
 			for (const request of shareRequests)
 			{
 				let end = request.events.length - 1;
@@ -1044,7 +1037,6 @@ function initButtons() {
         var categoryFound = false;
         for (key in categories)
         {
-            console.log(key, newName);
             if (key.toLowerCase() == newName)
             {
                 categoryDropdown.value = newName;
