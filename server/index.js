@@ -10,8 +10,6 @@ const home = require('./home');
 // Constants
 const hostname = '127.0.0.1';
 const port = 4000;
-
-
 const pages = [
 	'/',
 	'/favicon.ico',
@@ -30,6 +28,16 @@ const pages = [
 	'/apple.png',
 	'/email_background.png',
 	'/login_background.png',
+	'/add.png',
+	'/cloud.png',
+	'/leaves.png',
+	'/left-arrow.png',
+	'/left-arrow-acorn.png',
+	'/main_tree.png',
+	'/right-arrow.png',
+	'/search.png',
+	'/weekly-view.png',
+	'/weekly-view-mobile.png',
 ];
 const page_bindings = [
 	{ file: 'frontend/home.html',			type: 'text/html' },
@@ -46,9 +54,19 @@ const page_bindings = [
 	{ file: 'frontend/register.css',		type: 'text/css' },
 
 	/* Resources */
-	{ file: 'frontend/resources/apple.png',	type: 'image/png' },
-	{ file: 'frontend/resources/email_background.png',	type: 'image/png' },
-	{ file: 'frontend/resources/login_background.png',	type: 'image/png' },
+	{ file: 'frontend/resources/apple.png',					type: 'image/png' },
+	{ file: 'frontend/resources/email_background.png',		type: 'image/png' },
+	{ file: 'frontend/resources/login_background.png',		type: 'image/png' },
+	{ file: 'frontend/resources/add.png',					type: 'image/png' },
+	{ file: 'frontend/resources/cloud.png',					type: 'image/png' },
+	{ file: 'frontend/resources/leaves.png',				type: 'image/png' },
+	{ file: 'frontend/resources/left-arrow.png',			type: 'image/png' },
+	{ file: 'frontend/resources/left-arrow-acorn.png',		type: 'image/png' },
+	{ file: 'frontend/resources/main_tree.png',				type: 'image/png' },
+	{ file: 'frontend/resources/right-arrow.png',			type: 'image/png' },
+	{ file: 'frontend/resources/search.png',				type: 'image/png' },
+	{ file: 'frontend/resources/weekly-view.png',			type: 'image/png' },
+	{ file: 'frontend/resources/weekly-view-mobile.png',	type: 'image/png' },
 ];
 
 

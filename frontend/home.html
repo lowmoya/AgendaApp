@@ -3,10 +3,19 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendar App</title>
+    <title>Home Page</title>
+
 
     <link rel="stylesheet" href="home.css">
-	  <script src='session_locator.js'></script>
+    <script src='session_locator.js'></script>
+    <!-- Download the used font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Madimi+One&display=swap"
+      rel="stylesheet">
+
+    <meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
   </head>
   <body>
     <div id="container">
@@ -17,7 +26,8 @@
           <button id="nextButton">Next</button>
         </div>
       </div>
-	  
+
+      <!--
       <div id="searchEngine">
         <label for="startDate" >Start Date:</label>
         <input type="date" id="searchStart">
@@ -36,7 +46,9 @@
         <button id="exportSearchButton">Export</button>
         <button id="closeSearchButton">Close</button>
       </div>
+      -->
 
+      <!--
       <div id="shareModal" class="modal">
         Username <input type="text" id="shareUser"> <br>
         <label for="startDate" >Start Date:</label>
@@ -46,32 +58,85 @@
         <button id="confirmShare">Share</button>
         <button id="cancelShare">Cancel</button>
       </div>
+      -->
 
+      <!--
       <h3>Add a note to a week:</h3>
       <button id="openWeeklyNoteModal">Add Weekly Note</button>
 
-      <!-- Weekly Note Modal -->
       <div id="weeklyNoteModal" class="modal">
         <input type="date" id="weekOfNote" style="display: none;">
         <textarea id="weeklyNoteInput" placeholder="Enter your note for the week..."></textarea>
         <button id="submitWeeklyNote">Submit</button>
         <button id="cancelWeeklyNote">Cancel</button>
       </div>
+      -->
 
-      <div id="weekdays">
-        <div>Sunday</div>
-        <div>Monday</div>
-        <div>Tuesday</div>
-        <div>Wednesday</div>
-        <div>Thursday</div>
-        <div>Friday</div>
-        <div>Saturday</div>
+      <div>
+        <img id = 'tree_body' src = "main_tree.png" loading="lazy"
+          draggable = 'false'/>
+        <img id = 'leaves' src = "leaves.png" loading = "lazy"
+          dragabble = 'false'/>
       </div>
 
-      <div id="calendar"></div>
+      <div class = 'container'>
+        <img id = 'desktop-weekly' src = "weekly-view.png" draggable = 'false'>
+        <img id = 'mobile-weekly' src = "weekly-view-mobile.png" draggable = 'false'>
+
+        <div class = 'weekly-arrows'>
+          <img id = 'last-week' src = "left-arrow.png" draggable = 'false'>
+          <img id = 'next-week' src = "right-arrow.png" draggable = 'false'>
+        </div>
+
+        <div class = 'weekday'>
+          <div class='day-header' id='day1'>
+            <p>Mon</p>
+          </div>
+          <div class='day-header' id='day2'>
+            <p>Tue</p>
+          </div>
+          <div class='day-header' id='day3'>
+            <p>Wed</p>
+          </div>
+          <div class='day-header' id='day4'>
+            <p>Thu</p>
+          </div>
+          <div class='day-header' id='day5'>
+            <p>Fri</p>
+          </div>
+          <div class='day-header' id='day6'>
+            <p>Sat</p>
+          </div>
+          <div class='day-header' id='day7'>
+            <p>Sun</p>
+          </div>
+        </div>
+
+      <div class = 'top-text'> 
+        <div id = 'month-text'>Month</div>
+        <div id = 'year-text'>Year</div>
+      </div>
+
+      <div class = 'clickables'>
+        <img id = 'magnif-glass' src = "search.png" draggable = 'false'>
+        <img id = 'apple' src = "apple.png" draggable = 'false'>
+        <img id = 'to-reports' src = "left-arrow-acorn.png" draggable = 'false'>
+        <img id = 'add-button' src = "add.png" draggable = 'false'>
+      </div>
+
+
+      <!--
+      <div class='weekday' id='weekday-0'>Sunday</div>
+      <div class='weekday' id='weekday-1'>Monday</div>
+      <div class='weekday' id='weekday-2'>Tuesday</div>
+      <div class='weekday' id='weekday-3'>Wednesday</div>
+      <div class='weekday' id='weekday-4'>Thursday</div>
+      <div class='weekday' id='weekday-5'>Friday</div>
+      <div class='weekday' id='weekday-6'>Saturday</div>
+      -->
 
       <!-- Exporting events -->
-      <div id="exportEvents">
+      <!--<div id="exportEvents">
         <div id="exportTitle">Export Events</div>
         <p>Select the date range for the events you would like to export</p>
         <label for="startDate" id="startDate">Start Date:</label>
@@ -79,7 +144,7 @@
         <label for="endDate" id="endDate">End Date:</label>
         <input type="date" id="eDate">
         <button id="exportButton">Export Events</button>
-      </div>
+      </div>-->
       
     </div>
 

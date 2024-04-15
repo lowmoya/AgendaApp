@@ -1,224 +1,303 @@
-body {
-  display: flex;
-  margin-top: 50px;
-  justify-content: center;
-  background-color: #FFFCFF;
-}
-
-button {
-  width: 75px;
-  cursor: pointer;
-  box-shadow: 0px 0px 2px gray;
-  border: none;
-  outline: none;
-  padding: 5px;
-  border-radius: 5px;
-  color: white;
-}
-  
-#header {
-  padding: 10px;
-  color: #d36c6c;
-  font-size: 26px;
-  font-family: sans-serif;
-  display: flex;
-  justify-content: space-between;
-}
-
-#header button {
-  background-color:#92a1d1;
-}
-
-#container {
-  width: 770px;
-}
-
-#weekdays {
-  width: 100%;
-  display: flex;
-  color: #247BA0;
-}
-  
-#weekdays div {
-  width: 100px;
-  padding: 10px;
-}
-  
-#calendar {
-  width: 100%;
-  margin: auto;
-  display: flex;
-  flex-wrap: wrap;
-}
-  
-.day {
-  width: 100px;
-  padding: 10px;
-  height: 100px;
-  cursor: pointer;
-  box-sizing: border-box;
-  background-color: white;
-  margin: 5px;
-  box-shadow: 0px 0px 3px #CBD4C2;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.day:hover {
-  background-color: #e8faed;
-}
-  
-.day + #currentDay {
-  background-color:#e8f4fa;
-}
-
-.event {
-  font-size: 10px;
-  padding: 3px;
-  background-color: #58bae4;
-  color: white;
-  border-radius: 5px;
-  max-height: 55px;
-  overflow: hidden;
-}
-
-.padding {
-  cursor: default !important;
-  background-color: #FFFCFF !important;
-  box-shadow: none !important;
-}
-
-#newEventModal, #editEventModal, #weeklyNoteModal {
+/* New Home Screen */
+#mobile-weekly {
   display: none;
-  z-index: 20;
-  padding: 25px;
-  background-color: #e8f4fa;
-  box-shadow: 0px 0px 3px black;
-  border-radius: 5px;
-  width: 350px;
-  top: 50%;
-  left: calc(50% - 175px);
-  position: absolute;
-  font-family: sans-serif;
 }
-
-#alarmTime {
-  margin: 10px;
-  padding: 5px;
-}
-
-
-#alarmMessage {
-  margin-top: 10px;
-}
-
-.notes-container {
-  white-space: pre-wrap; 
-}
-
-input[type="text"], textarea {
-  width: 100%; 
-  padding: 10px; 
-  margin-top: 5px;
-  margin-bottom: 15px; 
-  box-sizing: border-box; 
-  border-radius: 3px; 
-  border: 1px solid #ccc; 
-}
-
-#modalBackDrop.active {
-  display: block; 
-}
-
-.modal {
-  display: none; 
-  position: fixed; 
-  z-index: 100; 
-  left: 50%;
-  top: 50%; 
-  transform: translate(-50%, -50%); 
-  width: 300px;
-  background-color: #fff; 
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px; 
-  padding: 20px; 
-}
-
-.modal.show {
-  opacity: 1;
-  visibility: visible;
-}
-  
-.event-button {
-  display: block;
-  width: 100%;
-  margin: auto;
-  padding: 10px;
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  justify-content: right;
-}
-
-.event-button > p {
-  color: black;
-  background-color: whitesmoke;
-  padding: 1% 1%;
-  margin: auto;
-  height: 50%;
-  width: 80%;
-  text-align: center;
-}
-
-#eventsList {
-  padding: 0;
-}
-
-#eventTitleInput {
-  padding: 10px;
-  width: 100%;
-  box-sizing: border-box;
-  margin-bottom: 25px;
-  border-radius: 3px;
-  outline: none;
-  border: none;
-  box-shadow: 0px 0px 3px gray;
-}
-
-#eventTitleInput.error {
-  border: 2px solid red;
-}
-  
-#cancelButton, #deleteButton {
-  background-color: #d36c6c;
-}
-
-#updateButton{
-  background-color: #58cd98;
-
-}
-
-#saveButton, #closeButton {
-  background-color: #17338e;
-}
-
-#deleteButton, #closeButton, #updateButton {
-	width: 100px;
-	height: 30px;
-}
-
-#eventText {
-  font-size: 14px;
-}
-
-#modalBackDrop {
+#add-button{
   display: none;
-  top: 0px;
-  left: 0px;
-  z-index: 10;
-  width: 100vw;
-  height: 100vh;
-  position: absolute;
-  background-color: rgba(0,0,0,0.8);
+}
+
+/* mobile */
+@media only screen and (max-width: 764px) {
+    #desktop-weekly {
+      display: none; 
+    }
+    #mobile-weekly {
+      display: block;
+    }
+    #add-button{
+      display: block;
+    }
+}
+
+/* font for month and year */
+.top-text{
+    color: #3A483B;
+    font: 50px 'Madimi One', sans-serif;
+    text-shadow: 0px 4px 2px rgba(0, 0, 0, .25), 
+               -2px 0px white, 2px 0px white, 0px -2px white, 0px 2px white;;
+}
+
+/* font for the weekdays */
+.weekday{
+    color: #334264;
+    font: 30px 'Madimi One', sans-serif;
+    text-shadow: 0px 4px 2px rgba(0, 0, 0, .25), 
+               -2px 0px white, 2px 0px white, 0px -2px white, 0px 2px white;
+
+
+    display: flex;
+    flex-flow: row;
+}
+/* desktop view */
+@media only screen and (min-width: 1024px) {
+
+    body {
+        display: flex;
+        user-select: none;
+        background-color: #DADFDB;
+        background-size: cover;
+        background-position: top;
+        background-repeat: no-repeat;
+        overflow: hidden;
+    }
+    #month-text{
+        position: absolute;
+        top:10px;
+        left: 380px ;
+        margin: 10px 50px 10px 50px;
+        align-content: center;
+    }
+
+    #year-text{
+        position: absolute;
+        top:10px;
+        left: 250px;
+        margin: 10px 10px 10px 10px;
+    }
+
+    #tree_body {
+        position: absolute;
+        top: 0; 
+        left: 0;
+        max-width: 100%; 
+        max-height: 100%; 
+    }
+
+    #leaves {
+        position: fixed;
+        z-index:2;  /* puts img in front of calendar view */
+    
+        top: 204px; 
+        left: 147px;
+        max-height: 50%; 
+        max-width: 20%;
+    }
+
+    #desktop-weekly {
+        position: relative;
+        z-index:1; /* puts img in front of background */
+    
+        top: 80px;
+        left: 320px;
+        max-height:660px;
+        width: 1210px;
+    }
+
+    /* navigational arrows on weekly calendar */
+    #last-week{
+        z-index: 4;
+        position: relative;
+        max-width: 100%;
+        max-height: 100%;
+        top: -590px;
+        left: 1030px;
+        }
+
+    #next-week{
+        z-index: 4;
+        position: relative;
+        max-width: 100%;
+        max-height: 100%;
+        top: -590px;
+        left: 1030px;
+   
+    }
+
+    .day-header {
+        position: relative;
+        top: -635px;
+        left: 360px;
+        margin: 10px 5px 0px 10px;
+        width: 170px;
+        height: 150px;
+        z-index: 4;
+
+        background-image: url('cloud.png');
+        background-size: cover;
+    }
+
+    .day-header > p {
+      text-align: center;
+      padding-top: 9px;
+      padding-right: 8px;
+      font-size: 30px;
+    }
+
+    /* start of clickables */
+    #apple {
+        position: absolute;
+        margin-right:10px;
+        width: 80px;
+        top: 0;
+        right: 0;
+    }
+
+    #magnif-glass {
+        position: absolute;
+        width: 45px;
+        max-width: 100%;
+        height: auto;
+        top:9px;
+        right:100px;
+    }
+
+    #to-reports{
+        position: absolute;
+        max-width: 100%;
+        margin: 10px 10px 20px 10px;
+        height: 100px;
+        left: 180px;
+        top:  320px;
+    }
+      
+}
+
+/* mobile view (incomplete) */
+@media only screen and (max-width: 764px){
+    body {
+        display: flex;
+        user-select: none;
+        background-color: #DADFDB;
+        background-size: cover;
+        background-position: top;
+        background-repeat: no-repeat;
+        overflow: hidden;
+    }
+
+    #month-text{
+    position: absolute;
+    right: 20%;
+    top: 0px;
+    align-content: center;
+    margin: 0px 10px 0px 10px;
+    }
+
+    #year-text{
+        position: absolute;
+        top:0px;
+        right: 75%;
+        margin-left: 10px;
+    }
+
+    #tree_body {
+        position: absolute;
+        max-width: 250%;
+        height: 100%; 
+        top:0px;
+        left:0px;
+    }
+
+    #mobile-weekly{
+        position: absolute;
+        height: 90%;
+        width: 100%;
+        top: 75px;
+        left: 0px;
+    }
+
+    #day1{
+        position: absolute;
+        top: 87px;
+        left: 0px;
+        width: 120px;
+    }
+    #day2{
+        position: absolute;
+        top: 185px;
+        left: 0px;
+        width: 120px;
+    }
+    #day3{
+        position: absolute;
+        top: 280px;
+        left: 0px;
+        width: 120px;
+    }
+
+    #day4{
+        position: absolute;
+        top: 370px;
+        left: 0px;
+        width: 120px;
+    }
+    #day5{
+        position: absolute;
+        top: 470px;
+        left: 0px;
+        width: 120px;
+    }
+    #day6{
+        position: absolute;
+        top: 570px;
+        left: 0px;
+        width: 120px;
+    }
+    #day7{
+        position: absolute;
+        top: 570px;
+        left: 210px;
+        width: 120px;
+    }
+
+    #to-reports{
+        position: absolute;
+        top: 0px;
+        left: 0px;
+    } 
+
+    /* start of clickables */
+    #apple {
+        position: absolute;
+        margin-right:0px;
+        width: 60px;
+        top: 0px;
+        right: 0px;
+    }
+
+    #magnif-glass {
+        position: absolute;
+        width: 35px;
+        height: auto;
+        margin-right:8px;
+        top:60px;
+        right:0px;
+    }
+
+    #to-reports{
+        position: absolute;
+        max-width: 48px;
+        height: auto;
+        top:  170px;
+        left: 90%;
+    }
+
+    #add-button{
+        position: absolute;
+        top: 120px;
+        right: 1px;
+        width: 9%;
+    }
+
+    #last-week{
+        position: absolute;
+        bottom: 0px;
+        right: 50px;
+        width: 8%;
+    }
+    #next-week{
+        position: absolute;
+        bottom: 0px;
+        right: 5px;
+        width: 8%;
+    }
 }
