@@ -197,7 +197,8 @@ async function registerAPI(req, res, id, body)
 		_id: id,
 		month_year: {},
 		alarms: [],
-		share_requests: []
+		share_requests: [],
+		categories: {work: "red", personal: "green", school: "blue"}
 	});
 	res.statusCode = 200;
 	res.end();

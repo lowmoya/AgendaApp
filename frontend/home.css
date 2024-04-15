@@ -116,20 +116,6 @@ button {
 .notes-container {
   white-space: pre-wrap; 
 }
-  
-.modal {
-  display: none; 
-  position: fixed; 
-  z-index: 100; 
-  left: 50%;
-  top: 50%; 
-  transform: translate(-50%, -50%); 
-  width: 300px;
-  background-color: #fff; 
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px; 
-  padding: 20px; 
-}
 
 input[type="text"], textarea {
   width: 100%; 
@@ -146,9 +132,17 @@ input[type="text"], textarea {
 }
 
 .modal {
-  transition: opacity 0.5s, visibility 0.5s;
-  opacity: 0;
-  visibility: hidden;
+  display: none; 
+  position: fixed; 
+  z-index: 100; 
+  left: 50%;
+  top: 50%; 
+  transform: translate(-50%, -50%); 
+  width: 300px;
+  background-color: #fff; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px; 
+  padding: 20px; 
 }
 
 .modal.show {
@@ -159,12 +153,26 @@ input[type="text"], textarea {
 .event-button {
   display: block;
   width: 100%;
-  margin: 5px 0;
+  margin: auto;
   padding: 10px;
   background-color: #f0f0f0;
   border: 1px solid #ddd;
   border-radius: 5px;
-  text-align: left;
+  justify-content: right;
+}
+
+.event-button > p {
+  color: black;
+  background-color: whitesmoke;
+  padding: 1% 1%;
+  margin: auto;
+  height: 50%;
+  width: 80%;
+  text-align: center;
+}
+
+#eventsList {
+  padding: 0;
 }
 
 #eventTitleInput {

@@ -13,6 +13,7 @@ async function homeAPI(req, res, id, body)
 	// Get calendar info, make sure the supplied variables are valid
 	var calendar = (await mongo.calendar.findOne({ _id: id }));
 	var alarms;
+	var categories;
 
 	if (calendar == null) {
 		result = await mongo.calendar.insertOne({
@@ -20,6 +21,7 @@ async function homeAPI(req, res, id, body)
 			month_year: {},
 			alarms: [],
 			share_requests: []
+			categories: { work: "red", personal: "green", school: "blue"}
 		});
 		if (!result.acknowledged) {
 			console.error("ERR |\tCalendar refusing creation:"
@@ -28,9 +30,11 @@ async function homeAPI(req, res, id, body)
 		}
 		calendar = {};
 		alarms = [];
+		categories = { work: "red", personal: "green", school: "blue"};
 	} else {
 		alarms = calendar.alarms;
 		share_requests = calendar.share_requests
+		categories = calendar.categories;
 		calendar = calendar.month_year;
 	}
 	
@@ -65,6 +69,19 @@ async function homeAPI(req, res, id, body)
 				date: body.event.alarm.time
 			};
 		}
+	} else if (body.type == 'insertCategory') {
+		categories[body.label] = body.color;
+        mongo.calendar.updateOne({ _id: id }, {
+            $set: { categories: categories }
+        });
+        res.statusCode = 200;
+        res.end();
+	} else if (body.type == 'insertCategories') {
+        mongo.calendar.updateOne({ _id: id }, {
+            $set: { categories: body.categories }
+        });
+        res.statusCode = 200;
+        res.end();
 	} else if (body.type == 'delete') {
 		try {
 			// Remove specific event
@@ -113,7 +130,8 @@ async function homeAPI(req, res, id, body)
 		// Sync for both alarms and events
 		const section = {
 			events: calendar[body.monthYear] || {},
-			alarms: alarms
+			alarms: alarms,
+			categories: categories
 		};
 		if (hash(JSON.stringify(section)) == body.hash) {
 			// User is up to date
