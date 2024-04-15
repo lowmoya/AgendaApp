@@ -153,6 +153,10 @@ body {
     opacity: 1;
     visibility: visible;
   }
+
+#eventsList {
+	padding: 0;
+}
   
   .event-button {
     display: block;
@@ -169,9 +173,10 @@ body {
   {
     color: black;
     background-color: whitesmoke;
-    padding: 0 10%;
+    padding: 1% 1%;
+	margin: auto;
     height: 50%;
-    width: 15%;
+    width: 80%;
     text-align: center;
   }
 

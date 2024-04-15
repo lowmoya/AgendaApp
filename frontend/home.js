@@ -444,7 +444,16 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
 
 	}
 
-    // set category
+	// Default custom category values
+    const catColor = document.getElementById('categoryColor');
+    catColor.value = "#444444";
+	const newCategory = document.getElementById('newCategory');
+	newCategory.style.display = 'none';
+	
+
+    // Already set category fields
+
+
     const categorySelector = document.getElementById('eventCat');
     var categoryFound = false;
     
@@ -462,11 +471,6 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
 
     categorySelector.value = categoryFound ? event.category.toLowerCase() : 'personal';
 
-    // category colors
-    const catColor = document.getElementById('categoryColor');
-    
-    // default color
-    catColor.value = "#444444";
 
 	// Set image inputs
 	const imageSelector = document.getElementById('image');
