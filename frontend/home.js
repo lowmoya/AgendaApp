@@ -14,7 +14,9 @@ const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Frida
 
 let currentEventIndex = null; 
 let currentDate = null;
-let eventModalImageLoaded = false;
+
+let editEventModalImagePath = undefined;
+let editEventModalImageContent;
 
 var categories = localStorage.categories != undefined ? JSON.parse(localStorage.categories) : {
     'work': '#FF0000',
@@ -62,7 +64,7 @@ function openModal(day) {
             e.stopPropagation(); 
             showEditEventModal(clicked, index, event);
         });
-        eventElement.style.backgroundColor = categories[event.category];
+        eventElement.style.borderColor = categories[event.category];
         eventsList.appendChild(eventElement);
     });
 
@@ -178,12 +180,14 @@ function toggleSearchWidget() {
 }
 
 function searchEvents() {
-  const searchModal = document.getElementById("searchModal");
-  const closeButton = document.getElementById("closeSearchButton");
   const startDate = document.getElementById("search-start-date").value;
   const endDate = document.getElementById("search-end-date").value;
   const searchQuery = document.getElementById("search-input").value;
-  const exportButton = document.getElementById("search-submit");
+
+  const searchModal = document.getElementById("searchModal");
+  const closeButton = document.getElementById("close-search-button");
+  const exportButton = document.getElementById("export-search-button");
+
   const startDateObj = new Date(startDate);
   const endDateObj = new Date(endDate);
 
@@ -504,7 +508,7 @@ function processCategories()
         {
             const newCatSection = document.getElementById('newCategory');
             newCatSection.value = '';
-            newCatSection.style.display = 'block';
+            newCatSection.style.display = 'flex';
         }
         else
         {
@@ -514,50 +518,6 @@ function processCategories()
     });
 }
 
-function addCategory() {
-    const newName = document.getElementById('newCategoryName').value.trim().toLowerCase();
-    const categoryDropdown = document.getElementById('eventCat');
-    const newCatSection = document.getElementById('newCategory');
-    const color = document.getElementById('categoryColor');
-
-    if (newName.length == 0)
-        return;
-
-    // check if name is in categories
-    for (key in categories) {
-        if (key == newName) {
-            categoryDropdown.value = newName;
-            newCatSection.style.display = 'none';
-            return;
-        }
-    }
-
-    // Add option to drop down
-    const option = document.createElement('option');
-    option.value = newName;
-    option.textContent = newName;
-    categoryDropdown.insertBefore(option,
-        categoryDropdown.querySelector('option[value="custom"]'));
-    categoryDropdown.value = newName;
-
-    newCatSection.style.display = 'none';
-
-    // Save category
-    categories[newName] = color.value;
-    localStorage.setItem('categories', JSON.stringify(categories));
-    fetch('/home', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Session': localStorage.session
-        },
-        body: JSON.stringify({
-            'type': 'insertCategory',
-            'label': newName,
-            'color': color.value
-        })
-    });
-}
 
 function loadCategories() {
     const catDropdown = document.getElementById('eventCat');
@@ -585,8 +545,8 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
     backDrop.style.display = 'block';
 
     // Only present delete button on editing events
-    document.getElementById('deleteButton').style.visibility = newEvent
-        ? 'hidden' : 'visible';
+    document.getElementById('deleteButton').style.display = newEvent
+        ? 'none' : 'inline';
  
     // Set the current event details in the input fields
     editEventTitleInput.value = event.title;
@@ -687,17 +647,11 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
 
 
     // Set image inputs
-    const imageSelector = document.getElementById('image');
-    const imageDisplay = document.getElementById('image-display');
-    if (event.image == undefined) {
-        imageDisplay.style.display = 'none';
-        imageSelector.value = '';
-        eventModalImageLoaded = false;
-    } else {
-        imageDisplay.src = event.image;
-        imageDisplay.style.display = 'block';
-        eventModalImageLoaded = true;
-    }
+    const imageLabel = document.getElementById('edit-event-image-label');
+    editEventModalImagePath = event.imagePath;
+    editEventModalImageContent = event.imageContent;
+    imageLabel.innerText = editEventModalImagePath == undefined ?
+        'None' : editEventModalImagePath;
 
     // Show the edit event modal
     editEventModal.style.display = 'block';
@@ -715,6 +669,55 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
         let alarmTime; 
 
         const updatedEndTime = endTimeInput.value;
+        
+
+        // Handle custom categories
+        var categoryName = categorySelector.value;
+        if (categoryName == 'custom') {
+            var newName = document.getElementById('newCategoryName').value
+                    .trim().toLowerCase();
+            const categoryDropdown = document.getElementById('eventCat');
+            const newCatSection = document.getElementById('newCategory');
+            const color = document.getElementById('categoryColor');
+
+            if (newName.length == 0)
+                newName = 'personal';
+            categoryName = newName;
+
+            // check if name is in categories
+            var unique = true;
+            for (key in categories)
+                if (key == newName)
+                    unique = false;
+
+            if (unique) {
+                // Add option to drop down
+                const option = document.createElement('option');
+                option.value = newName;
+                option.textContent = newName;
+                categoryDropdown.insertBefore(option,
+                    categoryDropdown.querySelector('option[value="custom"]'));
+                categoryDropdown.value = newName;
+
+                // Save category
+                categories[newName] = color.value;
+                localStorage.setItem('categories', JSON.stringify(categories));
+
+                fetch('/home', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Session': localStorage.session
+                    },
+                    body: JSON.stringify({
+                        'type': 'insertCategory',
+                        'label': newName,
+                        'color': color.value
+                    })
+                });
+            }
+
+        }
     
         // Determine if the custom alarm inputs should be shown or hidden
         const isCustom = alarmType === 'custom';
@@ -785,9 +788,10 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
         // Update the event with the new alarm info
         events[clicked.monthYear][clicked.day][currentEventIndex] = {
             title: updatedTitle,
-            category : categorySelector.value,
+            category : categoryName,
             notes: updatedNote,
-            image: eventModalImageLoaded ? imageDisplay.src : undefined,
+            imagePath: editEventModalImagePath,
+            imageContent: editEventModalImageContent,
             startTime: updatedStartTime,
             endTime: updatedEndTime,
             alarm: {
@@ -869,8 +873,23 @@ async function load(shouldSync = true) {
     const day = date.getDate();
     const month = date.getMonth();
     const year = date.getFullYear();
-    
-    document.getElementById('month-text').innerText = month + 1;
+
+    var monthLabel = undefined;
+    switch (month) {
+        case 0: monthLabel  = 'Jan'; break;
+        case 1: monthLabel  = 'Feb'; break;
+        case 2: monthLabel  = 'Mar'; break;
+        case 3: monthLabel  = 'Apr'; break;
+        case 4: monthLabel  = 'May'; break;
+        case 5: monthLabel  = 'Jun'; break;
+        case 6: monthLabel  = 'Jul'; break;
+        case 7: monthLabel  = 'Aug'; break;
+        case 8: monthLabel  = 'Spt'; break;
+        case 9: monthLabel  = 'Oct'; break;
+        case 10: monthLabel = 'Nov'; break;
+        case 11: monthLabel = 'Dec'; break;
+    }
+    document.getElementById('month-text').innerText = monthLabel;
     document.getElementById('year-text').innerText = year;
 
     // Setting global date
@@ -1026,10 +1045,25 @@ async function load(shouldSync = true) {
                 + sectionDate.getFullYear()]?.[sectionDate.getDate()];
         if (sectionEvents == undefined)
             continue;
-        for (event of sectionEvents) {
+        for (let i in sectionEvents) {
             const child = document.createElement('button');
-            child.innerText = event.title;
-            child.style.borderColor = categories[event.category];
+            child.innerText = sectionEvents[i].title;
+            child.style.borderColor
+              = categories[sectionEvents[i].category];
+            if (sectionEvents[i].imageContent != undefined) {
+                const image = document.createElement('img');
+                image.src = sectionEvents[i].imageContent;
+                child.appendChild(image);
+            }
+
+            child.onclick = () => {
+              clicked.events = sectionEvents;
+              clicked.monthYear = sectionDate.getMonth() + 1 + '_'
+                + sectionDate.getFullYear();
+              clicked.day = sectionDate.getDate();
+
+              showEditEventModal(clicked, i, sectionEvents[i]);
+            }
             sectionEventsContainer.appendChild(child);
         }
     };
@@ -1105,49 +1139,21 @@ async function load(shouldSync = true) {
 
 function loadEditModalImage() {
     const selector = document.getElementById('image');
-    const display = document.getElementById('image-display');
+    const label = document.getElementById('edit-event-image-label');
 
     const reader = new FileReader();
     reader.onload = () => {
-        display.src = reader.result;
-        display.style.display = 'block';
-         eventModalImageLoaded = true;
+        label.innerText = selector.files[0].name;
+        editEventModalImagePath = selector.files[0].name;
+        editEventModalImageContent = reader.result;
     };
 
+    label.innerText = 'Loading...';
     reader.readAsDataURL(selector.files[0]);
 }
 
 
-function initButtons() {
-    document.getElementById('nextButton').addEventListener('click', () => {
-        nav++;
-        load();
-    });
-    
-    document.getElementById('backButton').addEventListener('click', () => {
-        nav--;
-        load();
-    });
-
-    document.getElementById('saveButton').addEventListener('click', addEvent);
-    document.getElementById('cancelButton').addEventListener('click', closeModal);
-    document.getElementById('deleteButton').addEventListener('click', deleteEvent);
-    document.getElementById('closeButton').addEventListener('click', closeModal);
-    document.getElementById('exportButton').addEventListener('click', exportEvents);
-    document.getElementById('searchButton').addEventListener('click', searchEvents);
-    document.getElementById('shareButton').addEventListener('click', shareEvents);
-    document.getElementById('image').addEventListener('change', loadEditModalImage);
-    document.getElementById('image-display').addEventListener('error', function() {
-        const imageSelector = document.getElementById('image');
-        const imageDisplay = document.getElementById('image-display');
-        imageDisplay.style.display = 'none';
-        imageSelector.value = '';
-        eventModalImageLoaded = false;
-    });
-}
-
 document.addEventListener('DOMContentLoaded', function() {
-    //initButtons();
     //getWeeklyNote();
     loadCategories();
     load();

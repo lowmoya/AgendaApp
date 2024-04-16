@@ -28,19 +28,6 @@
       </div>
 
       <!--
-      <div id="searchEngine">
-        <label for="startDate" >Start Date:</label>
-        <input type="date" id="searchStart">
-        <label for="endDate">End Date:</label>
-        <input type="date" id="searchEnd">
-        <input type = "search" id="searchInput">
-        <button id="searchButton">Search</button>
-        <button id="shareButton">Share</button>
-      </div>
-	  
-      -->
-
-      <!--
       <div id="shareModal" class="modal">
         Username <input type="text" id="shareUser"> <br>
         <label for="startDate" >Start Date:</label>
@@ -188,56 +175,56 @@
     </div>
 
     <!-- Creating a new event modal -->
-    <div id="newEventModal">
+    <div id="newEventModal" class="modal">
       <h2>Day's Events</h2>
-      <ul id="eventsList"></ul> <!-- List of events for the selected day -->
-    
+      <ul id="eventsList" style="max-height: 53%;overflow-y: auto"></ul>
+
       <h2>New Event</h2>
       <input id="eventTitleInput" placeholder="Event Title" />
-	    <button id="saveButton" onclick="addEvent()">Add</button>
-      <button id="cancelButton" onclick="closeModal()">Close</button>
-	  
+      <button class="submit-button" onclick="addEvent()">Add</button>
+      <button class="ok-button" onclick="closeModal()">Close</button>
     </div>
 
     <!-- New modal for editing existing events -->
     <div id="editEventModal" class="modal">
-      <h2>Event Details</h2>
-      <input id="editEventTitleInput" placeholder="Event Title" />
+      <div id="editEventModalHeader" style="text-align: center">
+        <input id="editEventTitleInput" placeholder="Event Title" />
 
-      <label for="eventCat">Category:</label>
-      <select id="eventCat">
-          <option value="personal">Personal</option>
-          <option value="school">School</option>
-          <option value="work">Work</option>
-          <option value="custom">Custom</option>
-      </select>
+        <select id="eventCat">
+            <option value="personal">personal</option>
+            <option value="school">school</option>
+            <option value="work">work</option>
+            <option value="custom">custom</option>
+        </select>
+      </div>
 
-      <div id="newCategory" style="display: none;">
-        <label for="newCategoryName">Category Name:</label>
-        <input type="text" id="newCategoryName" placeholder="Enter category name"/>
-        <input type="color" id ="categoryColor" value="#444444"/>
-        <button id="submitCategory" onclick="addCategory()">Submit</button>
+      <div id="newCategory">
+        <label for="newCategoryName">Category:</label>
+        <input type="text" id="newCategoryName"
+			placeholder="Enter category name"/>
+		<input type="color" id="categoryColor" style='width:28px;height:28px'
+			value="#444444" />
       </div> 
 
       <!-- Time of event -->
-      <h2>Times:</h2>
-      <label for="startTime">Start Time:</label>
-	    <input type="time" id="startTime" name="startTime" required>
+      <label for="startTime">Start:</label>
+      <input type="time" id="startTime" name="startTime" required>
 
-	    <label for="endTime">End Time:</label>
+      <label for="endTime">End:</label>
       <input type="time" id="endTime" name="endTime" required>
+      <br>
 
       <!-- Alarm for event -->
-      <h2>Set an Alarm:</h2>
-      <select id="alarmTimeSelect">
+      Alarm: 
+      <select id="alarmTimeSelect" style="width: 100px;">
         <option value="5">5 mins before</option>
         <option value="10">10 mins before</option>
         <option value="15">15 mins before</option>
         <option value="60">60 mins before</option>
         <option value="custom">Customize</option>
-		    <option value="none" selected="selected">None</option>
+        <option value="none" selected="selected">None</option>
       </select>
-      
+
       <h4 id="alarmHeading"></h4>
       <label for="customAlarmDate" style="display: none;">Alarm Date:</label>
       <input type="date" id="customAlarmDate" style="display: none;">
@@ -245,18 +232,27 @@
       <label for="customAlarmTime" style="display: none;">Alarm Time:</label>
       <input type="time" id="customAlarmTime" style="display: none;">
 
+      <br>
       <!-- Image for event -->
-      <h2>Add a New Note</h2>
-      <textarea id="noteInput" placeholder="Note..." ></textarea>
-      <label for="image">Upload a new picture:</label>
-      <input type="file" id="image" name="image" accept="image/png, image/jpeg" />
-	    <img id='image-display' style='width: 100%;' alt='loading...' />
+      Picture:
+      <label for="image" class='ok-button' id='edit-event-image-label'>
+        File</label>
+      <input type="file" id="image" name="image" style='display:none'
+        accept="image/png, image/jpeg" onchange="loadEditModalImage()"/>
+      <br>
+
+      <textarea id="noteInput" placeholder="Note..."
+        style="width: 100%; height: 55%;margin-bottom: 10px"></textarea>
 
       <!-- Saving the event -->
-      <h2> </h2>
-	    <button id="updateButton">Save Event</button>
-      <button id="closeButton" onclick="closeEditModal()">Cancel</button>
-      <button id="deleteButton" onclick="deleteEvent()">Delete Event</button>
+      <div style="text-align: center">
+        <button id="updateButton" class="submit-button">
+          Save Event</button>
+        <button id="closeButton" class="ok-button"
+          onclick="closeEditModal()">Cancel</button>
+        <button id="deleteButton" class="no-button"
+          onclick="deleteEvent()">Delete Event</button>
+      </div>
 
     </div>
 
@@ -265,8 +261,8 @@
         <h2>Search Results</h2>
         <ul id="searchResultsList"></ul>
       </div>
-      <button id="exportSearchButton">Export</button>
-      <button id="closeSearchButton">Close</button>
+      <button id="export-search-button">Export</button>
+      <button id="close-search-button">Close</button>
     </div>
     <div id="modalBackDrop"></div>
     <script src="./home.js"></script>

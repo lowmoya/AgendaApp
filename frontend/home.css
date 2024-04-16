@@ -1,33 +1,71 @@
-/* New Home Screen */
-#mobile-weekly {
+/* Both views */
+/* pop ups */
+#modalBackDrop {
   display: none;
-}
-#add-button{
-  display: none;
+  top: 0px;
+  left: 0px;
+  z-index: 10;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  background-color: rgba(0,0,0,0.8);
 }
 
-/* mobile */
-@media only screen and (max-width: 764px) {
-    #desktop-weekly {
-      display: none; 
-    }
-    #mobile-weekly {
-      display: block;
-    }
-    #add-button{
-      display: block;
-    }
+#modalBackDrop.active {
+  display: block; 
 }
 
-/* font for month and year */
+.modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* events */
+.day-event-container > button {
+  background-color: lightyellow;
+}
+.day-event-container > button:hover {
+  filter: brightness(.9);
+}
+.day-event-container > button:active {
+  filter: brightness(.7);
+}
+
+/* buttons */
+.ok-button, .no-button, .submit-button {
+    width: 140px;
+    font: 20px 'Madimi One', sans-serif;
+    border-style: solid;
+    border-color: darkgray;
+    border-width: 2px;
+}
+.ok-button:hover, .no-button:hover, .submit-button:hover {
+    opacity: .7;
+}
+.ok-button:active, .no-button:active, .submit-button:active {
+    opacity: 1;
+    filter: brightness(.7);
+}
+.ok-button {
+    background-color: #7c90ff;
+}
+.no-button {
+    background-color: #d36c6c;
+}
+.submit-button {
+    background-color: #4fd864;
+}
+
+
+/* Font for month and year */
 .top-text{
     color: #3A483B;
     font: 50px 'Madimi One', sans-serif;
     text-shadow: 0px 4px 2px rgba(0, 0, 0, .25), 
-               -2px 0px white, 2px 0px white, 0px -2px white, 0px 2px white;;
+               -2px 0px white, 2px 0px white, 0px -2px white, 0px 2px white;
 }
 
-/* font for the weekdays */
+/* Font for the weekdays */
 .weekday{
     color: #334264;
     font: 30px 'Madimi One', sans-serif;
@@ -38,8 +76,16 @@
     display: flex;
     flex-flow: row;
 }
-/* desktop view */
+
+/* Desktop view */
 @media only screen and (min-width: 1024px) {
+    #mobile-weekly {
+        display: none;
+    }
+    #add-button{
+        display: none;
+    }
+
 
     body {
         display: flex;
@@ -144,56 +190,76 @@
     }
 
     .day-header > p {
-      text-align: center;
-      padding-top: 34px;
-      padding-bottom: 0px;
-      margin-bottom: 0px;
-      padding-right: 8px;
-      font-size: 30px;
+        text-align: center;
+        padding-top: 34px;
+        padding-bottom: 0px;
+        margin-bottom: 0px;
+        padding-right: 8px;
+        font-size: 30px;
     }
 
     .day-header > .day-header-date {
-      padding-top: 0;
-      margin-top: 0;
+        padding-top: 0;
+        margin-top: 0;
     }
 
     .selected-cloud {
-      filter: hue-rotate(230deg);
+        filter: hue-rotate(230deg);
     }
 
-    .day-section:hover > .day-header {
-      filter: hue-rotate(70deg);
+    .day-header:hover {
+        filter: hue-rotate(70deg);
     }
 
-    .day-section:hover > .day-header.selected-cloud {
-      filter: hue-rotate(30deg);
+    .day-header:active {
+        filter: hue-rotate(70deg) brightness(.7);
     }
 
-    .day-section:active > .day-header {
-      filter: hue-rotate(70deg) brightness(.7);
+    .day-header.selected-cloud:hover {
+        filter: hue-rotate(310deg);
     }
 
-    .day-section:active > .day-header.selected-cloud {
-      filter: hue-rotate(30deg) brightness(.7);
+     .day-header.selected-cloud:active {
+        filter: hue-rotate(310deg) brightness(.7);
     }
 
 
 
     #weekend-days > .day-section{
-      height: 225px;
-      left: 385px;
+        height: 225px;
+        left: 385px;
+        margin-left: 0;
     }
 
-    .day-event-container > button {
-      width: 100%;
-      padding: 1px;
-      margin: 2px;
-      margin-left: -1px;
-      border-style: solid;
-      border-width: 10px;
+    .day-event-container {
+        max-height: 380px;
+        overflow-y: auto;
+        overflow-x: clip;
     }
+
+    #weekend-days > .day-section > .day-event-container {
+        max-height: 138px;
+    }
+
+
+    .day-event-container > button {
+        width: 100%;
+        padding: 1px;
+        margin: 2px;
+        margin-left: -1px;
+        border-style: solid;
+        border-width: 10px;
+        font: 14px 'Madimi One', sans-serif;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .day-event-container > button > img{
+      object-fit: contain;
+      height: 100px;
+    }
+
     #weekend-days > .day-section > .day-event-container > button {
-      margin-left: -10px;
     }
 
 
@@ -215,6 +281,7 @@
         position: relative;
         margin: 5px;
     }
+  
 
     #magnif-glass {
         position: relative;
@@ -270,11 +337,116 @@
         left: 180px;
         top:  320px;
     }
-      
+
+    .modal {
+        display: none; 
+        z-index: 20;
+
+        position: absolute;
+        width: 40%;
+        height: 49%;
+        padding: 120px 50px;
+        margin: auto;
+
+        top: 50%;
+        left: 50%;
+	    transform: translate(-50%, -50%);
+
+        background-image: url('/pop-up.png');
+        background-size: cover;
+        background-color: white;
+        border-radius: 50px;
+
+        color: #3A483B;
+        font: 20px 'Madimi One', sans-serif;
+        text-shadow: 0px 4px 2px rgba(0, 0, 0, .25), 
+                   -2px 0px white, 2px 0px white, 0px -2px white,
+                   0px 2px white;
+    }
+
+
+    /* New event modal */
+    #newEventModal > input {
+        font: 20px 'Madimi One', sans-serif;
+        border-style: solid;
+        border-color: darkgray;
+        border-width: 2px;
+    }
+    #newEventModal > .ok-button {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translate(-50%);
+    }
+
+    .event-button {
+        font: 18px 'Madimi One', sans-serif;
+        background-color: white;
+        border-style: solid;
+        border-width: 12px;
+
+        height: fit-content;
+        margin: 5px;
+    }
+    .event-button:hover {
+        filter: brightness(.70);
+    }
+    .event-button:active {
+        filter: brightness(.40);
+    }
+    .event-button > p {
+        margin: 3px
+    }
+
+
+    /* Edit event modal */
+    #editEventModalHeader > input, #editEventModalHeader > select {
+        font: 22px 'Madimi One', sans-serif;
+    }
+
+    #editEventModal {
+        font: 18px 'Madimi One', sans-serif;
+    }
+    #editEventModal > select, #editEventModal > input,
+            #editEventModal > textarea {
+        font: 16px 'Madimi One', sans-serif;
+        margin: 5px auto;
+    }
+    #edit-event-image-label {
+        min-width: 100px;
+        padding: 0 10px;
+        width: fit-content;
+        display: inline-block;
+        text-align: center;
+        font-size: 16px;
+        margin-bottom: 10px;
+        background-color: whitesmoke;
+        text-shadow: none;
+    }
+    #newCategory {
+      display: none;
+      align-items: center;
+      margin: 5px auto;
+    }
+    #newCategory > input {
+      font: 16px 'Madimi One', sans-serif;
+      padding: 2px;
+      margin-left:5px;
+    }
 }
 
-/* mobile view (incomplete) */
+/* Mobile view */
 @media only screen and (max-width: 764px){
+    #desktop-weekly {
+      display: none; 
+    }
+    #mobile-weekly {
+      display: block;
+    }
+    #add-button{
+      display: block;
+    }
+
     body {
         display: flex;
         user-select: none;
@@ -426,51 +598,4 @@
     }
 }
 
-#modalBackDrop {
-  display: none;
-  top: 0px;
-  left: 0px;
-  z-index: 10;
-  width: 100vw;
-  height: 100vh;
-  position: absolute;
-  background-color: rgba(0,0,0,0.8);
-}
-
-#modalBackDrop.active {
-  display: block; 
-}
-
-.modal {
-  display: none; 
-  position: fixed; 
-  z-index: 100; 
-  left: 50%;
-  top: 50%; 
-  transform: translate(-50%, -50%); 
-  width: 300px;
-  background-color: #fff; 
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px; 
-  padding: 20px; 
-}
-
-.modal.show {
-  opacity: 1;
-  visibility: visible;
-}
-
-#newEventModal, #editEventModal, #weeklyNoteModal {
-  display: none;
-  z-index: 20;
-  padding: 25px;
-  background-color: #e8f4fa;
-  box-shadow: 0px 0px 3px black;
-  border-radius: 5px;
-  width: 350px;
-  top: 50%;
-  left: calc(50% - 175px);
-  position: absolute;
-  font-family: sans-serif;
-}
 

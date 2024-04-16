@@ -38,6 +38,8 @@ const pages = [
 	'/search.png',
 	'/weekly-view.png',
 	'/weekly-view-mobile.png',
+	'/pop-up.png',
+	'/pop-up2.png',
 ];
 const page_bindings = [
 	{ file: 'frontend/home.html',			type: 'text/html' },
@@ -67,6 +69,8 @@ const page_bindings = [
 	{ file: 'frontend/resources/search.png',				type: 'image/png' },
 	{ file: 'frontend/resources/weekly-view.png',			type: 'image/png' },
 	{ file: 'frontend/resources/weekly-view-mobile.png',	type: 'image/png' },
+	{ file: 'frontend/resources/pop-up.png',				type: 'image/png' },
+	{ file: 'frontend/resources/pop-up2.png',				type: 'image/png' },
 ];
 
 
