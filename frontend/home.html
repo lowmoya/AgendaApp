@@ -188,7 +188,7 @@
     <!-- New modal for editing existing events -->
     <div id="editEventModal" class="modal">
       <div id="editEventModalHeader" style="text-align: center">
-        <input id="editEventTitleInput" placeholder="Event Title" />
+		<input id="editEventTitleInput" placeholder="Event Title" />
 
         <select id="eventCat">
             <option value="personal">personal</option>
@@ -216,7 +216,7 @@
 
       <!-- Alarm for event -->
       Alarm: 
-      <select id="alarmTimeSelect" style="width: 100px;">
+      <select id="edit-event-alarm" style="width: 140px;">
         <option value="5">5 mins before</option>
         <option value="10">10 mins before</option>
         <option value="15">15 mins before</option>
@@ -224,15 +224,16 @@
         <option value="custom">Customize</option>
         <option value="none" selected="selected">None</option>
       </select>
+	  <br>
 
-      <h4 id="alarmHeading"></h4>
-      <label for="customAlarmDate" style="display: none;">Alarm Date:</label>
-      <input type="date" id="customAlarmDate" style="display: none;">
 
-      <label for="customAlarmTime" style="display: none;">Alarm Time:</label>
-      <input type="time" id="customAlarmTime" style="display: none;">
+	  <div id="edit-event-custom-alarm-widget"
+		  style='width: 100%;margin-bottom:5px'>
+	  	Custom alarm:
+		<input type="date" id="edit-event-custom-alarm-date">
+		<input type="time" id="edit-event-custom-alarm-time">
+	  </div>
 
-      <br>
       <!-- Image for event -->
       Picture:
       <label for="image" class='ok-button' id='edit-event-image-label'>
@@ -242,7 +243,7 @@
       <br>
 
       <textarea id="noteInput" placeholder="Note..."
-        style="width: 100%; height: 55%;margin-bottom: 10px"></textarea>
+        style="width: 100%; height: 44%;margin-bottom: 10px"></textarea>
 
       <!-- Saving the event -->
       <div style="text-align: center">
