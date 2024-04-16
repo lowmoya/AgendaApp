@@ -1,9 +1,9 @@
 let nav = 0;
 let clicked = {};
 let events = localStorage.getItem('events')
-	? JSON.parse(localStorage.getItem('events')) : {};
+    ? JSON.parse(localStorage.getItem('events')) : {};
 let alarms = localStorage.getItem('alarms')
-	? JSON.parse(localStorage.getItem('alarms')) : [];
+    ? JSON.parse(localStorage.getItem('alarms')) : [];
 
 const calendar = document.getElementById('calendar');
 const newEventModal =  document.getElementById('newEventModal');
@@ -22,17 +22,27 @@ var categories = localStorage.categories != undefined ? JSON.parse(localStorage.
     'school': '#0000FF'
 };
 
-function openModal(monthYear, day) {
-	// Create a container for this event
-	if (events[monthYear] == undefined) {
-		events[monthYear] = {};
-		events[monthYear][day] = [];
-	} else if (events[monthYear][day] == undefined) {
-		events[monthYear][day] = [];
-	}
-	clicked.events = events[monthYear][day];
-	clicked.monthYear = monthYear;
-	clicked.day = day;
+function openModal(day) {
+    // Get date info
+    const currentDay = currentDate.getDay();
+    const sectionDate = new Date(currentDate);
+    sectionDate.setDate(currentDate.getDate() + day - currentDay)
+    
+    const monthYear = sectionDate.getMonth() + 1 + '_'
+        + sectionDate.getFullYear();
+    const date = sectionDate.getDate();
+
+
+    // Create a container for this event
+    if (events[monthYear] == undefined) {
+        events[monthYear] = {};
+        events[monthYear][date] = [];
+    } else if (events[monthYear][date] == undefined) {
+        events[monthYear][date] = [];
+    }
+    clicked.events = events[monthYear][date];
+    clicked.monthYear = monthYear;
+    clicked.day = date;
 
 
     newEventModal.style.display = 'block';
@@ -158,13 +168,22 @@ function exportEvents()
     URL.revokeObjectURL(url.href);
 }
 
+
+function toggleSearchWidget() {
+    const searchWidget = document.getElementById("search-widget");
+    searchWidget.style.display = searchWidget.style.display == 'block'
+        ? 'none' : 'block';
+
+    document.getElementById("search-input").value = '';
+}
+
 function searchEvents() {
   const searchModal = document.getElementById("searchModal");
   const closeButton = document.getElementById("closeSearchButton");
-  const startDate = document.getElementById("searchStart").value;
-  const endDate = document.getElementById("searchEnd").value;
-  const searchQuery = document.getElementById("searchInput").value;
-  const exportButton = document.getElementById("exportSearchButton");
+  const startDate = document.getElementById("search-start-date").value;
+  const endDate = document.getElementById("search-end-date").value;
+  const searchQuery = document.getElementById("search-input").value;
+  const exportButton = document.getElementById("search-submit");
   const startDateObj = new Date(startDate);
   const endDateObj = new Date(endDate);
 
@@ -205,41 +224,41 @@ function searchEvents() {
       eventsListElement.innerHTML = "";
       eventsList.forEach((event) => {
         const button = document.createElement("button");
-		button.innerText = `${event.month}/${event.day}/${event.year}: ${event.title}`;
-		button.addEventListener("click", () => {
-			const monthYear = event.month+"_"+event.year
-			searchModal.style.display = "none";
-    		backDrop.style.display = "none";
-			openModal(monthYear,event.day);
-		});
-		eventsListElement.appendChild(button);
+        button.innerText = `${event.month}/${event.day}/${event.year}: ${event.title}`;
+        button.addEventListener("click", () => {
+            const monthYear = event.month+"_"+event.year
+            searchModal.style.display = "none";
+            backDrop.style.display = "none";
+            openModal(monthYear,event.day);
+        });
+        eventsListElement.appendChild(button);
       });
 
-	  exportButton.onclick = () =>
-		{
-			eventsList.forEach((event) => {
-				txt += `Date: ${event.month}/${event.day}/${event.year}\nTitle: ${event.title}\nNotes: ${event.notes}\n\n`;
-			});
-			const txtBlob = new Blob([txt], {type: 'text/plain'});
-			// download url
-			const url = document.createElement('a');
-			url.href = URL.createObjectURL(txtBlob);
-			url.download = 'MyEvents.txt';
+      exportButton.onclick = () =>
+        {
+            eventsList.forEach((event) => {
+                txt += `Date: ${event.month}/${event.day}/${event.year}\nTitle: ${event.title}\nNotes: ${event.notes}\n\n`;
+            });
+            const txtBlob = new Blob([txt], {type: 'text/plain'});
+            // download url
+            const url = document.createElement('a');
+            url.href = URL.createObjectURL(txtBlob);
+            url.download = 'MyEvents.txt';
 
-			document.body.appendChild(url);
-			url.click();
+            document.body.appendChild(url);
+            url.click();
 
-			// delete temporary link to download
-			document.body.removeChild(url);
-			URL.revokeObjectURL(url.href);
-		}
+            // delete temporary link to download
+            document.body.removeChild(url);
+            URL.revokeObjectURL(url.href);
+        }
 
     })
     .catch((error) => {
       console.error("Error:", error);
     });
 
-	
+    
 
   // Close search results modal
   closeButton.onclick = () => {
@@ -249,57 +268,57 @@ function searchEvents() {
 }
 
 function shareEvents() {
-	const cancelButton = document.getElementById("cancelShare");
-	const confirmButton = document.getElementById("confirmShare");
-	
-	
+    const cancelButton = document.getElementById("cancelShare");
+    const confirmButton = document.getElementById("confirmShare");
+    
+    
 
-	// Show the share modal
-	shareModal.style.display = "block";
-	backDrop.style.display = "block";
-	shareModal.style.opacity = 1;
-	shareModal.style.visibility = "visible";
+    // Show the share modal
+    shareModal.style.display = "block";
+    backDrop.style.display = "block";
+    shareModal.style.opacity = 1;
+    shareModal.style.visibility = "visible";
 
 
-	confirmButton.onclick = () =>
-	{
-		const username = document.getElementById("shareUser").value;
-		const startDate = document.getElementById("shareStart").value;
-  		const endDate = document.getElementById("shareEnd").value;
-		const startDateObj = new Date(startDate);
-		const endDateObj = new Date(endDate);
+    confirmButton.onclick = () =>
+    {
+        const username = document.getElementById("shareUser").value;
+        const startDate = document.getElementById("shareStart").value;
+          const endDate = document.getElementById("shareEnd").value;
+        const startDateObj = new Date(startDate);
+        const endDateObj = new Date(endDate);
 
-		if (startDateObj > endDateObj) {
-			alert("End date cannot be earlier than start date");
-			console.log("end date cannot be earlier");
-			return;
-		}
-	
-		if (startDate == "" || endDate == "")
-		{
-			alert("Please select a valid date range");
-			console.log("invalid date range");
-			return;
-		}
+        if (startDateObj > endDateObj) {
+            alert("End date cannot be earlier than start date");
+            console.log("end date cannot be earlier");
+            return;
+        }
+    
+        if (startDate == "" || endDate == "")
+        {
+            alert("Please select a valid date range");
+            console.log("invalid date range");
+            return;
+        }
 
-		fetch("/share", {
-			method: "POST",
-			headers: {
-			  "Content-Type": "application/json",
-			  Session: localStorage.session,
-			},
-			body: JSON.stringify({
-			  type: "share",
-			  username: username,
-			  startDate: startDate,
-			  endDate: endDate
-			}),
-		  });
+        fetch("/share", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Session: localStorage.session,
+            },
+            body: JSON.stringify({
+              type: "share",
+              username: username,
+              startDate: startDate,
+              endDate: endDate
+            }),
+          });
 
-		shareModal.style.display = "none";
-		backDrop.style.display = "none";
-		alert("Share request to: " + username +" was sent.");
-	}
+        shareModal.style.display = "none";
+        backDrop.style.display = "none";
+        alert("Share request to: " + username +" was sent.");
+    }
 }
 
 // Below are the functions for the weekly note modal functionality
@@ -327,23 +346,23 @@ function getWeeklyNote() {
     // Submit the weekly note
     document.getElementById('submitWeeklyNote').addEventListener('click', () => {
         const updatedWeeklyNote = editWeeklyNoteInput.value.trim();
-		const datePieces = weekOfNote.value.split('-');
+        const datePieces = weekOfNote.value.split('-');
         const date = new Date(parseInt(datePieces[0]),
-			parseInt(datePieces[1]) - 1, parseInt(datePieces[2]));
+            parseInt(datePieces[1]) - 1, parseInt(datePieces[2]));
 
         const monthYear = (date.getMonth() + 1) + '_' + date.getFullYear();
         const weekNumber = getWeekNumber(date);
-		const weekId = 'w' + weekNumber;
+        const weekId = 'w' + weekNumber;
 
         //const firstDayOfWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 1); // Adjust for first day of week assuming Sunday is start
         //const day = firstDayOfWeek.getDate();
-		if (!events[monthYear]) {
-			events[monthYear] = {};
-			events[monthYear][weekId] = [];
-		} else if (!events[monthYear][weekId]){
-			events[monthYear][weekId] = [];
-		}
-		var weeklyHome = events[monthYear][weekId];
+        if (!events[monthYear]) {
+            events[monthYear] = {};
+            events[monthYear][weekId] = [];
+        } else if (!events[monthYear][weekId]){
+            events[monthYear][weekId] = [];
+        }
+        var weeklyHome = events[monthYear][weekId];
 
         // Save to local storage (optional, if you want to cache or use locally)
         weeklyHome.push({ note: updatedWeeklyNote });
@@ -357,15 +376,15 @@ function getWeeklyNote() {
                 'Session': localStorage.session
             },
             body: JSON.stringify({
-				'type': 'insert',
-				'monthYear': monthYear,
-				'day': weekId,
-				'index': weeklyHome.length - 1,
-				'event': weeklyHome[weeklyHome.length - 1]
+                'type': 'insert',
+                'monthYear': monthYear,
+                'day': weekId,
+                'index': weeklyHome.length - 1,
+                'event': weeklyHome[weeklyHome.length - 1]
             })
         })
 
-		// Close the modal after submission
+        // Close the modal after submission
         weeklyNoteModal.style.display = 'none';
         backDrop.style.display = 'none';
     });
@@ -386,11 +405,11 @@ function addEvent() {
 
         if (clicked.events.length == 0)
             showEditEventModal(clicked, 0, {title: eventTitleInput.value},
-				newEvent=true);
+                newEvent=true);
 
         else
             showEditEventModal(clicked, clicked.events.length,
-				{title: eventTitleInput.value}, newEvent=true);
+                {title: eventTitleInput.value}, newEvent=true);
         
         
         closeModal();
@@ -401,42 +420,42 @@ function addEvent() {
 
 // Deleting the event off the list
 function deleteEvent() {
-	// Adjust alarms list
-	for (let i = alarms.length - 1; i > -1; --i) {
-		if (alarms[i].eventMonthYear != clicked.monthYear
-				|| alarms[i].eventDay != clicked.day)
-			continue;
+    // Adjust alarms list
+    for (let i = alarms.length - 1; i > -1; --i) {
+        if (alarms[i].eventMonthYear != clicked.monthYear
+                || alarms[i].eventDay != clicked.day)
+            continue;
 
-		// For same day alarms, adjust other alarms event index, or
-		// delete the alarm if it belonds to this event
-		if (alarms[i].eventIndex > currentEventIndex)
-			--alarms[i].eventIndex;
-		else if (alarms[i].eventIndex == currentEventIndex)
-			alarms.splice(i, 1);
-	}
-	localStorage.setItem('alarms', JSON.stringify(alarms));
+        // For same day alarms, adjust other alarms event index, or
+        // delete the alarm if it belonds to this event
+        if (alarms[i].eventIndex > currentEventIndex)
+            --alarms[i].eventIndex;
+        else if (alarms[i].eventIndex == currentEventIndex)
+            alarms.splice(i, 1);
+    }
+    localStorage.setItem('alarms', JSON.stringify(alarms));
 
 
-	// Remove event
+    // Remove event
     if (clicked.events && clicked.events.length > 0) {
         clicked.events.splice(currentEventIndex, 1); 
         if (clicked.events.length === 0) {
             delete events[clicked.monthYear][clicked.day]; 
         }
-		
-		fetch('/home', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'Session': localStorage.session
-			},
-			body: JSON.stringify({
-				'type': 'delete',
-				'monthYear': clicked.monthYear,
-				'day': clicked.day,
-				'index': currentEventIndex,
-			})
-		});
+        
+        fetch('/home', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Session': localStorage.session
+            },
+            body: JSON.stringify({
+                'type': 'delete',
+                'monthYear': clicked.monthYear,
+                'day': clicked.day,
+                'index': currentEventIndex,
+            })
+        });
     }
 
 
@@ -495,6 +514,63 @@ function processCategories()
     });
 }
 
+function addCategory() {
+    const newName = document.getElementById('newCategoryName').value.trim().toLowerCase();
+    const categoryDropdown = document.getElementById('eventCat');
+    const newCatSection = document.getElementById('newCategory');
+    const color = document.getElementById('categoryColor');
+
+    if (newName.length == 0)
+        return;
+
+    // check if name is in categories
+    for (key in categories) {
+        if (key == newName) {
+            categoryDropdown.value = newName;
+            newCatSection.style.display = 'none';
+            return;
+        }
+    }
+
+    // Add option to drop down
+    const option = document.createElement('option');
+    option.value = newName;
+    option.textContent = newName;
+    categoryDropdown.insertBefore(option,
+        categoryDropdown.querySelector('option[value="custom"]'));
+    categoryDropdown.value = newName;
+
+    newCatSection.style.display = 'none';
+
+    // Save category
+    categories[newName] = color.value;
+    localStorage.setItem('categories', JSON.stringify(categories));
+    fetch('/home', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Session': localStorage.session
+        },
+        body: JSON.stringify({
+            'type': 'insertCategory',
+            'label': newName,
+            'color': color.value
+        })
+    });
+}
+
+function loadCategories() {
+    const catDropdown = document.getElementById('eventCat');
+    for (key in categories) {
+        if (key == 'work' || key == 'personal' || key == 'school')
+          continue;
+        const option = document.createElement('option');
+        option.value = key.toLowerCase();
+        option.textContent = key;
+        catDropdown.insertBefore(option, catDropdown.querySelector('option[value="custom"]'));
+    }
+}
+
 function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
     const editEventModal = document.getElementById('editEventModal');
     const editEventTitleInput = document.getElementById('editEventTitleInput');
@@ -508,9 +584,9 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
     newEventModal.style.display = 'none';
     backDrop.style.display = 'block';
 
-	// Only present delete button on editing events
-	document.getElementById('deleteButton').style.visibility = newEvent
-		? 'hidden' : 'visible';
+    // Only present delete button on editing events
+    document.getElementById('deleteButton').style.visibility = newEvent
+        ? 'hidden' : 'visible';
  
     // Set the current event details in the input fields
     editEventTitleInput.value = event.title;
@@ -533,43 +609,43 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
 
     // Start and end time fields with the event's times
     startTimeInput.value = event.startTime || '';
-	endTimeInput.value = event.endTime || '';
+    endTimeInput.value = event.endTime || '';
 
-	// Set the alarm-related fields
+    // Set the alarm-related fields
     const alarmSelect = document.getElementById('alarmTimeSelect');
-	const alarmDate = document.getElementById('customAlarmDate');
-	if (newEvent || event.alarm.type != 'custom') {
-		alarmSelect.value = newEvent ? 'none' : event.alarm.type;
+    const alarmDate = document.getElementById('customAlarmDate');
+    if (newEvent || event.alarm.type != 'custom') {
+        alarmSelect.value = newEvent ? 'none' : event.alarm.type;
 
-		// Hide custom event panel
+        // Hide custom event panel
         document.getElementById('alarmHeading').style.display = 'none';
         document.getElementById('customAlarmDate').style.display = 'none';
         document.getElementById('customAlarmTime').style.display = 'none';
 
-		// Set default values for custom alarm
-		const eventDate = clicked.monthYear.split('_');
-		alarmDate.value = eventDate[1] + '-'
-			+ (eventDate[0] < 10 ? '0' + eventDate[0] : eventDate[0]) + '-'
-			+ (clicked.day < 10 ? '0' + clicked.day : clicked.day);
-		alarmTime.value = '12:00';
-	} else {
-		// Load values for custom event panel
-		alarmSelect.value = 'custom';
-		const date = new Date(event.alarm.time);
-		alarmDate.value = date.getFullYear() + '-'
-			+ (date.getMonth() < 9 ? '0' + (date.getMonth() + 1)
-				: date.getMonth() + 1)
-			+ '-' + (date.getDate() < 10 ? '0' + date.getDate() : date.getDate());
-		alarmTime.value =
-			(date.getHours() < 10 ? '0' + date.getHours() : date.getHours())
-			+ ':' + (date.getMinutes() < 10 ? '0' + date.getMinutes()
-				: date.getMinutes());
-		
-		// Show custom event panel
-		document.getElementById('alarmHeading').style.display = 'block';
-		document.getElementById('customAlarmDate').style.display = 'block';
-		document.getElementById('customAlarmTime').style.display = 'block';
-	}
+        // Set default values for custom alarm
+        const eventDate = clicked.monthYear.split('_');
+        alarmDate.value = eventDate[1] + '-'
+            + (eventDate[0] < 10 ? '0' + eventDate[0] : eventDate[0]) + '-'
+            + (clicked.day < 10 ? '0' + clicked.day : clicked.day);
+        alarmTime.value = '12:00';
+    } else {
+        // Load values for custom event panel
+        alarmSelect.value = 'custom';
+        const date = new Date(event.alarm.time);
+        alarmDate.value = date.getFullYear() + '-'
+            + (date.getMonth() < 9 ? '0' + (date.getMonth() + 1)
+                : date.getMonth() + 1)
+            + '-' + (date.getDate() < 10 ? '0' + date.getDate() : date.getDate());
+        alarmTime.value =
+            (date.getHours() < 10 ? '0' + date.getHours() : date.getHours())
+            + ':' + (date.getMinutes() < 10 ? '0' + date.getMinutes()
+                : date.getMinutes());
+        
+        // Show custom event panel
+        document.getElementById('alarmHeading').style.display = 'block';
+        document.getElementById('customAlarmDate').style.display = 'block';
+        document.getElementById('customAlarmTime').style.display = 'block';
+    }
 
     alarmSelect.addEventListener('change', function() {
         const isCustomSelected = this.value === 'custom';
@@ -584,12 +660,12 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
         }
     });
 
-	// Default custom category values
+    // Default custom category values
     const catColor = document.getElementById('categoryColor');
     catColor.value = "#444444";
-	const newCategory = document.getElementById('newCategory');
-	newCategory.style.display = 'none';
-	
+    const newCategory = document.getElementById('newCategory');
+    newCategory.style.display = 'none';
+    
 
     // Load set category values
     const categorySelector = document.getElementById('eventCat');
@@ -610,18 +686,18 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
     categorySelector.value = categoryFound ? event.category.toLowerCase() : 'personal';
 
 
-	// Set image inputs
-	const imageSelector = document.getElementById('image');
-	const imageDisplay = document.getElementById('image-display');
-	if (event.image == undefined) {
-		imageDisplay.style.display = 'none';
-		imageSelector.value = '';
-		eventModalImageLoaded = false;
-	} else {
-		imageDisplay.src = event.image;
-		imageDisplay.style.display = 'block';
-		eventModalImageLoaded = true;
-	}
+    // Set image inputs
+    const imageSelector = document.getElementById('image');
+    const imageDisplay = document.getElementById('image-display');
+    if (event.image == undefined) {
+        imageDisplay.style.display = 'none';
+        imageSelector.value = '';
+        eventModalImageLoaded = false;
+    } else {
+        imageDisplay.src = event.image;
+        imageDisplay.style.display = 'block';
+        eventModalImageLoaded = true;
+    }
 
     // Show the edit event modal
     editEventModal.style.display = 'block';
@@ -683,26 +759,26 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
 
 
 
-		// Adjust alarms list
-		if (alarmTime != undefined) {
-			//	Move insertion index to either the index of this alarm, if it
-			//	already exists, or to the end of the list
-			let index = 0;
-			while (index < alarms.length
-					&& (alarms[index].eventMonthYear != clicked.monthYear
-						|| alarms[index].eventDay != clicked.day
-						|| alarms[index].eventIndex != currentEventIndex))
-				++index;
+        // Adjust alarms list
+        if (alarmTime != undefined) {
+            //    Move insertion index to either the index of this alarm, if it
+            //    already exists, or to the end of the list
+            let index = 0;
+            while (index < alarms.length
+                    && (alarms[index].eventMonthYear != clicked.monthYear
+                        || alarms[index].eventDay != clicked.day
+                        || alarms[index].eventIndex != currentEventIndex))
+                ++index;
 
-			// Insert alarm
-			alarms[index] = {
-				eventMonthYear: clicked.monthYear,
-				eventDay: clicked.day,
-				eventIndex: currentEventIndex,
-				date: alarmTime
-			};
-			localStorage.setItem('alarms', JSON.stringify(alarms));
-		}
+            // Insert alarm
+            alarms[index] = {
+                eventMonthYear: clicked.monthYear,
+                eventDay: clicked.day,
+                eventIndex: currentEventIndex,
+                date: alarmTime
+            };
+            localStorage.setItem('alarms', JSON.stringify(alarms));
+        }
 
 
 
@@ -732,21 +808,21 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
         load(shouldSync = false); 
 
 
-		// Send backend the edited event
-		fetch('/home', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'Session': localStorage.session
-			},
-			body: JSON.stringify({
-				'type': 'insert',
-				'monthYear': clicked.monthYear,
-				'day': clicked.day,
-				'index': eventIndex,
-				'event': events[clicked.monthYear][clicked.day][eventIndex]
-			})
-		});
+        // Send backend the edited event
+        fetch('/home', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Session': localStorage.session
+            },
+            body: JSON.stringify({
+                'type': 'insert',
+                'monthYear': clicked.monthYear,
+                'day': clicked.day,
+                'index': eventIndex,
+                'event': events[clicked.monthYear][clicked.day][eventIndex]
+            })
+        });
     };
 }
 
@@ -776,8 +852,8 @@ function checkForAlarms() {
         }
     }
 
-	if (changed)
-		localStorage.setItem('alarms', JSON.stringify(alarms));
+    if (changed)
+        localStorage.setItem('alarms', JSON.stringify(alarms));
 }
 
 // Continue setting the interval as before
@@ -787,26 +863,28 @@ async function load(shouldSync = true) {
     const date = new Date();
 
     if (nav !== 0){
-		date.setDate(1);
-        date.setMonth(date.getMonth() + nav);
+        date.setDate(date.getDate() + nav * 7);
     }
 
     const day = date.getDate();
     const month = date.getMonth();
     const year = date.getFullYear();
+    
+    document.getElementById('month-text').innerText = month + 1;
+    document.getElementById('year-text').innerText = year;
 
     // Setting global date
     currentDate = date;
 
-	//Check if this month is out of sync
-	//Look into cleaning this up
+    //Check if this month is out of sync
+    //Look into cleaning this up
     if (shouldSync) {
-		// Check if should sync alarm and events
+        // Check if should sync alarm and events
         var currentHash = new TextEncoder().encode(JSON.stringify({
-			events: events[(month + 1) + '_' + year] || {},
-			alarms: alarms,
+            events: events[(month + 1) + '_' + year] || {},
+            alarms: alarms,
             categories: categories
-		}));
+        }));
         currentHash = await crypto.subtle.digest('SHA-256', currentHash);
         currentHash = btoa(String.fromCharCode(...(new Uint8Array(currentHash))))
         var syncResponse = await fetch('/home', {
@@ -818,19 +896,19 @@ async function load(shouldSync = true) {
             body: JSON.stringify({
                 type: 'sync',
                 monthYear: (month + 1) + '_' + year,
-				// Date five seconds back to avoid deleting alarms before
-				// they're seen
-				date: new Date(date - 5),
+                // Date five seconds back to avoid deleting alarms before
+                // they're seen
+                date: new Date(date - 5),
                 hash: currentHash
             })
         });
 
-		// Sync alarm and events
+        // Sync alarm and events
         if (syncResponse.status == 200) {
             // This month is out of sync, load the data it transferred and save it
-			const syncBody = await syncResponse.json();
+            const syncBody = await syncResponse.json();
 
-			alarms = syncBody.alarms;
+            alarms = syncBody.alarms;
             localStorage.setItem('alarms', JSON.stringify(alarms));
 
             categories = syncBody.categories;
@@ -840,8 +918,8 @@ async function load(shouldSync = true) {
             localStorage.setItem('events', JSON.stringify(events));
         }
 
-		// Check for share requests
-		const shareResponse = await fetch('/share', {
+        // Check for share requests
+        const shareResponse = await fetch('/share', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -852,78 +930,116 @@ async function load(shouldSync = true) {
             })
         });
 
-		if (shareResponse.status == 200)
-		{
-			const shareRequests = await shareResponse.json();
-			for (const request of shareRequests)
-			{
-				let end = request.events.length - 1;
-				const startDate = request.events[0].month + "/" + request.events[0].day + "/" + request.events[0].year;
-				const endDate = request.events[end].month + "/" + request.events[end].day + "/" + request.events[end].year;
-				const confirmation = confirm(request.username +" wants to share events " + startDate + " to " +
-				endDate +" with you, do you wish to proceed?");
+        if (shareResponse.status == 200)
+        {
+            const shareRequests = await shareResponse.json();
+            for (const request of shareRequests)
+            {
+                let end = request.events.length - 1;
+                const startDate = request.events[0].month + "/" + request.events[0].day + "/" + request.events[0].year;
+                const endDate = request.events[end].month + "/" + request.events[end].day + "/" + request.events[end].year;
+                const confirmation = confirm(request.username +" wants to share events " + startDate + " to " +
+                endDate +" with you, do you wish to proceed?");
 
-				if (confirmation)
-				{
-				
-					await fetch('/share', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json',
-							'session': localStorage.session
-						},
-						body: JSON.stringify({
-							type: 'shareAnswer',
-							index: 0,
-							accept:true
+                if (confirmation)
+                {
+                
+                    await fetch('/share', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'session': localStorage.session
+                        },
+                        body: JSON.stringify({
+                            type: 'shareAnswer',
+                            index: 0,
+                            accept:true
 
-						})
-					});
-					//alert("Share request accepted!")
-				
-					for (eventInfo of request.events)
-					{
-						const mY = eventInfo.month+"_"+eventInfo.year
-						if(events[mY] == undefined)
-						{
-							events[mY] = {};
-							events[mY][eventInfo.day] = [];
-						}
-						else if (events[mY][eventInfo.day] == undefined)
-						{
-							events[mY][eventInfo.day] = [];
-						}
-						events[mY][eventInfo.day].push(eventInfo.event);
-					}
+                        })
+                    });
+                    //alert("Share request accepted!")
+                
+                    for (eventInfo of request.events)
+                    {
+                        const mY = eventInfo.month+"_"+eventInfo.year
+                        if(events[mY] == undefined)
+                        {
+                            events[mY] = {};
+                            events[mY][eventInfo.day] = [];
+                        }
+                        else if (events[mY][eventInfo.day] == undefined)
+                        {
+                            events[mY][eventInfo.day] = [];
+                        }
+                        events[mY][eventInfo.day].push(eventInfo.event);
+                    }
         
-					localStorage.setItem("events", JSON.stringify(events))
-				}
-				else
-				{
-					await fetch('/share', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json',
-							'session': localStorage.session
-						},
-						body: JSON.stringify({
-							type: 'shareAnswer',
-							index: 0,
-							accept:false
+                    localStorage.setItem("events", JSON.stringify(events))
+                }
+                else
+                {
+                    await fetch('/share', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'session': localStorage.session
+                        },
+                        body: JSON.stringify({
+                            type: 'shareAnswer',
+                            index: 0,
+                            accept:false
 
-						})
-					});
-					alert("Share request denied.")
-				}
-			}
-			
-		}
-
-
+                        })
+                    });
+                    alert("Share request denied.")
+                }
+            }
+        }
     }
 
 
 
+    /* Weekly view */
+    const currentDay = currentDate.getDay();
+    for (let i = 0; i < 7; ++i) {
+        /* Adjust header */
+        const sectionDate = new Date(currentDate);
+        const sectionContent = document.getElementById('day' + (i + 1));
+        const sectionEventsContainer = document.querySelector('#day' + (i + 1)
+            + '> .day-event-container');
+        sectionEventsContainer.innerHTML = '';
+
+        sectionDate.setDate(currentDate.getDate() + i - currentDay + 1)
+        document.getElementById('day' + (i + 1) + '-date-text').innerText
+            = sectionDate.getMonth() + 1 + '/' + sectionDate.getDate();
+        
+        if (i + 1 == currentDay) {
+            document.querySelector('#day' + (i + 1) + ' > .day-header')
+                .classList.add('selected-cloud');
+        } else {
+            document.querySelector('#day' + (i + 1) + ' > .day-header')
+                .classList.remove('selected-cloud');
+        }
+
+        /* Adjust content */
+        const sectionEvents = events[sectionDate.getMonth() + 1 + '_'
+                + sectionDate.getFullYear()]?.[sectionDate.getDate()];
+        if (sectionEvents == undefined)
+            continue;
+        for (event of sectionEvents) {
+            const child = document.createElement('button');
+            child.innerText = event.title;
+            child.style.borderColor = categories[event.category];
+            sectionEventsContainer.appendChild(child);
+        }
+    };
+
+
+
+
+
+
+    /* Monthly view
     const firstDayofMonth = new Date(year, month, 1);
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
@@ -940,13 +1056,13 @@ async function load(shouldSync = true) {
 
     calendar.innerHTML = '';
 
-	
-	monthYear = (month + 1) + '_' + year;
+    
+    monthYear = (month + 1) + '_' + year;
     for(let i = 1; i <= paddingDays + daysInMonth; i++){
         const daySquare = document.createElement('div');
 
         daySquare.classList.add('day');
-		
+        
         if (i > paddingDays) {
             daySquare.innerText = i - paddingDays;
 
@@ -954,7 +1070,7 @@ async function load(shouldSync = true) {
                 daySquare.id = 'currentDay';
             }
         
-			let eventForDay;
+            let eventForDay;
             if (events[monthYear] != undefined && events[monthYear][i - paddingDays] != undefined)
                 eventForDay = events[monthYear][i - paddingDays];
             else
@@ -971,8 +1087,8 @@ async function load(shouldSync = true) {
                 daySquare.appendChild(eventDiv);
             });
 
-			daySquare.addEventListener('click', () => openModal(monthYear,
-					i - paddingDays));
+            daySquare.addEventListener('click', () => openModal(monthYear,
+                    i - paddingDays));
         } else {
             daySquare.classList.add('padding');
         }
@@ -983,21 +1099,22 @@ async function load(shouldSync = true) {
             openModal(monthYear, i - paddingDays);
         });
     }
+    */
 }
 
 
 function loadEditModalImage() {
-	const selector = document.getElementById('image');
-	const display = document.getElementById('image-display');
+    const selector = document.getElementById('image');
+    const display = document.getElementById('image-display');
 
-	const reader = new FileReader();
-	reader.onload = () => {
-		display.src = reader.result;
-		display.style.display = 'block';
-	 	eventModalImageLoaded = true;
-	};
+    const reader = new FileReader();
+    reader.onload = () => {
+        display.src = reader.result;
+        display.style.display = 'block';
+         eventModalImageLoaded = true;
+    };
 
-	reader.readAsDataURL(selector.files[0]);
+    reader.readAsDataURL(selector.files[0]);
 }
 
 
@@ -1008,7 +1125,7 @@ function initButtons() {
     });
     
     document.getElementById('backButton').addEventListener('click', () => {
-        nav--;        
+        nav--;
         load();
     });
 
@@ -1017,73 +1134,21 @@ function initButtons() {
     document.getElementById('deleteButton').addEventListener('click', deleteEvent);
     document.getElementById('closeButton').addEventListener('click', closeModal);
     document.getElementById('exportButton').addEventListener('click', exportEvents);
-	document.getElementById('searchButton').addEventListener('click', searchEvents);
-	document.getElementById('shareButton').addEventListener('click', shareEvents);
-	document.getElementById('image').addEventListener('change', loadEditModalImage);
-	document.getElementById('image-display').addEventListener('error', function() {
+    document.getElementById('searchButton').addEventListener('click', searchEvents);
+    document.getElementById('shareButton').addEventListener('click', shareEvents);
+    document.getElementById('image').addEventListener('change', loadEditModalImage);
+    document.getElementById('image-display').addEventListener('error', function() {
         const imageSelector = document.getElementById('image');
-	    const imageDisplay = document.getElementById('image-display');
+        const imageDisplay = document.getElementById('image-display');
         imageDisplay.style.display = 'none';
-		imageSelector.value = '';
-		eventModalImageLoaded = false;
+        imageSelector.value = '';
+        eventModalImageLoaded = false;
     });
-    document.getElementById('submitCategory').addEventListener('click', function() {
-        const newName = document.getElementById('newCategoryName').value.trim().toLowerCase();
-        const categoryDropdown = document.getElementById('eventCat');
-        const newCatSection = document.getElementById('newCategory');
-        const color = document.getElementById('categoryColor');
-
-        // check if name is in categories
-        var categoryFound = false;
-        for (key in categories)
-        {
-            if (key.toLowerCase() == newName)
-            {
-                categoryDropdown.value = newName;
-                newCatSection.style.display = 'none';
-                return;
-            }
-        }
-
-        // add new category to dropwdown
-        if(newName)
-        {
-            const option = document.createElement('option');
-            option.value = newName;
-            option.textContent = newName;
-            categoryDropdown.insertBefore(option, categoryDropdown.querySelector('option[value="custom"]'));
-            categoryDropdown.value = newName;
-            newCatSection.style.display = 'none';
-            categories[newName] = color.value;
-            localStorage.setItem('categories', JSON.stringify(categories));
-            fetch('/home', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Session': localStorage.session
-                },
-                body: JSON.stringify({
-                    'type': 'insertCategory',
-                    'label': newName,
-                    'color': color.value
-                })
-            });
-        }
-    });
-    
-    const catDropdown = document.getElementById('eventCat');
-    for (key in categories) {
-        if (key == 'work' || key == 'personal' || key == 'school')
-          continue;
-        const option = document.createElement('option');
-        option.value = key.toLowerCase();
-        option.textContent = key;
-        catDropdown.insertBefore(option, catDropdown.querySelector('option[value="custom"]'));
-    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    initButtons();
-    getWeeklyNote();
+    //initButtons();
+    //getWeeklyNote();
+    loadCategories();
     load();
 });

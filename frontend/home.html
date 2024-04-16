@@ -38,14 +38,6 @@
         <button id="shareButton">Share</button>
       </div>
 	  
-      <div id="searchModal" class="modal">
-        <div class="searchResults">
-          <h2>Search Results</h2>
-          <ul id="searchResultsList"></ul>
-        </div>
-        <button id="exportSearchButton">Export</button>
-        <button id="closeSearchButton">Close</button>
-      </div>
       -->
 
       <!--
@@ -83,32 +75,78 @@
         <img id = 'desktop-weekly' src = "weekly-view.png" draggable = 'false'>
         <img id = 'mobile-weekly' src = "weekly-view-mobile.png" draggable = 'false'>
 
-        <div class = 'weekly-arrows'>
-          <img id = 'last-week' src = "left-arrow.png" draggable = 'false'>
-          <img id = 'next-week' src = "right-arrow.png" draggable = 'false'>
+        <div id = 'weekly-arrows'>
+          <img id = 'last-week' src = "left-arrow.png" draggable = 'false'
+              onclick="--nav;load()">
+          <img id = 'next-week' src = "right-arrow.png" draggable = 'false'
+              onclick="++nav;load()">
         </div>
 
         <div class = 'weekday'>
-          <div class='day-header' id='day1'>
-            <p>Mon</p>
+          <div id='day1' class='day-section'>
+            <div class='day-header' onclick='openModal(1)'>
+              <p>Mon</p>
+              <p class='day-header-date'
+                id='day1-date-text'></p>
+            </div>
+            <div class='day-event-container'>
+            </div>
           </div>
-          <div class='day-header' id='day2'>
-            <p>Tue</p>
+          <div id='day2' class='day-section'>
+            <div class='day-header' onclick='openModal(2)'>
+              <p>Tue</p>
+              <p class='day-header-date'
+                id='day2-date-text'></p>
+            </div>
+            <div class='day-event-container'>
+            </div>
           </div>
-          <div class='day-header' id='day3'>
-            <p>Wed</p>
+          <div id='day3' class='day-section'>
+            <div class='day-header' onclick='openModal(3)'>
+              <p>Wed</p>
+              <p class='day-header-date'
+                id='day3-date-text'></p>
+            </div>
+            <div class='day-event-container'>
+            </div>
           </div>
-          <div class='day-header' id='day4'>
-            <p>Thu</p>
+          <div id='day4' class='day-section'>
+            <div class='day-header' onclick='openModal(4)'>
+              <p>Thu</p>
+              <p class='day-header-date'
+                id='day4-date-text'></p>
+            </div>
+            <div class='day-event-container'>
+            </div>
           </div>
-          <div class='day-header' id='day5'>
-            <p>Fri</p>
+          <div id='day5' class='day-section'>
+            <div class='day-header' onclick='openModal(5)'>
+              <p>Fri</p>
+              <p class='day-header-date'
+                id='day5-date-text'></p>
+            </div>
+            <div class='day-event-container'>
+            </div>
           </div>
-          <div class='day-header' id='day6'>
-            <p>Sat</p>
-          </div>
-          <div class='day-header' id='day7'>
-            <p>Sun</p>
+          <div id='weekend-days'>
+            <div id='day6' class='day-section'>
+              <div class='day-header' onclick='openModal(6)'>
+                <p>Sat</p>
+                <p class='day-header-date'
+                  id='day6-date-text'></p>
+              </div>
+              <div class='day-event-container'>
+              </div>
+            </div>
+            <div id='day7' class='day-section'>
+              <div class='day-header' onclick='openModal(7)'>
+                <p>Sun</p>
+                <p class='day-header-date'
+                  id='day7-date-text'></p>
+              </div>
+              <div class='day-event-container'>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -118,22 +156,23 @@
       </div>
 
       <div class = 'clickables'>
-        <img id = 'magnif-glass' src = "search.png" draggable = 'false'>
-        <img id = 'apple' src = "apple.png" draggable = 'false'>
+        <div id=nav-bar> <!-- Top Right Section -->
+          <img id = 'apple' src = "apple.png" draggable = 'false'>
+          <div id=search-widget>
+            <input type=search id='search-input'
+              placeholder="Enter phrase..."/>
+            <input type=date id='search-start-date'/>
+            <input type=date id='search-end-date'/>
+            <input type=button id='search-submit' value="Go"
+              onclick="searchEvents()"/>
+          </div>
+          <img id = 'magnif-glass' src = "search.png" draggable = 'false'
+            onclick="toggleSearchWidget()">
+        </div>
         <img id = 'to-reports' src = "left-arrow-acorn.png" draggable = 'false'>
         <img id = 'add-button' src = "add.png" draggable = 'false'>
       </div>
 
-
-      <!--
-      <div class='weekday' id='weekday-0'>Sunday</div>
-      <div class='weekday' id='weekday-1'>Monday</div>
-      <div class='weekday' id='weekday-2'>Tuesday</div>
-      <div class='weekday' id='weekday-3'>Wednesday</div>
-      <div class='weekday' id='weekday-4'>Thursday</div>
-      <div class='weekday' id='weekday-5'>Friday</div>
-      <div class='weekday' id='weekday-6'>Saturday</div>
-      -->
 
       <!-- Exporting events -->
       <!--<div id="exportEvents">
@@ -155,8 +194,8 @@
     
       <h2>New Event</h2>
       <input id="eventTitleInput" placeholder="Event Title" />
-	    <button id="saveButton">Add</button>
-      <button id="cancelButton">Close</button>
+	    <button id="saveButton" onclick="addEvent()">Add</button>
+      <button id="cancelButton" onclick="closeModal()">Close</button>
 	  
     </div>
 
@@ -177,7 +216,7 @@
         <label for="newCategoryName">Category Name:</label>
         <input type="text" id="newCategoryName" placeholder="Enter category name"/>
         <input type="color" id ="categoryColor" value="#444444"/>
-        <button id="submitCategory">Submit</button>
+        <button id="submitCategory" onclick="addCategory()">Submit</button>
       </div> 
 
       <!-- Time of event -->
@@ -221,6 +260,14 @@
 
     </div>
 
+    <div id="searchModal" class="modal">
+      <div class="searchResults">
+        <h2>Search Results</h2>
+        <ul id="searchResultsList"></ul>
+      </div>
+      <button id="exportSearchButton">Export</button>
+      <button id="closeSearchButton">Close</button>
+    </div>
     <div id="modalBackDrop"></div>
     <script src="./home.js"></script>
   </body>

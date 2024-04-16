@@ -94,6 +94,16 @@
     }
 
     /* navigational arrows on weekly calendar */
+    #weekly-arrows {
+      position: relative;
+      z-index: 5;
+    }
+    #last-week:hover, #next-week:hover {
+      filter: hue-rotate(200deg);
+    }
+    #last-week:active, #next-week:active {
+      filter: hue-rotate(200deg) brightness(.7);
+    }
     #last-week{
         z-index: 4;
         position: relative;
@@ -113,12 +123,19 @@
    
     }
 
-    .day-header {
+    .day-section {
         position: relative;
         top: -635px;
         left: 360px;
         margin: 10px 5px 0px 10px;
-        width: 170px;
+        width: 167px;
+        height: 150px;
+        z-index: 4;
+    }
+
+    .day-header {
+        position: relative;
+        width: 167px;
         height: 150px;
         z-index: 4;
 
@@ -128,27 +145,121 @@
 
     .day-header > p {
       text-align: center;
-      padding-top: 9px;
+      padding-top: 34px;
+      padding-bottom: 0px;
+      margin-bottom: 0px;
       padding-right: 8px;
       font-size: 30px;
     }
 
+    .day-header > .day-header-date {
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    .selected-cloud {
+      filter: hue-rotate(230deg);
+    }
+
+    .day-section:hover > .day-header {
+      filter: hue-rotate(70deg);
+    }
+
+    .day-section:hover > .day-header.selected-cloud {
+      filter: hue-rotate(30deg);
+    }
+
+    .day-section:active > .day-header {
+      filter: hue-rotate(70deg) brightness(.7);
+    }
+
+    .day-section:active > .day-header.selected-cloud {
+      filter: hue-rotate(30deg) brightness(.7);
+    }
+
+
+
+    #weekend-days > .day-section{
+      height: 225px;
+      left: 385px;
+    }
+
+    .day-event-container > button {
+      width: 100%;
+      padding: 1px;
+      margin: 2px;
+      margin-left: -1px;
+      border-style: solid;
+      border-width: 10px;
+    }
+    #weekend-days > .day-section > .day-event-container > button {
+      margin-left: -10px;
+    }
+
+
     /* start of clickables */
-    #apple {
-        position: absolute;
+    #nav-bar {
         margin-right:10px;
-        width: 80px;
-        top: 0;
-        right: 0;
+        top: 12px;
+        right: 12px;
+        height: 60px;
+
+        display: flex;
+        flex-flow: row-reverse;
+        flex-direction: left;
+        position: absolute;
+    }
+
+
+    #apple {
+        position: relative;
+        margin: 5px;
     }
 
     #magnif-glass {
-        position: absolute;
-        width: 45px;
-        max-width: 100%;
-        height: auto;
-        top:9px;
-        right:100px;
+        position: relative;
+        margin: 5px;
+    }
+    #magnif-glass:hover {
+      opacity: .7;
+    }
+    #magnif-glass:active {
+      opacity: 1;
+      filter: brightness(.7);
+    }
+
+    #search-widget {
+      position: relative;
+      width: 460px;
+      display: none;
+    }
+    #search-input {
+      height: 26px;
+      width: 400px;
+      left: 0;
+      position: absolute;
+      top: 6px;
+    }
+    #search-start-date {
+      top: 35px;
+      position: absolute;
+      left: 0;
+      height: 20px;
+      width: 190px;
+    }
+    #search-end-date {
+      position: absolute;
+      left: 203px;
+      top: 35px;
+      height: 20px;
+      width: 190px;
+    }
+    #search-submit {
+      height: 50px;
+      width: 50px;
+      left: 410px;
+      position: absolute;
+      top: 8px;
     }
 
     #to-reports{
@@ -272,6 +383,9 @@
         top:60px;
         right:0px;
     }
+    #magnif-glass:hover {
+      opacity: .8;
+    }
 
     #to-reports{
         position: absolute;
@@ -288,16 +402,75 @@
         width: 9%;
     }
 
-    #last-week{
+    #weekly-arrows {
+      position: relative;
+      z-index: 5;
+    }
+    #last-week:hover, #next-week:hover {
+      filter: hue-rotate(200deg);
+    }
+    #last-week:active, #next-week:active {
+      filter: hue-rotate(200deg) brightness(.7);
+    }
+    #last-week {
         position: absolute;
         bottom: 0px;
         right: 50px;
         width: 8%;
     }
-    #next-week{
+    #next-week {
         position: absolute;
         bottom: 0px;
         right: 5px;
         width: 8%;
     }
 }
+
+#modalBackDrop {
+  display: none;
+  top: 0px;
+  left: 0px;
+  z-index: 10;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  background-color: rgba(0,0,0,0.8);
+}
+
+#modalBackDrop.active {
+  display: block; 
+}
+
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 100; 
+  left: 50%;
+  top: 50%; 
+  transform: translate(-50%, -50%); 
+  width: 300px;
+  background-color: #fff; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px; 
+  padding: 20px; 
+}
+
+.modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+#newEventModal, #editEventModal, #weeklyNoteModal {
+  display: none;
+  z-index: 20;
+  padding: 25px;
+  background-color: #e8f4fa;
+  box-shadow: 0px 0px 3px black;
+  border-radius: 5px;
+  width: 350px;
+  top: 50%;
+  left: calc(50% - 175px);
+  position: absolute;
+  font-family: sans-serif;
+}
+
