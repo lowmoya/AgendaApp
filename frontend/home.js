@@ -572,52 +572,48 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
     endTimeInput.value = event.endTime || '';
 
     // Set the alarm-related fields
-    const alarmSelect = document.getElementById('alarmTimeSelect');
-    const alarmDate = document.getElementById('customAlarmDate');
+    const alarmSelect = document.getElementById('edit-event-alarm');
+
+    const customAlarmWidget = document
+            .getElementById('edit-event-custom-alarm-widget');
+    const alarmTimeInput = document.
+        getElementById('edit-event-custom-alarm-time');
+    const alarmDateInput = document.
+        getElementById('edit-event-custom-alarm-date');
+
     if (newEvent || event.alarm.type != 'custom') {
         alarmSelect.value = newEvent ? 'none' : event.alarm.type;
 
         // Hide custom event panel
-        document.getElementById('alarmHeading').style.display = 'none';
-        document.getElementById('customAlarmDate').style.display = 'none';
-        document.getElementById('customAlarmTime').style.display = 'none';
+        customAlarmWidget.style.display = 'none';
 
         // Set default values for custom alarm
         const eventDate = clicked.monthYear.split('_');
-        alarmDate.value = eventDate[1] + '-'
+        alarmDateInput.value = eventDate[1] + '-'
             + (eventDate[0] < 10 ? '0' + eventDate[0] : eventDate[0]) + '-'
             + (clicked.day < 10 ? '0' + clicked.day : clicked.day);
-        alarmTime.value = '12:00';
+        alarmTimeInput.value = '12:00';
     } else {
         // Load values for custom event panel
         alarmSelect.value = 'custom';
         const date = new Date(event.alarm.time);
-        alarmDate.value = date.getFullYear() + '-'
+        alarmDateInput.value = date.getFullYear() + '-'
             + (date.getMonth() < 9 ? '0' + (date.getMonth() + 1)
                 : date.getMonth() + 1)
             + '-' + (date.getDate() < 10 ? '0' + date.getDate() : date.getDate());
-        alarmTime.value =
+        alarmTimeInput.value =
             (date.getHours() < 10 ? '0' + date.getHours() : date.getHours())
             + ':' + (date.getMinutes() < 10 ? '0' + date.getMinutes()
                 : date.getMinutes());
         
         // Show custom event panel
-        document.getElementById('alarmHeading').style.display = 'block';
-        document.getElementById('customAlarmDate').style.display = 'block';
-        document.getElementById('customAlarmTime').style.display = 'block';
+        customAlarmWidget.style.display = 'inline-block';
     }
 
     alarmSelect.addEventListener('change', function() {
-        const isCustomSelected = this.value === 'custom';
-
         // Set the display of the custom alarm input fields based on the selection
-        document.getElementById('alarmHeading').style.display = isCustomSelected ? 'block' : 'none';
-        document.getElementById('customAlarmDate').style.display = isCustomSelected ? 'block' : 'none';
-        document.getElementById('customAlarmTime').style.display = isCustomSelected ? 'block' : 'none';
-
-        if (isCustomSelected) {
-            document.getElementById('alarmHeading').textContent = 'Set Custom Alarm:';
-        }
+        customAlarmWidget.style.display = this.value === 'custom'
+            ? 'inline-block' : 'none';
     });
 
     // Default custom category values
@@ -720,14 +716,9 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
         }
     
         // Determine if the custom alarm inputs should be shown or hidden
-        const isCustom = alarmType === 'custom';
-        document.getElementById('alarmHeading').style.display = isCustom ? 'block' : 'none';
-        document.getElementById('customAlarmDate').style.display = isCustom ? 'block' : 'none';
-        document.getElementById('customAlarmTime').style.display = isCustom ? 'block' : 'none';
-    
-        if (isCustom) {
-            const customAlarmDate = document.getElementById('customAlarmDate').value;
-            const customAlarmTime = document.getElementById('customAlarmTime').value;
+        if (alarmType === 'custom') {
+            const customAlarmDate = alarmDateInput.value;
+            const customAlarmTime = alarmTimeInput.value;
     
             // Check if both date and time inputs are provided
             if (customAlarmDate && customAlarmTime) {
@@ -739,7 +730,7 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
                 const localISOTime = `${alarmTime.getHours().toString().padStart(2, '0')}:${alarmTime.getMinutes().toString().padStart(2, '0')}`;
                 alarmTime = `${localISODate}T${localISOTime}:00.000`;
             } 
-        } else if (alarmType != 'none' && !isCustom) {
+        } else if (alarmType != 'none') {
             const today = new Date(); 
             // Split the time and convert to numbers
             const [hours, minutes] = updatedStartTime.split(':').map(Number); 

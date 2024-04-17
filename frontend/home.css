@@ -36,7 +36,7 @@
     width: 140px;
     font: 20px 'Madimi One', sans-serif;
     border-style: solid;
-    border-color: darkgray;
+    border-color: gray;
     border-width: 2px;
 }
 .ok-button:hover, .no-button:hover, .submit-button:hover {
@@ -403,7 +403,7 @@
     #newEventModal > input {
         font: 20px 'Madimi One', sans-serif;
         border-style: solid;
-        border-color: darkgray;
+        border-color: gray;
         border-width: 2px;
     }
     #newEventModal > .ok-button {
@@ -436,6 +436,10 @@
     /* Edit event modal */
     #editEventModalHeader > input, #editEventModalHeader > select {
         font: 22px 'Madimi One', sans-serif;
+        background-color: whitesmoke;
+        border-color: gray;
+        border-width: 2px;
+        border-style: solid;
     }
 
     #editEventModal {
@@ -443,6 +447,10 @@
     }
     #editEventModal > select, #editEventModal > input,
             #editEventModal > textarea {
+        background-color: whitesmoke;
+        border-color: gray;
+        border-width: 2px;
+        border-style: solid;
         font: 16px 'Madimi One', sans-serif;
         margin: 5px auto;
     }
@@ -462,8 +470,12 @@
       align-items: center;
       margin: 5px auto;
     }
-    #newCategory > input {
+    #newCategory > input, #edit-event-custom-alarm-widget > input{
       font: 16px 'Madimi One', sans-serif;
+      background-color: whitesmoke;
+      border-color: gray;
+      border-width: 2px;
+      border-style: solid;
       padding: 2px;
       margin-left:5px;
     }
