@@ -58,7 +58,7 @@
 
 
 /* Font for month and year */
-.top-text{
+#top-text{
     color: #3A483B;
     font: 50px 'Madimi One', sans-serif;
     text-shadow: 0px 4px 2px rgba(0, 0, 0, .25), 
@@ -73,8 +73,19 @@
                -2px 0px white, 2px 0px white, 0px -2px white, 0px 2px white;
 
 
+	position: absolute;
+	top: 0;
     display: flex;
+	width: 100%;
+	height: 100%;
+	padding-left: 2.37%;
     flex-flow: row;
+}
+
+/* General */
+html {
+	height: 100%;
+	width: 100%;
 }
 
 /* Desktop view */
@@ -82,20 +93,24 @@
     #mobile-weekly {
         display: none;
     }
-    #add-button{
-        display: none;
-    }
-
 
     body {
         display: flex;
+		align-items: center;
+
         user-select: none;
+		width: 100%;
+		height: 100%;
+		margin: 0;
+
         background-color: #DADFDB;
-        background-size: cover;
-        background-position: top;
-        background-repeat: no-repeat;
-        overflow: hidden;
+		
+		background-image: url('main_tree.png');
+        background-size: auto;
+        background-position: top left;
+		background-repeat: no-repeat;
     }
+
     #month-text{
         position: absolute;
         top:10px;
@@ -111,32 +126,20 @@
         margin: 10px 10px 10px 10px;
     }
 
-    #tree_body {
-        position: absolute;
-        top: 0; 
-        left: 0;
-        max-width: 100%; 
-        max-height: 100%; 
-    }
 
-    #leaves {
-        position: fixed;
-        z-index:2;  /* puts img in front of calendar view */
-    
-        top: 204px; 
-        left: 147px;
-        max-height: 50%; 
-        max-width: 20%;
-    }
+	#weekly-section {
+		position: absolute;
+		top 80px;
+		left: 25%;
+		
+		width: 60%;
+	}
 
     #desktop-weekly {
         position: relative;
         z-index:1; /* puts img in front of background */
-    
-        top: 80px;
-        left: 320px;
-        max-height:660px;
-        width: 1210px;
+		width: 100%;
+		border-radius: 20px;
     }
 
     /* navigational arrows on weekly calendar */
@@ -171,30 +174,30 @@
 
     .day-section {
         position: relative;
-        top: -635px;
-        left: 360px;
-        margin: 10px 5px 0px 10px;
-        width: 167px;
-        height: 150px;
+        width: 15.55%;
+        height: 100%;
         z-index: 4;
+		margin-right: .25%;
     }
 
     .day-header {
         position: relative;
-        width: 167px;
-        height: 150px;
+        width: 100%;
+		height: fit-content;
+		padding-right: 2px;
         z-index: 4;
-
-        background-image: url('cloud.png');
-        background-size: cover;
     }
 
+	.day-header > img {
+		width: 100%;
+	}
+
     .day-header > p {
+		position:absolute;
+		top: 16%;
+		left: -4%;
+		width: 100%;
         text-align: center;
-        padding-top: 34px;
-        padding-bottom: 0px;
-        margin-bottom: 0px;
-        padding-right: 8px;
         font-size: 30px;
     }
 
@@ -224,21 +227,24 @@
     }
 
 
+	#weekend-days {
+		position: relative;
+		left: 1.05%;
+		width: 15.65%;
+		height: 100%;
+	}
 
     #weekend-days > .day-section{
-        height: 225px;
-        left: 385px;
+        height: 50%;
+		width: 100%;
         margin-left: 0;
     }
 
     .day-event-container {
-        max-height: 380px;
+        max-height: 77.8%;
         overflow-y: auto;
         overflow-x: clip;
-    }
-
-    #weekend-days > .day-section > .day-event-container {
-        max-height: 138px;
+		scrollbar-color: #495f4b #b97f45;
     }
 
 
@@ -263,12 +269,27 @@
     }
 
 
+	#top-text {
+		position: absolute;
+		top: 0;
+		left: 5%;
+	}
+    #month-text, #year-text{
+		position: relative;
+		align-content: center;
+		margin: 0px 10px 0px 10px;
+		top: 4px;
+		left: 0;
+		display: inline-block;
+    }
+
     /* start of clickables */
     #nav-bar {
         margin-right:10px;
-        top: 12px;
+        top: 8px;
         right: 12px;
         height: 60px;
+		z-index: 5;
 
         display: flex;
         flex-flow: row-reverse;
@@ -329,14 +350,6 @@
       top: 8px;
     }
 
-    #to-reports{
-        position: absolute;
-        max-width: 100%;
-        margin: 10px 10px 20px 10px;
-        height: 100px;
-        left: 180px;
-        top:  320px;
-    }
 
     .modal {
         display: none; 
@@ -469,18 +482,21 @@
         overflow: hidden;
     }
 
-    #month-text{
-    position: absolute;
-    right: 20%;
-    top: 0px;
-    align-content: center;
-    margin: 0px 10px 0px 10px;
-    }
 
+
+	#top-text {
+		position: absolute;
+		top: 0;
+		left: 5%;
+	}
+    #month-text{
+		position: relative;
+		align-content: center;
+		margin: 0px 10px 0px 10px;
+    }
     #year-text{
-        position: absolute;
-        top:0px;
-        right: 75%;
+        position: relative;
+		align-content: center;
         margin-left: 10px;
     }
 
