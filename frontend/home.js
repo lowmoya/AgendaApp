@@ -226,22 +226,50 @@ function searchEvents() {
       const eventsListElement = document.getElementById("searchResultsList");
       // Clear previous results
       eventsListElement.innerHTML = "";
-      eventsList.forEach((event) => {
+      eventsList.forEach((entry) => {
         const button = document.createElement("button");
-        button.innerText = `${event.month}/${event.day}/${event.year}: ${event.title}`;
+        const date = document.createElement("p");
+        const title = document.createElement("p");
+        const notes = document.createElement("p");
+
+        date.innerText = `${entry.month}/${entry.day}/${entry.year}`;
+        date.classList.add('search-event-button-date');
+        title.innerText = entry.event.title;
+        title.classList.add('search-event-button-title');
+        notes.innerText = entry.event.notes;
+        notes.classList.add('search-event-button-notes');
+
+        button.appendChild(date);
+        button.appendChild(title);
+        button.appendChild(notes);
+        button.style.borderColor = categories[entry.event.category];
+
+        if (entry.event.imageContent != undefined) {
+          const image = document.createElement("img");
+          image.src = entry.event.imageContent;
+          button.appendChild(image);
+        }
+
         button.addEventListener("click", () => {
-            const monthYear = event.month+"_"+event.year
+            const monthYear = entry.month+"_"+entry.year
             searchModal.style.display = "none";
-            backDrop.style.display = "none";
-            openModal(monthYear,event.day);
+            
+            clicked.events = events[monthYear][entry.day];
+            clicked.monthYear = monthYear;
+            clicked.day = entry.day;
+            showEditEventModal(clicked, entry.index, entry.event);
         });
         eventsListElement.appendChild(button);
       });
 
-      exportButton.onclick = () =>
-        {
-            eventsList.forEach((event) => {
-                txt += `Date: ${event.month}/${event.day}/${event.year}\nTitle: ${event.title}\nNotes: ${event.notes}\n\n`;
+      exportButton.onclick = () => {
+            eventsList.forEach((entry) => {
+              txt += `Date: ${entry.month}/${entry.day}/${entry.year}\nTitle: ${entry.event.title}\nCategory: ${entry.event.category}\n`;
+              if (entry.event.notes.length != 0)
+                txt += 'Notes: ' + entry.event.notes + '\n';
+              if (entry.event.imagePath != undefined)
+                txt += 'Image: ' + entry.event.imagePath + '\n';
+              txt += '\n';
             });
             const txtBlob = new Blob([txt], {type: 'text/plain'});
             // download url
@@ -256,7 +284,6 @@ function searchEvents() {
             document.body.removeChild(url);
             URL.revokeObjectURL(url.href);
         }
-
     })
     .catch((error) => {
       console.error("Error:", error);

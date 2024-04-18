@@ -492,6 +492,51 @@ html {
       padding: 2px;
       margin-left:5px;
     }
+
+
+	.searchResults {
+		height: 100%;
+	}
+
+	#searchResultsList {
+		max-height: 80%;
+		overflow-y: scroll;
+		scrollbar-color: #495f4b #b97f45;
+	}
+    #searchResultsList > button {
+        font: 18px 'Madimi One', sans-serif;
+        background-color: white;
+        border-style: solid;
+        border-width: 12px;
+
+		width: 100%;
+        height: fit-content;
+        margin: 4px 0;
+    }
+    #searchResultsList > button:hover {
+        filter: brightness(.70);
+    }
+    #searchResultsList > button:active {
+        filter: brightness(.40);
+    }
+    #searchResultsList > button > p {
+		width: 100%;
+		margin: 2px;
+    }
+	#searchResultsList > button > img {
+		height: 60px;
+	}
+	.search-event-button-date {
+		color: gray;
+		font-size: 14px;
+    }
+	.search-event-button-title {
+		font-size: 20px;
+    }
+	.search-event-button-notes {
+		font-size: 16px;
+		color: slategray;
+    }
 }
 
 /* Mobile view */

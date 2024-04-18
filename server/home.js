@@ -227,8 +227,8 @@ async function homeAPI(req, res, id, body)
 								year: year,
 								month: month,
 								day: day,
-								title: event.title,
-								notes: event.notes
+                index:  i,
+                event: event
 							});
 						}
 					}
@@ -399,7 +399,14 @@ async function shareAPI(req, res, id, body)
 					calendar[mY][eventInfo.day] = [];
 				}
 				//calendar[mY][eventInfo.day].alarm.type = 'none';
+
 				calendar[mY][eventInfo.day].push(eventInfo.event);
+        alarms.push({
+          eventMonthYear: mY,
+          eventDay: eventInfo.day,
+          eventIndex: calendar[mY][eventInfo.day].length,
+          date: eventInfo.alarm.time
+        });
 			}
 			share_requests.splice(body.index,1);
 

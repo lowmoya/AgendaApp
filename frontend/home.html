@@ -46,6 +46,8 @@
           onclick="toggleSearchWidget()">
       </div>
 
+      <div id="modalBackDrop"></div>
+
       <!-- Right pane with the calendar contents -->
       <div id='weekly-section'>
         <img id = 'desktop-weekly' src = "weekly-view.png" draggable = 'false'>
@@ -114,9 +116,6 @@
           </div>
         </div>
 
-
-
-
       <!-- Exporting events -->
       <!--<div id="exportEvents">
         <div id="exportTitle">Export Events</div>
@@ -144,8 +143,7 @@
     <!-- New modal for editing existing events -->
     <div id="editEventModal" class="modal">
       <div id="editEventModalHeader" style="text-align: center">
-		<input id="editEventTitleInput" placeholder="Event Title" />
-
+        <input id="editEventTitleInput" placeholder="Event Title" />
         <select id="eventCat">
             <option value="personal">personal</option>
             <option value="school">school</option>
@@ -157,9 +155,9 @@
       <div id="newCategory">
         <label for="newCategoryName">Category:</label>
         <input type="text" id="newCategoryName"
-			placeholder="Enter category name"/>
-		<input type="color" id="categoryColor" style='width:28px;height:28px'
-			value="#444444" />
+          placeholder="Enter category name"/>
+        <input type="color" id="categoryColor" style='width:28px;height:28px'
+          value="#444444" />
       </div> 
 
       <!-- Time of event -->
@@ -216,12 +214,16 @@
     <div id="searchModal" class="modal">
       <div class="searchResults">
         <h2>Search Results</h2>
-        <ul id="searchResultsList"></ul>
+        <div id="searchResultsList"></div>
       </div>
-      <button id="export-search-button">Export</button>
-      <button id="close-search-button">Close</button>
+      <div style='text-align: center'>
+        <button id="export-search-button" class='submit-button' >Export</button>
+        <button id="close-search-button" class='no-button' >Close</button>
+      </div>
     </div>
-    <div id="modalBackDrop"></div>
-    <script src="./home.js"></script>
   </body>
+
+  <footer>
+    <script src="./home.js"></script>
+  </footer>
 </html>
