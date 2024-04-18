@@ -25,12 +25,6 @@
         <div id = 'year-text'>Year</div>
       </div>
 
-      <div id = 'weekly-arrows'>
-        <img id = 'last-week' src = "left-arrow.png" draggable = 'false'
-          onclick="--nav;load()">
-        <img id = 'next-week' src = "right-arrow.png" draggable = 'false'
-          onclick="++nav;load()">
-      </div>
 
       <div id=nav-bar>
         <img id = 'apple' src = "apple.png" draggable = 'false'>
@@ -51,6 +45,13 @@
       <!-- Right pane with the calendar contents -->
       <div id='weekly-section'>
         <img id = 'desktop-weekly' src = "weekly-view.png" draggable = 'false'>
+
+        <div id = 'weekly-arrows'>
+          <img id = 'last-week' src = "left-arrow.png" draggable = 'false'
+            onclick="--nav;load()">
+          <img id = 'next-week' src = "right-arrow.png" draggable = 'false'
+            onclick="++nav;load()">
+        </div>
 
         <div class = 'weekday'>
           <div id='day1' class='day-section'>

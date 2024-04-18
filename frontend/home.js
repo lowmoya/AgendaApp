@@ -1050,7 +1050,7 @@ async function load(shouldSync = true) {
         document.getElementById('day' + (i + 1) + '-date-text').innerText
             = sectionDate.getMonth() + 1 + '/' + sectionDate.getDate();
         
-        if (i + 1 == currentDay) {
+        if (nav == 0 && i + 1 == currentDay) {
             document.querySelector('#day' + (i + 1) + ' > .day-header')
                 .classList.add('selected-cloud');
         } else {

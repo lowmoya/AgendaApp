@@ -144,6 +144,7 @@ html {
 		width: 60%;
 	}
 
+
     #desktop-weekly {
         position: relative;
         z-index:1; /* puts img in front of background */
@@ -153,9 +154,12 @@ html {
 
     /* navigational arrows on weekly calendar */
     #weekly-arrows {
-      position: relative;
+      position: absolute;
+	  top: -20px;
+	  left: 60%;
       z-index: 5;
     }
+	
     #last-week:hover, #next-week:hover {
       filter: hue-rotate(200deg);
     }
@@ -167,18 +171,13 @@ html {
         position: relative;
         max-width: 100%;
         max-height: 100%;
-        top: -590px;
-        left: 1030px;
-        }
+    }
 
     #next-week{
         z-index: 4;
         position: relative;
         max-width: 100%;
         max-height: 100%;
-        top: -590px;
-        left: 1030px;
-   
     }
 
     .day-section {
@@ -681,10 +680,6 @@ html {
         width: 9%;
     }
 
-    #weekly-arrows {
-      position: relative;
-      z-index: 5;
-    }
     #last-week:hover, #next-week:hover {
       filter: hue-rotate(200deg);
     }
