@@ -56,6 +56,15 @@
     background-color: #4fd864;
 }
 
+.updateCat-button{
+    background-color: #c25eae;
+    width: 140px;
+    font: 20px 'Madimi One', sans-serif;
+    border-style: solid;
+    border-color: darkgray;
+    border-width: 2px;
+  }
+
 
 /* Font for month and year */
 #top-text{
@@ -222,7 +231,7 @@ html {
         filter: hue-rotate(310deg);
     }
 
-     .day-header.selected-cloud:active {
+    .day-header.selected-cloud:active {
         filter: hue-rotate(310deg) brightness(.7);
     }
 
@@ -248,6 +257,7 @@ html {
     }
 
 
+
     .day-event-container > button {
         width: 100%;
         padding: 1px;
@@ -267,7 +277,6 @@ html {
 
     #weekend-days > .day-section > .day-event-container > button {
     }
-
 
 	#top-text {
 		position: absolute;
@@ -377,6 +386,31 @@ html {
                    0px 2px white;
     }
 
+    .settingsModal {
+        display: none; 
+        z-index: 20;
+
+        position: absolute;
+        width: 30%;
+        height: 35%;
+        padding: 120px 50px;
+        margin: auto;
+
+        top: 50%;
+        left: 50%;
+	    transform: translate(-50%, -50%);
+
+        background-image: url('/pop-up2.png');
+        background-size: cover;
+        background-position: center;
+        border-radius: 50px;
+
+        color: #3A483B;
+        font: 20px 'Madimi One', sans-serif;
+        text-shadow: 0px 4px 2px rgba(0, 0, 0, .25), 
+                   -2px 0px white, 2px 0px white, 0px -2px white,
+                   0px 2px white;
+    }
 
     /* New event modal */
     #newEventModal > input {
