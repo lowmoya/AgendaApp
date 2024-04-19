@@ -116,95 +116,110 @@ async function homeAPI(req, res, id, body)
 			return;
 		}
 	} else if (body.type == 'export') {
-    /* Get starting state */
-    var startDate = body.start?.split('-');
-    var endDate = body.end?.split('-');
-    var currentDate = new Date(body.date);
+        /* Get starting state */
+        var startDate = body.start?.split('-');
+        var endDate = body.end?.split('-');
+        var currentDate = new Date(body.date);
 
-    /* Fix missing/broken starting state. */
-    if (currentDate == 'Invalid Date')
-      currentDate = new Date();
+        /* Fix missing/broken starting state. */
+        if (currentDate == 'Invalid Date')
+          currentDate = new Date();
 
-    if (startDate?.length == 3) {
-      for (let i in startDate) {
-        startDate[i] = parseInt(startDate[i]);
-        if (isNaN(startDate[i])) {
-          startDate = undefined;
-          break;
-        }
-      }
-    }
-    if (startDate == undefined || startDate.length != 3) {
-      let shiftedDate = new Date(currentDate);
-      shiftedDate.setFullYear(shiftedDate.getFullYear() - 5);
-      startDate = [ shiftedDate.getFullYear(), shiftedDate.getMonth(),
-        shiftedDate.getDate() ];
-    }
-
-    if (endDate?.length == 3) {
-      for (let i in endDate) {
-        endDate[i] = parseInt(endDate[i]);
-        if (isNaN(endDate[i])) {
-          endDate = undefined;
-          break;
-        }
-      }
-    }
-    if (endDate == undefined || endDate.length != 3) {
-      let shiftedDate = new Date(currentDate);
-      shiftedDate.setFullYear(shiftedDate.getFullYear() + 5);
-      endDate = [ shiftedDate.getFullYear(), shiftedDate.getMonth(),
-        shiftedDate.getDate() ];
-    }
-
-    /* Iterate through range, compiling output file. */
-    var output = '';
-    for (let year = startDate[0]; year <= endDate[0]; ++year) {
-      for (let month = 0; month <= 12; ++month) {
-        /* Only read within included months */
-        if (year == startDate[0] && month < startDate[1])
-          continue;
-        if (year == endDate[0] && month > endDate[1])
-          break;
-
-        /* Skip this month if it doesn't contain any events */
-        const monthEvents = calendar[month + '_' + year];
-        if (monthEvents == undefined || Object.keys(monthEvents) == 0)
-          continue;
-
-        /* Iterate ethrough days */
-        for (let day = 0; day < 31; ++day) {
-          /* Only read within included days */
-          if (year == startDate[0] && month == startDate[1]
-              && day < startDate[2])
-            continue;
-          if (year == endDate[0] && month == endDate[1]
-              && day > endDate[2])
-            break;
-
-          /* Append the information about this day to the output text */
-          const events = monthEvents[String(day)];
-          if (events == undefined)
-            continue;
-
-          for (entry of events) {
-            output += 'Date: ' + month + '/' + day + '/' + year + '\n'
-              + 'Title: ' + entry.title + '\nCategory: ' + entry.category
-              + '\n';
-            if (entry.imagePath != undefined)
-              output += 'Image: ' + entry.imagePath + '\n';
-            if (entry.notes.length != 0)
-              output += 'Notes: ' + entry.notes + '\n';
-            output += '\n';
+        if (startDate?.length == 3) {
+          for (let i in startDate) {
+            startDate[i] = parseInt(startDate[i]);
+            if (isNaN(startDate[i])) {
+              startDate = undefined;
+              break;
+            }
           }
         }
-      }
-    }
+        if (startDate == undefined || startDate.length != 3) {
+          let shiftedDate = new Date(currentDate);
+          shiftedDate.setFullYear(shiftedDate.getFullYear() - 5);
+          startDate = [ shiftedDate.getFullYear(), shiftedDate.getMonth(),
+            shiftedDate.getDate() ];
+        }
 
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end(output);
-  } else if (body.type == 'sync') {
+        if (endDate?.length == 3) {
+          for (let i in endDate) {
+            endDate[i] = parseInt(endDate[i]);
+            if (isNaN(endDate[i])) {
+              endDate = undefined;
+              break;
+            }
+          }
+        }
+        if (endDate == undefined || endDate.length != 3) {
+          let shiftedDate = new Date(currentDate);
+          shiftedDate.setFullYear(shiftedDate.getFullYear() + 5);
+          endDate = [ shiftedDate.getFullYear(), shiftedDate.getMonth(),
+            shiftedDate.getDate() ];
+        }
+
+        /* Iterate through range, compiling output file. */
+        var output = '';
+        for (let year = startDate[0]; year <= endDate[0]; ++year) {
+          for (let month = 0; month <= 12; ++month) {
+            /* Only read within included months */
+            if (year == startDate[0] && month < startDate[1])
+              continue;
+            if (year == endDate[0] && month > endDate[1])
+              break;
+
+            /* Skip this month if it doesn't contain any events */
+            const monthEvents = calendar[month + '_' + year];
+            if (monthEvents == undefined || Object.keys(monthEvents) == 0)
+              continue;
+
+            /* Iterate ethrough days */
+            for (let day = 0; day < 31; ++day) {
+              /* Only read within included days */
+              if (year == startDate[0] && month == startDate[1]
+                  && day < startDate[2])
+                continue;
+              if (year == endDate[0] && month == endDate[1]
+                  && day > endDate[2])
+                break;
+
+              /* Append the information about this day to the output text */
+              var weeklyEvents = monthEvents['w' + day];
+              var dailyEvents = monthEvents[String(day)];
+
+              if (weeklyEvents == undefined)
+                weeklyEvents = [];
+              if (dailyEvents == undefined)
+                dailyEvents = [];
+
+              for (entry of weeklyEvents) {
+                output += 'Week: ' + month + '/' + day + '/' + year + '\n'
+                  + 'Title: ' + entry.title + '\nCategory: ' + entry.category
+                  + '\n';
+                if (entry.imagePath != undefined)
+                  output += 'Image: ' + entry.imagePath + '\n';
+                if (entry.notes.length != 0)
+                  output += 'Notes: ' + entry.notes + '\n';
+                output += '\n';
+              }
+              for (entry of dailyEvents) {
+                output += 'Day: ' + month + '/' + day + '/' + year + '\n'
+                  + 'Title: ' + entry.title + '\nCategory: ' + entry.category
+                  + '\n';
+                if (entry.imagePath != undefined)
+                  output += 'Image: ' + entry.imagePath + '\n';
+                if (entry.notes.length != 0)
+                  output += 'Notes: ' + entry.notes + '\n';
+                output += '\n';
+              }
+            }
+          }
+        }
+
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'text/plain');
+        res.end(output);
+
+    } else if (body.type == 'sync') {
 		// Delete expired alarms
 		var changed = false;
 		// May want to move this to after responding to the client, to avoid
@@ -425,19 +440,31 @@ async function shareAPI(req, res, id, body)
 						if (year == start.year && month == start.month) if (day < start.day) continue;
 						if (year == end.year && month == end.month) if (day > end.day) break;
 						// Skip if no content
-						if (monthEvents[day] == undefined) continue;
-						for (let i = 0; i < monthEvents[day].length; i++) {
-							let event = monthEvents[day][i];
-								eventsList.push({
-									year: year,
-									month: month,
-									day: day,
-									event: event
-								});
-							}
-						}
-					}
-				}
+						if (monthEvents['w' + day] != undefined) {
+              for (let i = 0; i < monthEvents['w' + day].length; i++) {
+                let event = monthEvents['w' + day][i];
+                eventsList.push({
+                  year: year,
+                  month: month,
+                  day: 'w' +day,
+                  event: event
+                });
+              }
+            }
+						if (monthEvents[day] != undefined) {
+              for (let i = 0; i < monthEvents[day].length; i++) {
+                let event = monthEvents[day][i];
+                eventsList.push({
+                  year: year,
+                  month: month,
+                  day: day,
+                  event: event
+                });
+              }
+            }
+          }
+        }
+      }
 
 			calendarTarget = (await mongo.calendar.findOne({_id: targetAccount._id}));
 		

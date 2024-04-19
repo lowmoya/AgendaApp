@@ -20,6 +20,7 @@ const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Frida
 
 let currentEventIndex = null; 
 let currentDate = null;
+let currentWeek = null;
 
 let editEventModalImagePath = undefined;
 let editEventModalImageContent;
@@ -39,6 +40,49 @@ function openModal(day) {
     const monthYear = sectionDate.getMonth() + 1 + '_'
         + sectionDate.getFullYear();
     const date = sectionDate.getDate();
+
+
+    // Create a container for this event
+    if (events[monthYear] == undefined) {
+        events[monthYear] = {};
+        events[monthYear][date] = [];
+    } else if (events[monthYear][date] == undefined) {
+        events[monthYear][date] = [];
+    }
+    clicked.events = events[monthYear][date];
+    clicked.monthYear = monthYear;
+    clicked.day = date;
+
+
+    newEventModal.style.display = 'block';
+
+    // Display existing events in the modal
+    const eventsList = document.getElementById('eventsList'); 
+    eventsList.innerHTML = ''; 
+
+    clicked.events.forEach((event, index) => {
+        const eventElement = document.createElement('button');
+        eventElement.classList.add('event-button');
+        const eventText = document.createElement('p');
+        eventText.innerText = event.title;
+        eventElement.appendChild(eventText);
+        eventElement.addEventListener('click', (e) => {
+            // Prevent the openModal event
+            e.stopPropagation(); 
+            showEditEventModal(clicked, index, event);
+        });
+        eventElement.style.borderColor = categories[event.category];
+        eventsList.appendChild(eventElement);
+    });
+
+    backDrop.style.display = 'block';
+}
+
+function openWeeklyEventsModal() {
+    // Get date info
+    const monthYear = currentWeek.getMonth() + 1 + '_'
+        + currentWeek.getFullYear();
+    const date = 'w' + currentWeek.getDate();
 
 
     // Create a container for this event
@@ -374,7 +418,6 @@ function populateNationalHolidays(year) {
     /* Thanksgiving Day. Fourth Thursday in November */
     date.setDate(1);
     date.setMonth(10);
-    console.log(date);
     nationalHolidays[11 + '_' + year][
         1 + (date.getDay() < 5 ? 4 : 11) - date.getDay() + 21
     ] = "Thanksgiving Day";
@@ -981,6 +1024,18 @@ async function load(shouldSync = true) {
     document.getElementById('month-text').innerText = monthLabel;
     document.getElementById('year-text').innerText = year;
 
+    var weekStart = date.getDate();
+    if (date.getDay() == 0)
+        weekStart -= 6;
+    else if (date.getDay() != 1)
+        weekStart -= date.getDay() - 1;
+
+    var weekDate = new Date(date);
+    weekDate.setDate(weekStart);
+    document.getElementById('weekly-note-label').innerText = 'Week of '
+        + (weekDate.getMonth() + 1) + '/' + weekDate.getDate();
+    currentWeek = weekDate;
+
     // Setting global date
     currentDate = date;
 
@@ -988,13 +1043,18 @@ async function load(shouldSync = true) {
     //Look into cleaning this up
     if (shouldSync) {
         // Check if should sync alarm and events
-        var currentHash = new TextEncoder().encode(JSON.stringify({
-            events: events[(month + 1) + '_' + year] || {},
-            alarms: alarms,
-            categories: categories
-        }));
-        currentHash = await crypto.subtle.digest('SHA-256', currentHash);
-        currentHash = btoa(String.fromCharCode(...(new Uint8Array(currentHash))))
+        var currentHash = '';
+        if (crypto?.subtle?.digest != undefined) {
+            currentHash = new TextEncoder().encode(JSON.stringify({
+                events: events[(month + 1) + '_' + year] || {},
+                alarms: alarms,
+                categories: categories
+            }));
+            // Support for mobile devices without crypto.subtle
+            currentHash = await crypto.subtle.digest('SHA-256', currentHash);
+            currentHash =
+                btoa(String.fromCharCode(...(new Uint8Array(currentHash))));
+        }
         var syncResponse = await fetch('/home', {
             method: 'POST',
             headers: {
@@ -1043,9 +1103,33 @@ async function load(shouldSync = true) {
             const shareRequests = await shareResponse.json();
             for (const request of shareRequests)
             {
+                if (request.events.length == 0) {
+                    await fetch('/share', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'session': localStorage.session
+                        },
+                        body: JSON.stringify({
+                            type: 'shareAnswer',
+                            index: 0,
+                            accept: false
+                        })
+                    });
+                    continue;
+                }
                 let end = request.events.length - 1;
-                const startDate = request.events[0].month + "/" + request.events[0].day + "/" + request.events[0].year;
-                const endDate = request.events[end].month + "/" + request.events[end].day + "/" + request.events[end].year;
+                const startDate = request.events[0].month + "/"
+                    + (request.events[0].day[0] == 'w'
+                        ? request.events[0].day.substring(1)
+                        : request.events[0].day)
+                    + "/" + request.events[0].year;
+                const endDate = request.events[end].month + "/"
+                    + (request.events[end].day[0] == 'w'
+                        ? request.events[end].day.substring(1)
+                        : request.events[end].day)
+                    + "/" + request.events[end].year;
+
                 const confirmation = confirm(request.username +" wants to share a copy of their events from " + startDate + " to " +
                 endDate +" with you, would you like to accept it?");
 

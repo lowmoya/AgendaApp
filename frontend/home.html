@@ -23,14 +23,19 @@
       <div id = 'top-text'> 
         <div id = 'month-text'>Month</div>
         <div id = 'year-text'>Year</div>
+        <p id='weekly-note-label' onclick='openWeeklyEventsModal()'></p>
+        <div id = 'weekly-arrows'>
+          <img id = 'last-week' src = "left-arrow.png" draggable = 'false'
+            onclick="localStorage.setItem('nav',--nav);load()">
+          <img id = 'next-week' src = "right-arrow.png" draggable = 'false'
+            onclick="localStorage.setItem('nav',++nav);load()">
+        </div>
       </div>
 
 
       <div id=nav-bar>
         <img id = 'apple' src = "apple.png" draggable = 'false'
           onclick="openSettingsMenu()">
-        <img id = 'notes' src = "add.png" draggable = 'false'
-          onclick="getWeeklyNote()">
         <div id=search-widget style='display: none'>
           <input type=search id='search-input'
             placeholder="Enter phrase..."/>
@@ -103,13 +108,6 @@
       <div id='weekly-section'>
         <img id = 'desktop-weekly' src = "weekly-view.png" draggable = 'false'>
         <img id = 'mobile-weekly' src = "weekly-view-mobile.png" draggable = 'false'>
-
-        <div id = 'weekly-arrows'>
-          <img id = 'last-week' src = "left-arrow.png" draggable = 'false'
-            onclick="localStorage.setItem('nav',--nav);load()">
-          <img id = 'next-week' src = "right-arrow.png" draggable = 'false'
-            onclick="localStorage.setItem('nav',++nav);load()">
-        </div>
 
         <div class = 'weekday'>
           <div id='day1' class='day-section'>
