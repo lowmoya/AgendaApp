@@ -61,25 +61,16 @@
                0px 2px white;
 }
 
-.settingsModal > h2 {
-  text-align: center;
-  font-size: 40px;
+#settingsModal > input[type='checkbox'] {
+    width: 18px;
+    height: 18px;
+    top: 12px;
+    display: inline;
 }
 
-.settingsModal > h3 {
-  font-size: 25px;
-  margin-bottom: 10px;
-}
-
-.settingsModal > input, .settingsModal > div > input {
-    font: 16px 'Madimi One', sans-serif;
-    border-style: solid;
-    border-color: slategray;
-    margin: 2px;
-}
-
-.settingsModal > .clicked {
-    background-color: slategray;
+#settingsModal > p {
+    text-shadow: none;
+    display: inline;
 }
 
 .mobile-popup-background {
@@ -282,6 +273,13 @@
 }
 .day-event-container > button:active {
   filter: brightness(.7);
+}
+.day-event-container > h2 {
+    font-size: 16px;
+    text-shadow: none;
+    text-align: center;
+    width: 100%;
+    overflow: clip;
 }
 .day-event-container-time {
   color: slategray;
@@ -844,6 +842,15 @@ body {
     .day-event-container > button > img{
       object-fit: contain;
       height: 60%;
+    }
+
+    .day-event-container > h2 {
+        width: 100px;
+        margin: 2px;
+        height: 100%;
+        display: inline-grid;
+        align-items: center;
+        font-size: 14px;
     }
 
     #weekend-days {

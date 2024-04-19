@@ -63,13 +63,20 @@
             onclick='settingsDataSubmitButton()'/>
         </div>
 
+        <h3>Calendar</h3>
+        <p>Render national holidays:</p>
+        <input id='settings-render-holidays' type=checkbox />
+        <br>
+        <p>Save position through refreshes:</p>
+        <input id='settings-save-position' type=checkbox />
+
         <h3>Categories</h3>
         <div id="categoriesList"></div> <!-- List will be populated by JavaScript -->
         <div id="editControls" style="display:none;">
           <input type="text" id="editName" style="margin-right: 10px;">
           <input type="color" id="editColor" style="margin-right: 10px;">
         </div>
-        
+
         <h3>Account</h3>
         <input type="button" class="ok-button" value="Sign out"
         onclick="delete localStorage.session;window.location='/login'"/>
@@ -99,9 +106,9 @@
 
         <div id = 'weekly-arrows'>
           <img id = 'last-week' src = "left-arrow.png" draggable = 'false'
-            onclick="--nav;load()">
+            onclick="localStorage.setItem('nav',--nav);load()">
           <img id = 'next-week' src = "right-arrow.png" draggable = 'false'
-            onclick="++nav;load()">
+            onclick="localStorage.setItem('nav',++nav);load()">
         </div>
 
         <div class = 'weekday'>

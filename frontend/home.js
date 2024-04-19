@@ -1,9 +1,15 @@
-let nav = 0;
 let clicked = {};
 let events = localStorage.getItem('events')
     ? JSON.parse(localStorage.getItem('events')) : {};
 let alarms = localStorage.getItem('alarms')
     ? JSON.parse(localStorage.getItem('alarms')) : [];
+let nationalHolidays = {};
+let renderNationalHolidays = localStorage.getItem('renderNationalHolidays')
+    ? localStorage.getItem('renderNationalHolidays') == 'true' : true;
+let savePosition = localStorage.getItem('savePosition')
+    ? localStorage.getItem('savePosition') == 'true' : false;
+let nav = savePosition ? isNaN(localStorage.getItem('nav')) ? 0
+    : parseInt(localStorage.getItem('nav')) : 0;
 
 const calendar = document.getElementById('calendar');
 const newEventModal =  document.getElementById('newEventModal');
@@ -297,6 +303,87 @@ function getWeekNumber(date) {
 
     const offsetDate = date.getDate() + firstDayOfWeek - 1;
     return Math.ceil(offsetDate / 7);
+}
+
+
+/* Fill the nationalHolidays structure with the holidays for the provided year,
+ * as specified by https://www.usa.gov/holidays */
+function populateNationalHolidays(year) {
+    const date = new Date();
+    date.setDate(1);
+    date.setFullYear(year);
+    var day;
+
+    /* New Year's Day. January 1 */
+    nationalHolidays[1 + '_' + year] = {};
+    nationalHolidays[1 + '_' + year][1] = "New Year's Day";
+
+    /* Birthday of Martin Luther King, Jr. Third Monday in January */
+    date.setDate(1);
+    date.setMonth(0);
+    nationalHolidays[1 + '_' + year][
+        1 + (date.getDay() < 2 ? 1 : 8) - date.getDay() + 14
+    ] = "Martin Luther King Jr. Day";
+
+    /* Presidents Day. Third Monday in February */
+    date.setDate(1);
+    date.setMonth(1);
+    nationalHolidays[2 + '_' + year] = {};
+    nationalHolidays[2 + '_' + year][
+        1 + (date.getDay() < 2 ? 1 : 8) - date.getDay() + 14
+    ] = "Presidents Day";
+
+    /* Memorial Day. Last Monday in May */
+    date.setDate(1);
+    date.setMonth(5);
+    date.setDate(0);
+    nationalHolidays[5 + '_' + year] = {};
+    nationalHolidays[5 + '_' + year][
+        date.getDate() + (date.getDay() > 0 ? 1 - date.getDay() : -6)
+    ] = "Memorial Day";
+
+    /* Juneteenth National Independence Day. June 19 */
+    nationalHolidays[6 + '_' + year] = {};
+    nationalHolidays[6 + '_' + year][19]
+        = "Juneteenth National Independence Day";
+
+    /* Independence Day. July 4 */
+    nationalHolidays[7 + '_' + year] = {};
+    nationalHolidays[7 + '_' + year][4] = "Independence Day";
+
+    /* Labor Day. First Monday in September */
+    date.setDate(1);
+    date.setMonth(8);
+    nationalHolidays[9 + '_' + year] = {};
+    nationalHolidays[9 + '_' + year][
+        1 + (date.getDay() < 2 ? 1 : 8) - date.getDay()
+    ] = "Labor Day";
+
+    /* Columbus Day. Second Monday in October */
+    date.setDate(1);
+    date.setMonth(9);
+    nationalHolidays[10 + '_' + year] = {};
+    nationalHolidays[10 + '_' + year][
+        1 + (date.getDay() < 2 ? 1 : 8) - date.getDay() + 7
+    ] = "Columbus Day";
+
+    /* Veterans Day. November 11 */
+    nationalHolidays[11 + '_' + year] = {};
+    nationalHolidays[11 + '_' + year][11] = "Veterans Day";
+
+    /* Thanksgiving Day. Fourth Thursday in November */
+    date.setDate(1);
+    date.setMonth(10);
+    console.log(date);
+    nationalHolidays[11 + '_' + year][
+        1 + (date.getDay() < 5 ? 4 : 11) - date.getDay() + 21
+    ] = "Thanksgiving Day";
+
+    /* Christmas Day (December 25) */
+    nationalHolidays[12 + '_' + year] = {};
+    nationalHolidays[12 + '_' + year][25] = "Christmas Day";
+
+    nationalHolidays[year] = true;
 }
 
 function loadCurrentWeekNote() {
@@ -1018,6 +1105,10 @@ async function load(shouldSync = true) {
     }
 
 
+    /* Handle national holidays */
+    if (nationalHolidays[year] == undefined && renderNationalHolidays)
+        populateNationalHolidays(year);
+
 
     /* Weekly view */
     const currentDay = currentDate.getDay();
@@ -1039,6 +1130,17 @@ async function load(shouldSync = true) {
         } else {
             document.querySelector('#day' + (i + 1) + ' > .day-header')
                 .classList.remove('selected-cloud');
+        }
+
+        /* Add national holidays */
+        if (renderNationalHolidays) {
+            const holidayTitle = nationalHolidays[sectionDate.getMonth() + 1
+                + '_' + sectionDate.getFullYear()]?.[sectionDate.getDate()];
+            if (holidayTitle != undefined) {
+                const child = document.createElement('h2');
+                child.innerText = holidayTitle;
+                sectionEventsContainer.appendChild(child);
+            }
         }
 
         /* Adjust content */
@@ -1114,6 +1216,11 @@ function openSettingsMenu() {
 	shareButton.classList.remove('clicked');
 
 
+    // Calendar section
+    document.getElementById('settings-render-holidays').checked
+        = renderNationalHolidays;
+    document.getElementById('settings-save-position').checked
+        = savePosition;
 
 	// Category list
     const categoriesList = document.getElementById('categoriesList');
@@ -1253,6 +1360,16 @@ function settingsModalDeleteCategory(index) {
 
 
 async function saveSettings() {
+    // Calendar
+    renderNationalHolidays = document
+        .getElementById('settings-render-holidays').checked;
+    localStorage.setItem('renderNationalHolidays',
+        String(renderNationalHolidays));
+    savePosition = document
+        .getElementById('settings-save-position').checked;
+    localStorage.setItem('savePosition', savePosition);
+
+    // Categories
 	const categoriesList = document.getElementById('categoriesList');
 	const newCategories = {};
 	for (let d = 0; d < categoriesList.childElementCount - 1; ++d) {
