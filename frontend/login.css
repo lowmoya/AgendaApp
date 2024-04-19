@@ -106,6 +106,17 @@ button:active {
 	z-index: -1;
 }
 
+#email-pane > label {
+	font: bold 24px 'Madimi One', sans-serif;
+	display: block;
+	color: slate;
+	margin-bottom: -13px;
+	left: 77px;
+	height: 33px;
+	position: relative;
+	text-align: left;
+}
+
 #email-pane > input {
 	width: 70%;
 	margin: 10px;

@@ -21,7 +21,7 @@ async function homeAPI(req, res, id, body)
 			month_year: {},
 			alarms: [],
 			share_requests: [],
-			categories: { work: "red", personal: "green", school: "blue" }
+			categories: { work: "#FF0000", personal: "#00FF00", school: "#0000FF" }
 		});
 		if (!result.acknowledged) {
 			console.error("ERR |\tCalendar refusing creation:"

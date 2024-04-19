@@ -27,8 +27,9 @@
 
 
       <div id=nav-bar>
-        <img id = 'apple' src = "apple.png" draggable = 'false'>
-        <div id=search-widget>
+        <img id = 'apple' src = "apple.png" draggable = 'false'
+          onclick="openSettingsMenu()">
+        <div id=search-widget style='display: none'>
           <input type=search id='search-input'
             placeholder="Enter phrase..."/>
           <input type=date id='search-start-date'/>
@@ -42,9 +43,50 @@
 
       <div id="modalBackDrop"></div>
 
+      <!-- Creating a settings modal -->
+      <div id="settingsModal" class="settingsModal">
+        <h2>Settings Menu</h2>
+        <h3>Data</h3>
+        <input type="button" class="ok-button" value="Share" />
+        <input type="button" class="ok-button" value="Export" />
+        <input type="text" />
+        <br>
+        <input type="date" /> - <input type="date" />
+        <br>
+        <input type="button" class="submit-button" value="Export" />
+
+        <h3>Categories</h3>
+        <div id="categoriesList"></div> <!-- List will be populated by JavaScript -->
+        <div id="editControls" style="display:none;">
+          <input type="text" id="editName" style="margin-right: 10px;">
+          <input type="color" id="editColor" style="margin-right: 10px;">
+        </div>
+        
+        <h3>Account</h3>
+        <input type="button" class="ok-button" value="Sign out"
+        onclick="delete localStorage.session;window.location='/login'"/>
+        
+        <div id='settings-section-close'>
+          <button class='submit-button' onclick="saveSettings()">Okay</button>
+          <button class='no-button' onclick="closeSettings()">Cancel</button>
+        </div>
+      </div>
+
+      <div id="searchModal" class="modal" style="display: none">
+        <div class="searchResults">
+          <h2>Search Results</h2>
+          <div id="searchResultsList"></div>
+        </div>
+        <div style='text-align: center'>
+          <button id="export-search-button" class='submit-button' >Export</button>
+          <button id="close-search-button" class='no-button' >Close</button>
+        </div>
+      </div>
+
       <!-- Right pane with the calendar contents -->
       <div id='weekly-section'>
         <img id = 'desktop-weekly' src = "weekly-view.png" draggable = 'false'>
+        <img id = 'mobile-weekly' src = "weekly-view-mobile.png" draggable = 'false'>
 
         <div id = 'weekly-arrows'>
           <img id = 'last-week' src = "left-arrow.png" draggable = 'false'
@@ -103,7 +145,7 @@
                 <p>Sat</p>
 				        <p class='day-header-date' id='day6-date-text'></p>
               </div>
-              <div class='day-event-container' style='max-height:63.7%'></div>
+              <div class='day-event-container'></div>
             </div>
             <div id='day7' class='day-section'>
               <div class='day-header' onclick='openModal(7)' style='top:-3%'>
@@ -111,8 +153,7 @@
                 <p>Sun</p>
 				        <p class='day-header-date'id='day7-date-text'></p>
               </div>
-              <div class='day-event-container'
-                style='position:relative;top:-3%;max-height:58.5%'></div>
+              <div class='day-event-container'></div>
             </div>
           </div>
         </div>
@@ -131,7 +172,7 @@
     </div>
 
     <!-- Creating a new event modal -->
-    <div id="newEventModal" class="modal">
+    <div id="newEventModal" class="modal" style="display: none">
       <h2>Day's Events</h2>
       <ul id="eventsList" style="max-height: 53%;overflow-y: auto"></ul>
 
@@ -142,14 +183,10 @@
     </div>
 
     <!-- New modal for editing existing events -->
-    <div id="editEventModal" class="modal">
+    <div id="editEventModal" class="modal" style="display: none">
       <div id="editEventModalHeader" style="text-align: center">
         <input id="editEventTitleInput" placeholder="Event Title" />
         <select id="eventCat">
-            <option value="personal">personal</option>
-            <option value="school">school</option>
-            <option value="work">work</option>
-            <option value="custom">custom</option>
         </select>
       </div>
 
@@ -185,8 +222,8 @@
 	  <div id="edit-event-custom-alarm-widget"
 		  style='width: 100%;margin-bottom:5px'>
 	  	Custom alarm:
-		<input type="date" id="edit-event-custom-alarm-date">
-		<input type="time" id="edit-event-custom-alarm-time">
+      <input type="date" id="edit-event-custom-alarm-date">
+      <input type="time" id="edit-event-custom-alarm-time">
 	  </div>
 
       <!-- Image for event -->
@@ -194,7 +231,9 @@
       <label for="image" class='ok-button' id='edit-event-image-label'>
         File</label>
       <input type="file" id="image" name="image" style='display:none'
-        accept="image/png, image/jpeg" onchange="loadEditModalImage()"/>
+        accept="image/png, image/jpeg" onchange="editModalLoadImage()"/>
+		  <input type="button" id='edit-event-image-remove' class='ok-button'
+        onclick="editModalRemoveImage()" value="X" style='margin:0' />
       <br>
 
       <textarea id="noteInput" placeholder="Note..."
@@ -210,17 +249,6 @@
           onclick="deleteEvent()">Delete Event</button>
       </div>
 
-    </div>
-
-    <div id="searchModal" class="modal">
-      <div class="searchResults">
-        <h2>Search Results</h2>
-        <div id="searchResultsList"></div>
-      </div>
-      <div style='text-align: center'>
-        <button id="export-search-button" class='submit-button' >Export</button>
-        <button id="close-search-button" class='no-button' >Close</button>
-      </div>
     </div>
   </body>
 

@@ -548,14 +548,17 @@ function processCategories()
 
 function loadCategories() {
     const catDropdown = document.getElementById('eventCat');
+	catDropdown.innerHTML = '';
     for (key in categories) {
-        if (key == 'work' || key == 'personal' || key == 'school')
-          continue;
         const option = document.createElement('option');
         option.value = key.toLowerCase();
         option.textContent = key;
-        catDropdown.insertBefore(option, catDropdown.querySelector('option[value="custom"]'));
+        catDropdown.appendChild(option);
     }
+	const customOption = document.createElement('option');
+	customOption.value = 'custom';
+	customOption.textContent = 'custom';
+	catDropdown.appendChild(customOption);
 }
 
 function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
@@ -579,20 +582,6 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
     editEventTitleInput.value = event.title;
     currentEventIndex = eventIndex;
     editNoteInput.value = event.notes || '';
-
-    // const categoryDropdown = document.getElementById('eventCat');
-    // categoryDropdown.addEventListener('change', function() {
-    //     const chosenCat = categoryDropdown.value;
-    //     let catColor;
-    //     if(categoryColors[chosenCat.toLowerCase()])
-    //     {
-    //         catColor = categoryColors[chosenCat.toLowerCase()];
-    //     }
-    //     else
-    //     {
-    //         catColor = document.getElementById('newCategoryColor').value;
-    //     }
-    // });
 
     // Start and end time fields with the event's times
     startTimeInput.value = event.startTime || '';
@@ -666,15 +655,22 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
         }
     }
 
-    categorySelector.value = categoryFound ? event.category.toLowerCase() : 'personal';
+    categorySelector.value = categoryFound ? event.category.toLowerCase()
+		: Object.keys(categories)[0];
 
 
     // Set image inputs
     const imageLabel = document.getElementById('edit-event-image-label');
+	const imageDeleter = document.getElementById('edit-event-image-remove');
     editEventModalImagePath = event.imagePath;
     editEventModalImageContent = event.imageContent;
-    imageLabel.innerText = editEventModalImagePath == undefined ?
-        'None' : editEventModalImagePath;
+	if (editEventModalImagePath == undefined) {
+		imageLabel.innerText = 'None';
+		imageDeleter.style.display = 'none';
+	} else {
+		imageLabel.innerText = editEventModalImagePath;
+		imageDeleter.style.display = 'inline';
+	}
 
     // Show the edit event modal
     editEventModal.style.display = 'block';
@@ -704,7 +700,7 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
             const color = document.getElementById('categoryColor');
 
             if (newName.length == 0)
-                newName = 'personal';
+                newName = Object.keys(categories)[0];
             categoryName = newName;
 
             // check if name is in categories
@@ -1065,15 +1061,43 @@ async function load(shouldSync = true) {
             continue;
         for (let i in sectionEvents) {
             const child = document.createElement('button');
-            child.innerText = sectionEvents[i].title;
+
+			// Time Info
+			var timeString = undefined;
+			if (sectionEvents[i].startTime != ''
+					&& sectionEvents[i].endTime != '') {
+				timeString = sectionEvents[i].startTime + ' - '
+					+ sectionEvents[i].endTime;
+			} else if (sectionEvents[i].startTime != '') {
+				timeString = 'Starts at ' + sectionEvents[i].startTime;
+			} else if (sectionEvents[i].endTime != '') {
+				timeString = 'Ends at ' + sectionEvents[i].endTime;
+			}
+
+			if (timeString != undefined) {
+				const timeChild = document.createElement('p');
+				timeChild.classList.add('day-event-container-time');
+				timeChild.innerText = timeString;
+				child.appendChild(timeChild);
+			}
+
+			// Title Info
+			const titleChild = document.createElement('p');
+			titleChild.innerText = sectionEvents[i].title;
+            child.appendChild(titleChild);
+
+
             child.style.borderColor
               = categories[sectionEvents[i].category];
+
+			// Image Info
             if (sectionEvents[i].imageContent != undefined) {
                 const image = document.createElement('img');
                 image.src = sectionEvents[i].imageContent;
                 child.appendChild(image);
             }
 
+			// Click Event
             child.onclick = () => {
               clicked.events = sectionEvents;
               clicked.monthYear = sectionDate.getMonth() + 1 + '_'
@@ -1085,89 +1109,158 @@ async function load(shouldSync = true) {
             sectionEventsContainer.appendChild(child);
         }
     };
+}
 
+function openSettingsMenu() {
 
+    const settingsModal = document.getElementById('settingsModal');
+    settingsModal.style.display = 'block';
 
+	// Category list
+    const categoriesList = document.getElementById('categoriesList');
+    categoriesList.innerHTML = '';
 
+    for (const key in categories) {
+		const element = document.createElement('div');
+		const titleInput = document.createElement('input');
+		const colorInput = document.createElement('input');
+		const deleteButton = document.createElement('input');
+		const listLength = categoriesList.childElementCount;
+		
+		titleInput.type = 'text';
+		titleInput.placeholder = 'Name';
+		titleInput.value = key;
+		element.appendChild(titleInput);
 
+		colorInput.type = 'color';
+		colorInput.value = categories[key];
+		element.appendChild(colorInput);
 
-    /* Monthly view
-    const firstDayofMonth = new Date(year, month, 1);
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+		deleteButton.type = 'button';
+		deleteButton.value = 'X';
+		element.appendChild(deleteButton);
+		deleteButton.classList.add('no-button');
 
-    const dateString = firstDayofMonth.toLocaleDateString('en-us', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-    });
+        categoriesList.appendChild(element);
 
-    const paddingDays = weekdays.indexOf(dateString.split(', ')[0]);
-
-    document.getElementById('monthDisplay').innerText = `${date.toLocaleDateString('en-us', {month: 'long'})} ${year}`;
-
-    calendar.innerHTML = '';
-
-    
-    monthYear = (month + 1) + '_' + year;
-    for(let i = 1; i <= paddingDays + daysInMonth; i++){
-        const daySquare = document.createElement('div');
-
-        daySquare.classList.add('day');
-        
-        if (i > paddingDays) {
-            daySquare.innerText = i - paddingDays;
-
-            if (i - paddingDays === day && nav === 0) {
-                daySquare.id = 'currentDay';
-            }
-        
-            let eventForDay;
-            if (events[monthYear] != undefined && events[monthYear][i - paddingDays] != undefined)
-                eventForDay = events[monthYear][i - paddingDays];
-            else
-                eventForDay = [];
-
-            eventForDay.forEach(event => {
-                const eventDiv = document.createElement('div');
-                eventDiv.classList.add('event');
-                eventDiv.innerText = event.title;
-                eventDiv.style.backgroundColor = categories[event.category];
-                if (event.startTime && event.endTime){
-                    eventDiv.innerText = `${event.title} (${convertTo12HourFormat(event.startTime)} - ${convertTo12HourFormat(event.endTime)})`;
-                }
-                daySquare.appendChild(eventDiv);
-            });
-
-            daySquare.addEventListener('click', () => openModal(monthYear,
-                    i - paddingDays));
-        } else {
-            daySquare.classList.add('padding');
-        }
-
-        calendar.appendChild(daySquare);
-
-        daySquare.addEventListener('click', () => {
-            openModal(monthYear, i - paddingDays);
-        });
+		deleteButton.onclick = () => {
+			categoriesList.removeChild(element);
+		};
     }
-    */
+
+	const newButton = document.createElement('input');
+	newButton.type = 'button';
+	newButton.value = '+';
+	newButton.style.width = '24px';
+	newButton.style.height = '24px';
+	newButton.style.marginTop = '4px';
+	newButton.classList.add('ok-button');
+	newButton.onclick = settingsModalNewCategory;
+
+	const newDiv = document.createElement('div');
+	newDiv.appendChild(newButton);
+	categoriesList.appendChild(newDiv);
+}
+
+function settingsModalNewCategory() {
+	const categoriesList = document.getElementById('categoriesList');
+	const listLength = categoriesList.childElementCount;
+
+	const newCategorySection = document.createElement('div');
+	const title = document.createElement('input');
+	const color = document.createElement('input');
+	const deleteButton = document.createElement('input');
+
+	title.type = 'text';
+	title.placeholder = 'Name';
+
+	color.type = 'color';
+	color.value = '#444444';
+		
+	deleteButton.type = 'button';
+	deleteButton.value = 'X';
+	deleteButton.classList.add('no-button');
+
+	newCategorySection.appendChild(title);
+	newCategorySection.appendChild(color);
+	newCategorySection.appendChild(deleteButton);
+
+	categoriesList.insertBefore(newCategorySection,
+		categoriesList.childNodes[listLength - 1]);
+
+	deleteButton.onclick = () => {
+		categoriesList.removeChild(newCategorySection);
+	}
 }
 
 
-function loadEditModalImage() {
+function settingsModalDeleteCategory(index) {
+	const categoriesList = document.getElementById('categoriesList');
+	categoriesList.removeChild(categoriesList.childNodes[index]);
+}
+
+
+async function saveSettings() {
+	const categoriesList = document.getElementById('categoriesList');
+	const newCategories = {};
+	for (let d = 0; d < categoriesList.childElementCount - 1; ++d) {
+		const div = categoriesList.childNodes[d];
+		const title = div.childNodes[0].value;
+		const color = div.childNodes[1].value;
+		if (title != '') {
+			newCategories[title.toLowerCase()] = color;
+			console.log(title.toLowerCase(), color);
+		}
+	}
+	categories = newCategories;
+	localStorage.setItem('categories', JSON.stringify(categories));
+	console.log(newCategories);
+
+	await fetch('/home', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Session': localStorage.session
+		},
+		body: JSON.stringify({
+			'type': 'insertCategories',
+			categories: categories
+		})
+	});
+
+	loadCategories();
+	load();
+	closeSettings();
+}
+
+function closeSettings() {
+    settingsModal.style.display = 'none';
+}
+
+
+
+function editModalLoadImage() {
     const selector = document.getElementById('image');
     const label = document.getElementById('edit-event-image-label');
 
     const reader = new FileReader();
     reader.onload = () => {
         label.innerText = selector.files[0].name;
+		document.getElementById('edit-event-image-remove').style.display
+			= 'inline';
         editEventModalImagePath = selector.files[0].name;
         editEventModalImageContent = reader.result;
     };
 
     label.innerText = 'Loading...';
     reader.readAsDataURL(selector.files[0]);
+}
+
+function editModalRemoveImage() {
+	document.getElementById('edit-event-image-remove').style.display = 'none';
+	document.getElementById('edit-event-image-label').innerText = 'None';
+	editEventModalImagePath = undefined;
+	editEventModalImageContent = undefined;
 }
 
 

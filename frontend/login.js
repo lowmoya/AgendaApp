@@ -1,5 +1,6 @@
 const emailPane = document.getElementById('email-pane');
 const emailField = document.getElementById('email');
+const passwordLabel = document.getElementById('password-label');
 const passwordField = document.getElementById('password');
 const googleButton = document.getElementById('google-button');
 const emailButton = document.getElementById('email-button');
@@ -135,12 +136,16 @@ function checkPassword()
 	if (passwordMessage != undefined) {
 		passwordField.classList.add('invalid');
 		passwordField.setCustomValidity(passwordMessage);
+		passwordLabel.innerText = passwordMessage;
 		invalid = 1;
 
 		return false;
+	} else {
+
+		passwordLabel.innerText = '';
+		return true;
 	}
 
-	return true;
 }
 
 async function emailLogin()

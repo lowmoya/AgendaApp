@@ -20,6 +20,244 @@
   visibility: visible;
 }
 
+/* modals */
+.modal {
+    display: none; 
+    z-index: 20;
+
+    position: absolute;
+    margin: auto;
+
+    background-image: url('/pop-up.png');
+    background-size: cover;
+    background-position: center;
+    background-color: white;
+    border-radius: 50px;
+
+    color: #3A483B;
+    font: 20px 'Madimi One', sans-serif;
+    text-shadow: 0px 4px 2px rgba(0, 0, 0, .25), 
+               -2px 0px white, 2px 0px white, 0px -2px white,
+               0px 2px white;
+}
+
+.settingsModal {
+    display: none; 
+    z-index: 20;
+
+    position: absolute;
+    width: 400px;
+    height: 600px;
+    padding: 10px 50px;
+    margin: auto;
+
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    background-image: url('/pop-up2.png');
+    background-size: cover;
+    background-position: center;
+    border-radius: 50px;
+
+    border-style: solid;
+    border-color: #b97f45;
+    border-width: 8px;
+
+    color: #3A483B;
+    font: 20px 'Madimi One', sans-serif;
+    text-shadow: 0px 4px 2px rgba(0, 0, 0, .25), 
+               -2px 0px white, 2px 0px white, 0px -2px white,
+               0px 2px white;
+}
+
+.settingsModal > h2 {
+  text-align: center;
+  font-size: 40px;
+}
+
+.settingsModal > h3 {
+  font-size: 25px;
+  margin-bottom: 10px;
+}
+
+#categoriesList {
+  max-height: 200px;
+  overflow-y: auto;
+  width: 300px;
+  scrollbar-color: #495f4b #b97f45;
+}
+
+#categoriesList > div > input {
+    font: 16px 'Madimi One', sans-serif;
+    width: 200px;
+    height: 20px;
+    margin: 0px 4px;
+    background-color: whitesmoke;
+    border-style: solid;
+    border-color: slategray;
+}
+
+#categoriesList > div > input[type='color'] {
+  width: 24px;
+  height: 24px;
+  top: 4px;
+  position: relative;
+  padding: 0px;
+}
+
+#categoriesList > div > .no-button {
+  width: 24px;
+  height: 24px;
+}
+
+#settings-section-close {
+  text-align: center;
+  bottom: 40px;
+  position: absolute;
+  left: 0;
+  width: 100%;
+}
+
+/* New event modal */
+#newEventModal > input {
+    font: 20px 'Madimi One', sans-serif;
+    border-style: solid;
+    border-color: gray;
+    border-width: 2px;
+}
+#newEventModal > .ok-button {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translate(-50%);
+}
+
+.event-button {
+    font: 18px 'Madimi One', sans-serif;
+    background-color: white;
+    border-style: solid;
+    border-width: 12px;
+
+    height: fit-content;
+    margin: 5px;
+}
+.event-button:hover {
+    filter: brightness(.70);
+}
+.event-button:active {
+    filter: brightness(.40);
+}
+.event-button > p {
+    margin: 3px
+}
+
+#apple:hover {
+    filter: brightness(1.2);
+}
+#apple:active {
+    filter: brightness(.8);
+}
+
+
+/* Edit event modal */
+#editEventModalHeader > input, #editEventModalHeader > select {
+    font: 22px 'Madimi One', sans-serif;
+    background-color: whitesmoke;
+    border-color: gray;
+    border-width: 2px;
+    border-style: solid;
+}
+
+#editEventModal {
+    font: 18px 'Madimi One', sans-serif;
+}
+#editEventModal > select, #editEventModal > input,
+        #editEventModal > textarea {
+    background-color: whitesmoke;
+    border-color: gray;
+    border-width: 2px;
+    border-style: solid;
+    font: 16px 'Madimi One', sans-serif;
+    margin: 5px auto;
+}
+#edit-event-image-label {
+    min-width: 100px;
+    padding: 0 10px;
+    width: fit-content;
+    display: inline-block;
+    text-align: center;
+    font-size: 16px;
+    margin-bottom: 10px;
+    background-color: whitesmoke;
+    text-shadow: none;
+}
+#edit-event-image-remove {
+    position: relative;
+    top: 1px;
+        width: 26px;
+    height: 24px;
+}
+#newCategory {
+  display: none;
+  align-items: center;
+  margin: 5px auto;
+}
+#newCategory > input, #edit-event-custom-alarm-widget > input{
+  font: 16px 'Madimi One', sans-serif;
+  background-color: whitesmoke;
+  border-color: gray;
+  border-width: 2px;
+  border-style: solid;
+  padding: 0px;
+  margin-left:5px;
+}
+
+
+.searchResults {
+    height: 100%;
+}
+
+#searchResultsList {
+    max-height: 80%;
+    overflow-y: scroll;
+    scrollbar-color: #495f4b #b97f45;
+}
+#searchResultsList > button {
+    font: 18px 'Madimi One', sans-serif;
+    background-color: white;
+    border-style: solid;
+    border-width: 12px;
+
+    width: 100%;
+    height: fit-content;
+    margin: 4px 0;
+}
+#searchResultsList > button:hover {
+    filter: brightness(.70);
+}
+#searchResultsList > button:active {
+    filter: brightness(.40);
+}
+#searchResultsList > button > p {
+    width: 100%;
+    margin: 2px;
+}
+#searchResultsList > button > img {
+    height: 60px;
+}
+.search-event-button-date {
+    color: gray;
+    font-size: 14px;
+}
+.search-event-button-title {
+    font-size: 20px;
+}
+.search-event-button-notes {
+    font-size: 16px;
+    color: slategray;
+}
+
 /* events */
 .day-event-container > button {
   background-color: lightyellow;
@@ -29,6 +267,11 @@
 }
 .day-event-container > button:active {
   filter: brightness(.7);
+}
+.day-event-container-time {
+  color: slategray;
+  margin-top: 2px;
+  margin-bottom: -14px;
 }
 
 /* buttons */
@@ -68,14 +311,21 @@
 
 /* Font for month and year */
 #top-text{
+	position: absolute;
+	top: 0;
+	left: 5%;
+
+	display: inherit;
+
     color: #3A483B;
     font: 50px 'Madimi One', sans-serif;
     text-shadow: 0px 4px 2px rgba(0, 0, 0, .25), 
                -2px 0px white, 2px 0px white, 0px -2px white, 0px 2px white;
 }
 
+
 /* Font for the weekdays */
-.weekday{
+.weekday {
     color: #334264;
     font: 30px 'Madimi One', sans-serif;
     text-shadow: 0px 4px 2px rgba(0, 0, 0, .25), 
@@ -87,9 +337,115 @@
     display: flex;
 	width: 100%;
 	height: 100%;
-	padding-left: 2.37%;
-    flex-flow: row;
 }
+
+/* Weekly display */
+.selected-cloud {
+	filter: hue-rotate(230deg);
+}
+
+.day-header:hover {
+	filter: hue-rotate(70deg);
+}
+
+.day-header:active {
+	filter: hue-rotate(70deg) brightness(.7);
+}
+
+.day-header.selected-cloud:hover {
+	filter: hue-rotate(310deg);
+}
+
+.day-header.selected-cloud:active {
+	filter: hue-rotate(310deg) brightness(.7);
+}
+
+/* Clickables */
+#nav-bar {
+	margin-right:10px;
+	top: 8px;
+	right: 12px;
+	height: 60px;
+	z-index: 7;
+
+	display: flex;
+	flex-flow: row-reverse;
+	flex-direction: left;
+	position: absolute;
+}
+
+
+#apple {
+	position: relative;
+	margin: 5px;
+}
+
+
+#magnif-glass {
+	position: relative;
+	margin: 5px;
+}
+#magnif-glass:hover {
+  opacity: .7;
+}
+#magnif-glass:active {
+  opacity: 1;
+  filter: brightness(.7);
+}
+
+#search-widget {
+  position: relative;
+  width: 460px;
+  display: none;
+}
+#search-input {
+  height: 26px;
+  width: 400px;
+  left: 0;
+  position: absolute;
+  top: 6px;
+}
+#search-start-date {
+  top: 35px;
+  position: absolute;
+  left: 0;
+  height: 20px;
+  width: 190px;
+}
+#search-end-date {
+  position: absolute;
+  left: 203px;
+  top: 35px;
+  height: 20px;
+  width: 190px;
+}
+#search-submit {
+  height: 50px;
+  width: 50px;
+  left: 410px;
+  position: absolute;
+  top: 8px;
+}
+#last-week:hover, #next-week:hover {
+  filter: hue-rotate(200deg);
+}
+#last-week:active, #next-week:active {
+  filter: hue-rotate(200deg) brightness(.7);
+}
+#last-week{
+	z-index: 4;
+	position: relative;
+	max-width: 100%;
+	max-height: 100%;
+}
+
+#next-week{
+	z-index: 4;
+	position: relative;
+	max-width: 100%;
+	max-height: 100%;
+}
+
 
 /* General */
 html {
@@ -97,27 +453,29 @@ html {
 	width: 100%;
 }
 
+body {
+    display: flex;
+    user-select: none;
+    user-select: none;
+	height: 100%;
+	width: 100%;
+    background-color: #DADFDB;
+	margin: 0;
+
+    background-image: url('main_tree.png');
+    background-size: auto;
+    background-position: top left;
+    background-repeat: no-repeat;
+}
+
 /* Desktop view */
-@media only screen and (min-width: 1024px) {
+@media only screen and (min-width: 900.0001px) {
     #mobile-weekly {
         display: none;
     }
 
     body {
-        display: flex;
 		align-items: center;
-
-        user-select: none;
-		width: 100%;
-		height: 100%;
-		margin: 0;
-
-        background-color: #DADFDB;
-		
-		background-image: url('main_tree.png');
-        background-size: auto;
-        background-position: top left;
-		background-repeat: no-repeat;
     }
 
     #month-text{
@@ -160,25 +518,12 @@ html {
       z-index: 5;
     }
 	
-    #last-week:hover, #next-week:hover {
-      filter: hue-rotate(200deg);
-    }
-    #last-week:active, #next-week:active {
-      filter: hue-rotate(200deg) brightness(.7);
-    }
-    #last-week{
-        z-index: 4;
-        position: relative;
-        max-width: 100%;
-        max-height: 100%;
-    }
 
-    #next-week{
-        z-index: 4;
-        position: relative;
-        max-width: 100%;
-        max-height: 100%;
-    }
+
+	.weekday {
+        padding-left: 2.37%;
+        flex-flow: row;
+	}
 
     .day-section {
         position: relative;
@@ -214,25 +559,6 @@ html {
         margin-top: 0;
     }
 
-    .selected-cloud {
-        filter: hue-rotate(230deg);
-    }
-
-    .day-header:hover {
-        filter: hue-rotate(70deg);
-    }
-
-    .day-header:active {
-        filter: hue-rotate(70deg) brightness(.7);
-    }
-
-    .day-header.selected-cloud:hover {
-        filter: hue-rotate(310deg);
-    }
-
-    .day-header.selected-cloud:active {
-        filter: hue-rotate(310deg) brightness(.7);
-    }
 
 
 	#weekend-days {
@@ -274,95 +600,29 @@ html {
       height: 100px;
     }
 
+    #day6 > .day-event-container {
+        max-height: 63.7%;
+    }
+
+    #day7 > .day-event-container {
+        max-height: 58.5%;
+        position: relative;
+        top:-3%;
+    }
+
     #weekend-days > .day-section > .day-event-container > button {
     }
 
-	#top-text {
-		position: absolute;
-		top: 0;
-		left: 5%;
-	}
     #month-text, #year-text{
-		position: relative;
-		align-content: center;
-		margin: 0px 10px 0px 10px;
-		top: 4px;
-		left: 0;
-		display: inline-block;
-    }
-
-    /* start of clickables */
-    #nav-bar {
-        margin-right:10px;
-        top: 8px;
-        right: 12px;
-        height: 60px;
-		z-index: 5;
-
-        display: flex;
-        flex-flow: row-reverse;
-        flex-direction: left;
-        position: absolute;
-    }
-
-
-    #apple {
-        position: relative;
-        margin: 5px;
-    }
-  
-
-    #magnif-glass {
-        position: relative;
-        margin: 5px;
-    }
-    #magnif-glass:hover {
-      opacity: .7;
-    }
-    #magnif-glass:active {
-      opacity: 1;
-      filter: brightness(.7);
-    }
-
-    #search-widget {
       position: relative;
-      width: 460px;
-      display: none;
-    }
-    #search-input {
-      height: 26px;
-      width: 400px;
+      align-content: center;
+      margin: 0px 10px 0px 10px;
+      top: 4px;
       left: 0;
-      position: absolute;
-      top: 6px;
+      display: inline-block;
     }
-    #search-start-date {
-      top: 35px;
-      position: absolute;
-      left: 0;
-      height: 20px;
-      width: 190px;
-    }
-    #search-end-date {
-      position: absolute;
-      left: 203px;
-      top: 35px;
-      height: 20px;
-      width: 190px;
-    }
-    #search-submit {
-      height: 50px;
-      width: 50px;
-      left: 410px;
-      position: absolute;
-      top: 8px;
-    }
-
 
     .modal {
-        display: none; 
-        z-index: 20;
-
         position: absolute;
         width: 40%;
         height: 49%;
@@ -371,202 +631,22 @@ html {
 
         top: 50%;
         left: 50%;
-	    transform: translate(-50%, -50%);
-
-        background-image: url('/pop-up.png');
-        background-size: cover;
-        background-color: white;
-        border-radius: 50px;
-
-        color: #3A483B;
-        font: 20px 'Madimi One', sans-serif;
-        text-shadow: 0px 4px 2px rgba(0, 0, 0, .25), 
-                   -2px 0px white, 2px 0px white, 0px -2px white,
-                   0px 2px white;
+        transform: translate(-50%, -50%);
     }
 
-    .settingsModal {
-        display: none; 
-        z-index: 20;
-
-        position: absolute;
-        width: 30%;
-        height: 35%;
-        padding: 120px 50px;
-        margin: auto;
-
-        top: 50%;
-        left: 50%;
-	    transform: translate(-50%, -50%);
-
-        background-image: url('/pop-up2.png');
-        background-size: cover;
-        background-position: center;
-        border-radius: 50px;
-
-        color: #3A483B;
-        font: 20px 'Madimi One', sans-serif;
-        text-shadow: 0px 4px 2px rgba(0, 0, 0, .25), 
-                   -2px 0px white, 2px 0px white, 0px -2px white,
-                   0px 2px white;
-    }
-
-    /* New event modal */
-    #newEventModal > input {
-        font: 20px 'Madimi One', sans-serif;
-        border-style: solid;
-        border-color: gray;
-        border-width: 2px;
-    }
-    #newEventModal > .ok-button {
-        position: absolute;
-        bottom: 40px;
-        left: 50%;
-        transform: translate(-50%);
-    }
-
-    .event-button {
-        font: 18px 'Madimi One', sans-serif;
-        background-color: white;
-        border-style: solid;
-        border-width: 12px;
-
-        height: fit-content;
-        margin: 5px;
-    }
-    .event-button:hover {
-        filter: brightness(.70);
-    }
-    .event-button:active {
-        filter: brightness(.40);
-    }
-    .event-button > p {
-        margin: 3px
-    }
-
-
-    /* Edit event modal */
-    #editEventModalHeader > input, #editEventModalHeader > select {
-        font: 22px 'Madimi One', sans-serif;
-        background-color: whitesmoke;
-        border-color: gray;
-        border-width: 2px;
-        border-style: solid;
-    }
-
-    #editEventModal {
-        font: 18px 'Madimi One', sans-serif;
-    }
-    #editEventModal > select, #editEventModal > input,
-            #editEventModal > textarea {
-        background-color: whitesmoke;
-        border-color: gray;
-        border-width: 2px;
-        border-style: solid;
-        font: 16px 'Madimi One', sans-serif;
-        margin: 5px auto;
-    }
-    #edit-event-image-label {
-        min-width: 100px;
-        padding: 0 10px;
-        width: fit-content;
-        display: inline-block;
-        text-align: center;
-        font-size: 16px;
-        margin-bottom: 10px;
-        background-color: whitesmoke;
-        text-shadow: none;
-    }
-    #newCategory {
-      display: none;
-      align-items: center;
-      margin: 5px auto;
-    }
-    #newCategory > input, #edit-event-custom-alarm-widget > input{
-      font: 16px 'Madimi One', sans-serif;
-      background-color: whitesmoke;
-      border-color: gray;
-      border-width: 2px;
-      border-style: solid;
-      padding: 2px;
-      margin-left:5px;
-    }
-
-
-	.searchResults {
-		height: 100%;
-	}
-
-	#searchResultsList {
-		max-height: 80%;
-		overflow-y: scroll;
-		scrollbar-color: #495f4b #b97f45;
-	}
-    #searchResultsList > button {
-        font: 18px 'Madimi One', sans-serif;
-        background-color: white;
-        border-style: solid;
-        border-width: 12px;
-
-		width: 100%;
-        height: fit-content;
-        margin: 4px 0;
-    }
-    #searchResultsList > button:hover {
-        filter: brightness(.70);
-    }
-    #searchResultsList > button:active {
-        filter: brightness(.40);
-    }
-    #searchResultsList > button > p {
-		width: 100%;
-		margin: 2px;
-    }
-	#searchResultsList > button > img {
-		height: 60px;
-	}
-	.search-event-button-date {
-		color: gray;
-		font-size: 14px;
-    }
-	.search-event-button-title {
-		font-size: 20px;
-    }
-	.search-event-button-notes {
-		font-size: 16px;
-		color: slategray;
-    }
 }
 
 /* Mobile view */
-@media only screen and (max-width: 764px){
+@media only screen and (max-width: 900px){
     #desktop-weekly {
       display: none; 
     }
-    #mobile-weekly {
-      display: block;
-    }
-    #add-button{
-      display: block;
-    }
 
     body {
-        display: flex;
-        user-select: none;
-        background-color: #DADFDB;
-        background-size: cover;
-        background-position: top;
-        background-repeat: no-repeat;
-        overflow: hidden;
+		flex-direction: column;
+        overflow-y: clip;
     }
 
-
-
-	#top-text {
-		position: absolute;
-		top: 0;
-		left: 5%;
-	}
     #month-text{
 		position: relative;
 		align-content: center;
@@ -578,125 +658,135 @@ html {
         margin-left: 10px;
     }
 
-    #tree_body {
-        position: absolute;
-        max-width: 250%;
-        height: 100%; 
-        top:0px;
-        left:0px;
+    #weekly-arrows {
+      position: absolute;
+	  top: -20px;
+	  left: 60%;
+      z-index: 5;
+    }
+
+    #weekly-section {
+        position: relative;
+        top: 10%;
+
+        width: 100%;
+        height: 89%;
     }
 
     #mobile-weekly{
-        position: absolute;
-        height: 90%;
+		display: block;
         width: 100%;
-        top: 75px;
-        left: 0px;
+		height: 100%;
+        border-radius: 30px;
     }
 
-    #day1{
-        position: absolute;
-        top: 87px;
-        left: 0px;
-        width: 120px;
-    }
-    #day2{
-        position: absolute;
-        top: 185px;
-        left: 0px;
-        width: 120px;
-    }
-    #day3{
-        position: absolute;
-        top: 280px;
-        left: 0px;
-        width: 120px;
+	.weekday {
+		flex-flow: column;
+        padding-top: 1.5%;
+	}
+
+	#weekend-days {
+		position: relative;
+		display: flex;
+	}
+
+    .day-section {
+        position: relative;
+        height: 15.55%;
+        width: 100%;
+        z-index: 4;
+        margin-bottom: .29%;
+        display: flex;
     }
 
-    #day4{
-        position: absolute;
-        top: 370px;
-        left: 0px;
-        width: 120px;
-    }
-    #day5{
-        position: absolute;
-        top: 470px;
-        left: 0px;
-        width: 120px;
-    }
-    #day6{
-        position: absolute;
-        top: 570px;
-        left: 0px;
-        width: 120px;
-    }
-    #day7{
-        position: absolute;
-        top: 570px;
-        left: 210px;
-        width: 120px;
+    .day-header {
+		display: inline-block;
+        position: relative;
+        width: fit-content;
+		height: 100%;
+		padding-right: 2px;
+        z-index: 4;
     }
 
-    #to-reports{
-        position: absolute;
-        top: 0px;
-        left: 0px;
-    } 
+	.day-header > img {
+		height: 100%;
+	}
 
-    /* start of clickables */
-    #apple {
-        position: absolute;
-        margin-right:0px;
-        width: 60px;
-        top: 0px;
-        right: 0px;
+    .day-header > p {
+		position:absolute;
+		top: 8%;
+		left: -4%;
+		width: 100%;
+        text-align: center;
+        font-size: 30px;
     }
 
-    #magnif-glass {
-        position: absolute;
-        width: 35px;
-        height: auto;
-        margin-right:8px;
-        top:60px;
-        right:0px;
-    }
-    #magnif-glass:hover {
-      opacity: .8;
+    .day-header > .day-header-date {
+        padding-top: 0;
+        margin-top: 0;
     }
 
-    #to-reports{
-        position: absolute;
-        max-width: 48px;
-        height: auto;
-        top:  170px;
-        left: 90%;
+    .day-event-container {
+		display: inline-flex;
+		flex-direction: row;
+		height: 100%;
+		max-width: 75.5%;
+        overflow-x: auto;
+        overflow-y: clip;
+		scrollbar-color: #495f4b #b97f45;
     }
 
-    #add-button{
-        position: absolute;
-        top: 120px;
-        right: 1px;
-        width: 9%;
+
+
+    .day-event-container > button {
+        height: 100%;
+        min-width: 100px;
+        width: fit-content;
+		justify-content: center;
+        padding: 1px;
+        margin-right: 4px;
+        margin-left: -1px;
+        border-style: solid;
+        border-width: 10px;
+        font: 14px 'Madimi One', sans-serif;
+        display: flex;
+        flex-direction: column;
     }
 
-    #last-week:hover, #next-week:hover {
-      filter: hue-rotate(200deg);
+    .day-event-container > button > p {
+        margin: 0;
     }
-    #last-week:active, #next-week:active {
-      filter: hue-rotate(200deg) brightness(.7);
+
+    .day-event-container > button > img{
+      object-fit: contain;
+      height: 60%;
     }
-    #last-week {
-        position: absolute;
-        bottom: 0px;
-        right: 50px;
-        width: 8%;
+
+    #weekend-days {
+        margin-top: 1.1%;
+        height: 16.1%
     }
-    #next-week {
-        position: absolute;
-        bottom: 0px;
-        right: 5px;
-        width: 8%;
+
+    #day6, #day7 {
+        height: 100%;
+    }
+
+    #day6 {
+        width: 49.2%;
+    }
+    #day7 {
+        margin-left: -5%;
+        width: 50.3%;
+    }
+
+    .modal {
+        width: 99%;
+        height: 99%;
+        margin: auto;
+
+        top: 0;
+        left: 0;
+        padding: 120px 50px;
     }
 }
 
