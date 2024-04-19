@@ -29,6 +29,8 @@
       <div id=nav-bar>
         <img id = 'apple' src = "apple.png" draggable = 'false'
           onclick="openSettingsMenu()">
+        <img id = 'notes' src = "add.png" draggable = 'false'
+          onclick="getWeeklyNote()">
         <div id=search-widget style='display: none'>
           <input type=search id='search-input'
             placeholder="Enter phrase..."/>
@@ -186,6 +188,15 @@
       <input id="eventTitleInput" placeholder="Event Title" />
       <button class="submit-button" onclick="addEvent()">Add</button>
       <button class="ok-button" onclick="closeModal()">Close</button>
+    </div>
+
+    <!-- New modal for weekly notes -->
+    <div id="weeklyNoteModal" class="modal hidden">
+      <p id="currentWeekNote">Current Note: None</p>
+      <input type="date" id="weekOfNote">
+      <textarea style="width:411px; height: 159px" id="weeklyNoteInput" placeholder="Your notes for the week"></textarea>
+      <button class="submit-button" id="submitWeeklyNote">Save Note</button>
+      <button class="ok-button" id="cancelWeeklyNote">Cancel</button>
     </div>
 
     <!-- New modal for editing existing events -->
