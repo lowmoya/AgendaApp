@@ -76,8 +76,8 @@ function exportEvents()
     // Code below references fae's (export search results)
     // const startDate = document.getElementById('sDate').value;
     // const endDate = document.getElementById('eDate').value;
-    const startStr = document.getElementById('sDate').value;
-    const endStr = document.getElementById('eDate').value;
+    const startStr = document.getElementById('settings-date-start').value;
+    const endStr = document.getElementById('settings-date-end').value;
     const startSegments = startStr.split("-");
     const endSegments = endStr.split("-");
 
@@ -298,58 +298,58 @@ function searchEvents() {
   };
 }
 
-function shareEvents() {
-    const cancelButton = document.getElementById("cancelShare");
-    const confirmButton = document.getElementById("confirmShare");
-    
-    
+async function shareEvents() {
+    const username = document.getElementById("settings-share-username").value;
+	if (username.length == 0) {
+		alert("Must provide a username");
+		return;
+	}
 
-    // Show the share modal
-    shareModal.style.display = "block";
-    backDrop.style.display = "block";
-    shareModal.style.opacity = 1;
-    shareModal.style.visibility = "visible";
+	if (!confirm("Are you sure you want to send a copy to " + username + "?"))
+		return;
 
 
-    confirmButton.onclick = () =>
-    {
-        const username = document.getElementById("shareUser").value;
-        const startDate = document.getElementById("shareStart").value;
-          const endDate = document.getElementById("shareEnd").value;
-        const startDateObj = new Date(startDate);
-        const endDateObj = new Date(endDate);
+	const startDate = document.getElementById("settings-data-start").value;
+	const endDate = document.getElementById("settings-data-end").value;
+	const startDateObj = new Date(startDate);
+	const endDateObj = new Date(endDate);
 
-        if (startDateObj > endDateObj) {
-            alert("End date cannot be earlier than start date");
-            console.log("end date cannot be earlier");
-            return;
-        }
-    
-        if (startDate == "" || endDate == "")
-        {
-            alert("Please select a valid date range");
-            console.log("invalid date range");
-            return;
-        }
+	if (startDateObj > endDateObj) {
+		alert("End date cannot be earlier than start date");
+		console.log("end date cannot be earlier");
+		return;
+	}
 
-        fetch("/share", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Session: localStorage.session,
-            },
-            body: JSON.stringify({
-              type: "share",
-              username: username,
-              startDate: startDate,
-              endDate: endDate
-            }),
-          });
+	if (startDate == "" || endDate == "")
+	{
+		alert("Please select a valid date range");
+		console.log("invalid date range");
+		return;
+	}
 
-        shareModal.style.display = "none";
-        backDrop.style.display = "none";
-        alert("Share request to: " + username +" was sent.");
-    }
+	const response = await fetch("/share", {
+		method: "POST",
+		headers: {
+		  "Content-Type": "application/json",
+		  Session: localStorage.session,
+		},
+		body: JSON.stringify({
+		  type: "share",
+		  username: username,
+		  startDate: startDate,
+		  endDate: endDate
+		}),
+	});
+
+	if (response.status == 404) {
+		alert("No user found with that username.");
+	} else {
+		alert("Share request to " + username +" was sent.");
+		document.getElementById('settings-data-widget').style.display = 'none';
+		document.getElementById('settings-share-button').classList
+			.remove('clicked');
+	}
+
 }
 
 // Below are the functions for the weekly note modal functionality
@@ -971,8 +971,8 @@ async function load(shouldSync = true) {
                 let end = request.events.length - 1;
                 const startDate = request.events[0].month + "/" + request.events[0].day + "/" + request.events[0].year;
                 const endDate = request.events[end].month + "/" + request.events[end].day + "/" + request.events[end].year;
-                const confirmation = confirm(request.username +" wants to share events " + startDate + " to " +
-                endDate +" with you, do you wish to proceed?");
+                const confirmation = confirm(request.username +" wants to share a copy of their events from " + startDate + " to " +
+                endDate +" with you, would you like to accept it?");
 
                 if (confirmation)
                 {
@@ -1024,7 +1024,6 @@ async function load(shouldSync = true) {
 
                         })
                     });
-                    alert("Share request denied.")
                 }
             }
         }
@@ -1115,6 +1114,18 @@ function openSettingsMenu() {
 
     const settingsModal = document.getElementById('settingsModal');
     settingsModal.style.display = 'block';
+	backDrop.style.display = 'block';
+
+
+	// Data section
+	const dataWidget = document.getElementById('settings-data-widget');
+	const exportButton = document.getElementById('settings-export-button');
+	const shareButton = document.getElementById('settings-share-button');
+	dataWidget.style.display = 'none';
+	exportButton.classList.remove('clicked');
+	shareButton.classList.remove('clicked');
+
+
 
 	// Category list
     const categoriesList = document.getElementById('categoriesList');
@@ -1160,6 +1171,48 @@ function openSettingsMenu() {
 	const newDiv = document.createElement('div');
 	newDiv.appendChild(newButton);
 	categoriesList.appendChild(newDiv);
+}
+
+function settingsShareButton() {
+	const exportButton = document.getElementById('settings-export-button');
+	const shareButton = document.getElementById('settings-share-button');
+	const dataWidget = document.getElementById('settings-data-widget');
+	const usernameField = document.getElementById('settings-share-username');
+
+	if (shareButton.classList.contains('clicked')) {
+		shareButton.classList.remove('clicked');
+		dataWidget.style.display = 'none';
+	} else {
+		if (exportButton.classList.contains('clicked')) {
+			exportButton.classList.remove('clicked');
+		} else {
+			dataWidget.style.display = 'block';
+		}
+		usernameField.style.display = 'block';
+		shareButton.classList.add('clicked');
+	}
+
+}
+
+function settingsExportButton() {
+	const exportButton = document.getElementById('settings-export-button');
+	const shareButton = document.getElementById('settings-share-button');
+	const dataWidget = document.getElementById('settings-data-widget');
+	const usernameField = document.getElementById('settings-share-username');
+
+	if (exportButton.classList.contains('clicked')) {
+		exportButton.classList.remove('clicked');
+		dataWidget.style.display = 'none';
+	} else {
+		if (shareButton.classList.contains('clicked')) {
+			shareButton.classList.remove('clicked');
+		} else {
+			dataWidget.style.display = 'block';
+		}
+
+		usernameField.style.display = 'none';
+		exportButton.classList.add('clicked');
+	}
 }
 
 function settingsModalNewCategory() {
@@ -1235,6 +1288,7 @@ async function saveSettings() {
 
 function closeSettings() {
     settingsModal.style.display = 'none';
+	backDrop.style.display = 'none';
 }
 
 

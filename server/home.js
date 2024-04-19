@@ -366,7 +366,8 @@ async function shareAPI(req, res, id, body)
 					{_id: targetAccount._id},
 					{$set: {share_requests: calendarTarget.share_requests}});
 			res.statusCode = 200;
-			//return;
+      res.end();
+      return;
 		}
 
 	}
@@ -401,12 +402,14 @@ async function shareAPI(req, res, id, body)
 				//calendar[mY][eventInfo.day].alarm.type = 'none';
 
 				calendar[mY][eventInfo.day].push(eventInfo.event);
-        alarms.push({
-          eventMonthYear: mY,
-          eventDay: eventInfo.day,
-          eventIndex: calendar[mY][eventInfo.day].length,
-          date: eventInfo.alarm.time
-        });
+        if (eventInfo?.event?.alarm?.time != undefined) {
+          alarms.push({
+            eventMonthYear: mY,
+            eventDay: eventInfo.day,
+            eventIndex: calendar[mY][eventInfo.day].length,
+            date: eventInfo.event.alarm.time
+          });
+        }
 			}
 			share_requests.splice(body.index,1);
 

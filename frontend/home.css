@@ -81,6 +81,17 @@
   margin-bottom: 10px;
 }
 
+.settingsModal > input, .settingsModal > div > input {
+    font: 16px 'Madimi One', sans-serif;
+    border-style: solid;
+    border-color: slategray;
+    margin: 2px;
+}
+
+.settingsModal > .clicked {
+    background-color: slategray;
+}
+
 #categoriesList {
   max-height: 200px;
   overflow-y: auto;
