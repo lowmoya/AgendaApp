@@ -25,6 +25,9 @@
     display: none; 
     z-index: 20;
 
+    overflow-y: auto;
+    scrollbar-color: #495f4b #b97f45;
+
     position: absolute;
     margin: auto;
 
@@ -41,28 +44,15 @@
                0px 2px white;
 }
 
-.settingsModal {
+#settingsModal {
     display: none; 
     z-index: 20;
 
-    position: absolute;
-    width: 400px;
-    height: 600px;
-    padding: 10px 50px;
-    margin: auto;
-
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
 
     background-image: url('/pop-up2.png');
     background-size: cover;
     background-position: center;
     border-radius: 50px;
-
-    border-style: solid;
-    border-color: #b97f45;
-    border-width: 8px;
 
     color: #3A483B;
     font: 20px 'Madimi One', sans-serif;
@@ -90,6 +80,10 @@
 
 .settingsModal > .clicked {
     background-color: slategray;
+}
+
+.mobile-popup-background {
+  display: none;
 }
 
 #categoriesList {
@@ -124,8 +118,9 @@
 
 #settings-section-close {
   text-align: center;
-  bottom: 40px;
-  position: absolute;
+  margin-top: 60px;
+  margin-bottom: 20px;
+  position: relative;
   left: 0;
   width: 100%;
 }
@@ -138,10 +133,19 @@
     border-width: 2px;
 }
 #newEventModal > .ok-button {
-    position: absolute;
-    bottom: 40px;
+    position: relative;
+    margin-top: 40px;
+    margin-bottom: 20px;
     left: 50%;
+    display: block;
+
     transform: translate(-50%);
+}
+
+#eventsList {
+  max-height: 53%;
+  overflow-y: auto;
+  scrollbar-color: #495f4b #b97f45;
 }
 
 .event-button {
@@ -415,6 +419,7 @@
   left: 0;
   position: absolute;
   top: 6px;
+  font: 16px 'Madimi One', sans-serif;
 }
 #search-start-date {
   top: 35px;
@@ -422,6 +427,7 @@
   left: 0;
   height: 20px;
   width: 190px;
+  font: 16px 'Madimi One', sans-serif;
 }
 #search-end-date {
   position: absolute;
@@ -429,6 +435,7 @@
   top: 35px;
   height: 20px;
   width: 190px;
+  font: 16px 'Madimi One', sans-serif;
 }
 #search-submit {
   height: 50px;
@@ -436,6 +443,7 @@
   left: 410px;
   position: absolute;
   top: 8px;
+  font: 16px 'Madimi One', sans-serif;
 }
 #last-week:hover, #next-week:hover {
   filter: hue-rotate(200deg);
@@ -635,8 +643,8 @@ body {
 
     .modal {
         position: absolute;
-        width: 40%;
-        height: 49%;
+        width: 660px;
+        height: 350px;
         padding: 120px 50px;
         margin: auto;
 
@@ -644,6 +652,29 @@ body {
         left: 50%;
         transform: translate(-50%, -50%);
     }
+
+    #noteInput {
+      width: 100%;
+      height: 44%;
+      margin-bottom: 10px;
+    }
+
+    #settingsModal {
+      position: absolute;
+      width: 400px;
+      height: 600px;
+      padding: 10px 50px;
+      margin: auto;
+
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      border-style: solid;
+      border-color: #b97f45;
+      border-width: 8px;
+    }
+
 
 }
 
@@ -654,26 +685,64 @@ body {
     }
 
     body {
-		flex-direction: column;
+        flex-direction: column;
         overflow-y: clip;
     }
 
     #month-text{
-		position: relative;
-		align-content: center;
-		margin: 0px 10px 0px 10px;
+        position: relative;
+        align-content: center;
+        margin: 0px 10px 0px 10px;
     }
     #year-text{
         position: relative;
-		align-content: center;
+        align-content: center;
         margin-left: 10px;
     }
 
     #weekly-arrows {
       position: absolute;
-	  top: -20px;
-	  left: 60%;
+      top: -20px;
+      left: 60%;
       z-index: 5;
+    }
+
+    #search-widget {
+      position: relative;
+      width: 260px;
+      height: 65px;
+      display: none;
+      background-color: tan;
+    }
+    #search-input {
+      height: 26px;
+      width: 200px;
+      left: 2.5px;
+      position: absolute;
+      top: 6px;
+    }
+    #search-start-date {
+      top: 35px;
+      position: absolute;
+      left: 2.5px;
+      height: 20px;
+      width: 90px;
+      font-size: 12px;
+    }
+    #search-end-date {
+      position: absolute;
+      left: 105.5px;
+      top: 35px;
+      height: 20px;
+      width: 90px;
+      font-size: 12px;
+    }
+    #search-submit {
+      height: 50px;
+      width: 50px;
+      left: 205px;
+      position: absolute;
+      top: 8px;
     }
 
     #weekly-section {
@@ -685,21 +754,21 @@ body {
     }
 
     #mobile-weekly{
-		display: block;
+        display: block;
         width: 100%;
-		height: 100%;
+        height: 100%;
         border-radius: 30px;
     }
 
-	.weekday {
-		flex-flow: column;
+    .weekday {
+        flex-flow: column;
         padding-top: 1.5%;
-	}
+    }
 
-	#weekend-days {
-		position: relative;
-		display: flex;
-	}
+    #weekend-days {
+        position: relative;
+        display: flex;
+    }
 
     .day-section {
         position: relative;
@@ -711,23 +780,23 @@ body {
     }
 
     .day-header {
-		display: inline-block;
+        display: inline-block;
         position: relative;
         width: fit-content;
-		height: 100%;
-		padding-right: 2px;
+        height: 100%;
+        padding-right: 2px;
         z-index: 4;
     }
 
-	.day-header > img {
-		height: 100%;
-	}
+    .day-header > img {
+        height: 100%;
+    }
 
     .day-header > p {
-		position:absolute;
-		top: 8%;
-		left: -4%;
-		width: 100%;
+        position:absolute;
+        top: 8%;
+        left: -4%;
+        width: 100%;
         text-align: center;
         font-size: 30px;
     }
@@ -738,13 +807,13 @@ body {
     }
 
     .day-event-container {
-		display: inline-flex;
-		flex-direction: row;
-		height: 100%;
-		max-width: 75.5%;
-        overflow-x: auto;
-        overflow-y: clip;
-		scrollbar-color: #495f4b #b97f45;
+      display: inline-flex;
+      flex-direction: row;
+      height: 100%;
+      max-width: 75.5%;
+      overflow-x: auto;
+      overflow-y: clip;
+      scrollbar-color: #495f4b #b97f45;
     }
 
 
@@ -753,7 +822,7 @@ body {
         height: 100%;
         min-width: 100px;
         width: fit-content;
-		justify-content: center;
+        justify-content: center;
         padding: 1px;
         margin-right: 4px;
         margin-left: -1px;
@@ -791,14 +860,68 @@ body {
     }
 
     .modal {
-        width: 99%;
-        height: 99%;
+        width: 90%;
+        height: 94%;
+        padding: 5%;
         margin: auto;
 
         top: 0;
         left: 0;
-        padding: 120px 50px;
+        border-radius: 0;
     }
+
+    #settingsModal {
+      background-size: contain;
+      border-radius: 0;
+      border-width: 0;
+    }
+
+    #categoriesList {
+      max-height: 147px;
+    }
+
+    #noteInput {
+      width: 80%;
+      height: 28%;
+      margin-bottom: 10px;
+    }
+
+    #editEventModal > div > input:not([type = 'text']),
+        #editEventModal > div > button {
+      font-size: 16px;
+      width: 120px;
+    }
+
+    #editEventTitleInput {
+      font-size: 20px;
+      width: 200px;
+    }
+
+    #newEventModal {
+      width: 90%;
+      height: 80%;
+      padding: 10% 5%;
+    }
+
+    #editEventModal {
+      height: 60%;
+      padding: 20% 5%;
+    }
+    
+  .mobile-popup-background {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 0;
+    z-index: -1;
+  }
+
+  #modalBackDrop {
+    width:0;
+    height:0;
+  }
 }
 
 

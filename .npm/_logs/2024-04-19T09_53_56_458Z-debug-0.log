@@ -1,0 +1,61 @@
+0 verbose cli /usr/local/bin/node /usr/local/bin/npm
+1 info using npm@10.2.4
+2 info using node@v21.6.2
+3 timing npm:load:whichnode Completed in 1ms
+4 timing config:load:defaults Completed in 1ms
+5 timing config:load:file:/usr/local/lib/node_modules/npm/npmrc Completed in 2ms
+6 timing config:load:builtin Completed in 2ms
+7 timing config:load:cli Completed in 2ms
+8 timing config:load:env Completed in 0ms
+9 timing config:load:file:/.npmrc Completed in 0ms
+10 timing config:load:project Completed in 1ms
+11 timing config:load:file:/root/.npmrc Completed in 0ms
+12 timing config:load:user Completed in 1ms
+13 timing config:load:file:/usr/local/etc/npmrc Completed in 6ms
+14 timing config:load:global Completed in 6ms
+15 timing config:load:setEnvs Completed in 1ms
+16 timing config:load Completed in 15ms
+17 timing npm:load:configload Completed in 16ms
+18 timing config:load:flatten Completed in 2ms
+19 timing npm:load:mkdirpcache Completed in 1ms
+20 timing npm:load:mkdirplogs Completed in 0ms
+21 verbose title npm i
+22 verbose argv "i"
+23 timing npm:load:setTitle Completed in 1ms
+24 timing npm:load:display Completed in 1ms
+25 verbose logfile logs-max:10 dir:/root/.npm/_logs/2024-04-19T09_53_56_458Z-
+26 verbose logfile /root/.npm/_logs/2024-04-19T09_53_56_458Z-debug-0.log
+27 timing npm:load:logFile Completed in 10ms
+28 timing npm:load:timers Completed in 0ms
+29 timing npm:load:configScope Completed in 0ms
+30 timing npm:load Completed in 49ms
+31 timing config:load:flatten Completed in 0ms
+32 timing arborist:ctor Completed in 1ms
+33 silly logfile done cleaning log files
+34 timing arborist:ctor Completed in 0ms
+35 timing idealTree:init Completed in 12ms
+36 timing idealTree:userRequests Completed in 1ms
+37 silly idealTree buildDeps
+38 timing idealTree Completed in 13ms
+39 timing command:i Completed in 92ms
+40 verbose stack Error: Tracker "idealTree" already exists
+40 verbose stack     at [_onError] (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/tracker.js:100:11)
+40 verbose stack     at Arborist.addTracker (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/tracker.js:27:21)
+40 verbose stack     at #buildDeps (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/build-ideal-tree.js:768:10)
+40 verbose stack     at Arborist.buildIdealTree (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/build-ideal-tree.js:196:28)
+40 verbose stack     at async Promise.all (index 1)
+40 verbose stack     at async Arborist.reify (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/reify.js:159:5)
+40 verbose stack     at async Install.exec (/usr/local/lib/node_modules/npm/lib/commands/install.js:152:5)
+40 verbose stack     at async module.exports (/usr/local/lib/node_modules/npm/lib/cli-entry.js:61:5)
+41 verbose cwd /
+42 verbose Linux 5.15.133.1-microsoft-standard-WSL2
+43 verbose node v21.6.2
+44 verbose npm  v10.2.4
+45 error Tracker "idealTree" already exists
+46 verbose exit 1
+47 timing npm Completed in 639ms
+48 verbose unfinished npm timer reify 1713520437015
+49 verbose unfinished npm timer reify:loadTrees 1713520437090
+50 verbose unfinished npm timer idealTree:buildDeps 1713520437104
+51 verbose code 1
+52 error A complete log of this run can be found in: /root/.npm/_logs/2024-04-19T09_53_56_458Z-debug-0.log

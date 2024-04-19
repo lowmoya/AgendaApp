@@ -12,7 +12,13 @@ var database;
 
 
 async function initAPI() {
-	client = new MongoClient(url);
+    if (process.env.WA_LOCAL_DATABASE) {
+        client = new MongoClient("mongodb://mongo:27017");
+		console.log('INF\t| Using local database');
+    } else {
+        client = new MongoClient(url);
+    }
+
 	await client.connect();
 	console.log('INF\t| Connected to MongoDB');
 	database = client.db(database_name);

@@ -1,0 +1,31 @@
+# Host the Mongo database and the NodeJS server in docker containers
+
+services:
+  mongo:
+    container_name: mongo
+    image: mongo
+    restart: always
+    volumes:
+      - ./db_records:/data/db
+    networks:
+      - data-net
+  
+  server:
+    container_name: server
+    image: node
+    restart: always
+    ports:
+      - 4000:4000
+    volumes:
+      - ./:/root/agenda
+    working_dir:
+      /root/agenda
+    networks:
+      - data-net
+    environment:
+      WA_LOCAL_DATABASE: 1
+    command: bash -c "npm i && ./start.sh"
+
+networks:
+  data-net:
+    driver: bridge

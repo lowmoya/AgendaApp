@@ -72,6 +72,7 @@ const page_bindings = [
 	{ file: 'frontend/resources/pop-up.png',				type: 'image/png' },
 	{ file: 'frontend/resources/pop-up2.png',				type: 'image/png' },
 ];
+const static_pages = [];
 
 
 // Hosted APIS for the request handler to forward towards.
@@ -105,10 +106,10 @@ async function requestHandler(req, res) {
 	if (req.method == 'GET') {
 		let index = pages.indexOf(req.url);
 		if (index != -1) {
-			supplyPage(res, page_bindings[index].file, page_bindings[index].type);
+			supplyPage(res, index);
 		} else {
 			supplyMissingPage(res);
-			console.log(`WRN	| Unsupplied file '${req.url}' requested.`);
+			console.log(`WRN\t|Unsupplied file '${req.url}' requested.`);
 		}
 	} else if (req.method == 'POST') {
 		// Get index of requested api, if invalid respond with bad request.
@@ -187,18 +188,25 @@ async function requestHandler(req, res) {
 }
 
 
-function supplyPage(res, file, type) {
-	fs.readFile(file, (err, data) => {
-		if (err) {
-			supplyMissingPage(res);
-			console.error(`ERR	| File '${file}' missing.`);
-		} else {
-			res.statusCode = 200;
-			res.setHeader('Content-Type', type);
-			res.end(data);
-			console.error(`INF	| Supplied client '${file}'.`);
-		}
-	});
+function supplyPage(res, index) {
+    if (process.env.WA_RELEASE) {
+        res.statusCode = 200;
+        res.setHeader('Content-Type', page_bindings[index].type);
+        res.end(static_pages[index]);
+    } else {
+        fs.readFile(page_bindings[index].file, (err, data) => {
+            if (err) {
+                supplyMissingPage(res);
+                console.error(`ERR\t| File '${file}' missing.`);
+            } else {
+                res.statusCode = 200;
+                res.setHeader('Content-Type', page_bindings[index].type);
+                res.end(data);
+                console.log('INF\t|Supplied client "'
+                    + page_bindings[index].file + '"');
+            }
+        });
+    }
 }
 
 
@@ -209,9 +217,40 @@ function supplyMissingPage(res) {
 }
 
 
+async function preloadPages() {
+	console.log("INF\t| Starting page preloading...");
+	for (let binding of page_bindings) {
+		static_pages.push(new Promise((res, req) => {
+			fs.readFile(binding.file, (err, data) => {
+				if (err) {
+					supplyMissingPage(res);
+					console.error(`ERR\t|File '${file}' missing.`);
+					res('Page missing.');
+				} else {
+					res(data);
+				}
+			});
+		}));
+	}
+
+    for (p in static_pages) {
+        static_pages[p] = await static_pages[p];
+    }
+
+	console.log("INF\t| Finished page preloading");
+}
+
+
 // Create the server
 async function initialize() {
-	await mongo.initAPI();
+	if (process.env.WA_RELEASE) {
+		const pagesPromise = preloadPages();
+		await mongo.initAPI();
+		await pagesPromise;
+	} else {
+		await mongo.initAPI();
+	}
+
 	await auth.initAPI();
 	// Wrapped in try to prevent any missed malformed data exceptions from
 	// crashing the server.
@@ -223,7 +262,7 @@ async function initialize() {
 		}
 	});
 	server.listen(port, () => {
-		console.log(`INF	| Server running at http//${hostname}:${port}/`);
+		console.log(`INF\t| Server running at http//${hostname}:${port}/`);
 	});
 }
 

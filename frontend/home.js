@@ -71,91 +71,25 @@ function openModal(day) {
     backDrop.style.display = 'block';
 }
 
-function exportEvents() 
+async function exportEvents() 
 {
-    // Code below references fae's (export search results)
-    // const startDate = document.getElementById('sDate').value;
-    // const endDate = document.getElementById('eDate').value;
-    const startStr = document.getElementById('settings-date-start').value;
-    const endStr = document.getElementById('settings-date-end').value;
-    const startSegments = startStr.split("-");
-    const endSegments = endStr.split("-");
+    /* Make call to export API */
+	const response = await fetch("/home", {
+	    method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            session: localStorage.session,
+        },
+        body: JSON.stringify({
+            type: "export",
+            start: document.getElementById('settings-data-start').value,
+            end: document.getElementById('settings-data-end').value,
+            date: new Date(),
+        }),
+    });
 
-    let start, end;
-    // store list of events that are included in user's date range
-    let eventsList = [];
-    let txt = '';
-
-    currentDate = new Date();
-
-    if (startSegments.length != 3) 
-    {
-      start = {
-        year: currentDate.getFullYear() - 5,
-        month: currentDate.getMonth() + 1,
-        day: currentDate.getDate(),
-      };
-    } 
-    else 
-    {
-      start = {
-        year: parseInt(startSegments[0]),
-        month: parseInt(startSegments[1]),
-        day: parseInt(startSegments[2]),
-      };
-    }
-
-    if (endSegments.length != 3) 
-    {
-      end = {
-        year: currentDate.getFullYear() + 5,
-        month: currentDate.getMonth() + 1,
-        day: currentDate.getDate(),
-      };
-    } 
-    else 
-    {
-      end = {
-        year: parseInt(endSegments[0]),
-        month: parseInt(endSegments[1]),
-        day: parseInt(endSegments[2]),
-      };
-    }
-    
-    // begin event iteration
-    for (let year = start.year; year <= end.year; ++year) 
-    {
-        for (let month = 0; month <= 12; ++month) 
-        { // check if before or after start month
-            if (year == start.year && month < start.month)
-                continue;
-            // Skip if no contents
-            if (year == end.year && month > end.month)
-                break; 
-            
-            const monthEvents = events[month + "_" + year];
-            
-            // vvvvvvv monthEvents might be undefined vvvvvvv
-            if (monthEvents == undefined) continue;
-            
-            for (let day = 0; day <= 31; ++day) 
-            {
-                // check if before or after start day
-                if (year == start.year && month == start.month) if (day < start.day) continue;
-                if (year == end.year && month == end.month) if (day > end.day) break;
-                // Skip if no content
-                if (monthEvents[day] == undefined) continue;
-                
-                // add info about events on current date to the txt file
-                for (let i = 0; i < monthEvents[day].length; i++) 
-                {   
-                    txt += `Date: ${month}/${day}/${year}\nTitle: ${monthEvents[day][i].title}\nNotes: ${monthEvents[day][i].notes}\n\n`;
-                }
-            }
-        }
-    }
-
-    const txtBlob = new Blob([txt], {type: 'text/plain'});
+    const output = await response.text();
+    const txtBlob = new Blob([output], {type: 'text/plain'});
 
     // download url
     const url = document.createElement('a');
@@ -168,6 +102,10 @@ function exportEvents()
     // delete temporary link to download
     document.body.removeChild(url);
     URL.revokeObjectURL(url.href);
+
+	document.getElementById('settings-data-widget').style.display = 'none';
+	document.getElementById('settings-export-button').classList
+		.remove('clicked');
 }
 
 
@@ -265,10 +203,10 @@ function searchEvents() {
       exportButton.onclick = () => {
             eventsList.forEach((entry) => {
               txt += `Date: ${entry.month}/${entry.day}/${entry.year}\nTitle: ${entry.event.title}\nCategory: ${entry.event.category}\n`;
-              if (entry.event.notes.length != 0)
-                txt += 'Notes: ' + entry.event.notes + '\n';
               if (entry.event.imagePath != undefined)
                 txt += 'Image: ' + entry.event.imagePath + '\n';
+              if (entry.event.notes.length != 0)
+                txt += 'Notes: ' + entry.event.notes + '\n';
               txt += '\n';
             });
             const txtBlob = new Blob([txt], {type: 'text/plain'});
@@ -632,31 +570,39 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
             ? 'inline-block' : 'none';
     });
 
+
+
     // Default custom category values
     const catColor = document.getElementById('categoryColor');
     catColor.value = "#444444";
     const newCategory = document.getElementById('newCategory');
-    newCategory.style.display = 'none';
-    
 
     // Load set category values
     const categorySelector = document.getElementById('eventCat');
+
     var categoryFound = false;
-    
-    if (event.category != undefined)
-    {
-        for (key in categories)
-        {
-            if (key.toLowerCase() == event.category.toLowerCase())
-            {
+    if (event.category != undefined) {
+        for (key in categories) {
+            if (key.toLowerCase() == event.category.toLowerCase()) {
                 categoryFound = true;
                 break;
             }
         }
     }
 
-    categorySelector.value = categoryFound ? event.category.toLowerCase()
-		: Object.keys(categories)[0];
+	if (categoryFound) {
+		categorySelector.value = event.category.toLowerCase();
+    	newCategory.style.display = 'none';
+	} else {
+		const keys = Object.keys(categories);
+		if (keys.length != 0) {
+			categorySelector.value = keys[0];
+    		newCategory.style.display = 'none';
+		} else {
+			categorySelector.value = 'custom';
+			newCategory.style.display = 'flex';
+		}
+	}
 
 
     // Set image inputs
@@ -699,9 +645,10 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
             const newCatSection = document.getElementById('newCategory');
             const color = document.getElementById('categoryColor');
 
-            if (newName.length == 0)
-                newName = Object.keys(categories)[0];
-            categoryName = newName;
+            if (newName.length == 0 || newName == 'custom') {
+				const keys = Object.keys(categories);
+				newName = keys.length != 0 ? keys[0] : 'personal';
+			}
 
             // check if name is in categories
             var unique = true;
@@ -1215,6 +1162,17 @@ function settingsExportButton() {
 	}
 }
 
+function settingsDataSubmitButton() {
+	const exportButton = document.getElementById('settings-export-button');
+	const shareButton = document.getElementById('settings-share-button');
+
+	if (exportButton.classList.contains('clicked')) {
+		exportEvents();
+	} else if (shareButton.classList.contains('clicked')) {
+		shareEvents();
+	}
+}
+
 function settingsModalNewCategory() {
 	const categoriesList = document.getElementById('categoriesList');
 	const listLength = categoriesList.childElementCount;
@@ -1262,12 +1220,10 @@ async function saveSettings() {
 		const color = div.childNodes[1].value;
 		if (title != '') {
 			newCategories[title.toLowerCase()] = color;
-			console.log(title.toLowerCase(), color);
 		}
 	}
 	categories = newCategories;
 	localStorage.setItem('categories', JSON.stringify(categories));
-	console.log(newCategories);
 
 	await fetch('/home', {
 		method: 'POST',

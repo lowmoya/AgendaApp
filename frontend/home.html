@@ -44,7 +44,7 @@
       <div id="modalBackDrop"></div>
 
       <!-- Creating a settings modal -->
-      <div id="settingsModal" class="settingsModal">
+      <div id="settingsModal" class="modal">
         <h2>Settings Menu</h2>
         <h3>Data</h3>
         <input type="button" id='settings-share-button' class="ok-button"
@@ -58,7 +58,7 @@
           <input id='settings-data-end' type="date" />
           <br>
           <input type="button" class="submit-button" value="Okay"
-            onclick='shareEvents()'/>
+            onclick='settingsDataSubmitButton()'/>
         </div>
 
         <h3>Categories</h3>
@@ -87,6 +87,7 @@
           <button id="export-search-button" class='submit-button' >Export</button>
           <button id="close-search-button" class='no-button' >Close</button>
         </div>
+        <img class='mobile-popup-background' src='pop-up.png'>
       </div>
 
       <!-- Right pane with the calendar contents -->
@@ -163,35 +164,25 @@
             </div>
           </div>
         </div>
-
-      <!-- Exporting events -->
-      <!--<div id="exportEvents">
-        <div id="exportTitle">Export Events</div>
-        <p>Select the date range for the events you would like to export</p>
-        <label for="startDate" id="startDate">Start Date:</label>
-        <input type="date" id="sDate">
-        <label for="endDate" id="endDate">End Date:</label>
-        <input type="date" id="eDate">
-        <button id="exportButton">Export Events</button>
-      </div>-->
       
     </div>
 
     <!-- Creating a new event modal -->
     <div id="newEventModal" class="modal" style="display: none">
       <h2>Day's Events</h2>
-      <ul id="eventsList" style="max-height: 53%;overflow-y: auto"></ul>
+      <ul id="eventsList"></ul>
 
       <h2>New Event</h2>
       <input id="eventTitleInput" placeholder="Event Title" />
       <button class="submit-button" onclick="addEvent()">Add</button>
       <button class="ok-button" onclick="closeModal()">Close</button>
+      <img class='mobile-popup-background' src='pop-up.png'>
     </div>
 
     <!-- New modal for editing existing events -->
     <div id="editEventModal" class="modal" style="display: none">
       <div id="editEventModalHeader" style="text-align: center">
-        <input id="editEventTitleInput" placeholder="Event Title" />
+        <input type=text id="editEventTitleInput" placeholder="Event Title" />
         <select id="eventCat">
         </select>
       </div>
@@ -199,7 +190,7 @@
       <div id="newCategory">
         <label for="newCategoryName">Category:</label>
         <input type="text" id="newCategoryName"
-          placeholder="Enter category name"/>
+          placeholder="Name"/>
         <input type="color" id="categoryColor" style='width:28px;height:28px'
           value="#444444" />
       </div> 
@@ -242,8 +233,7 @@
         onclick="editModalRemoveImage()" value="X" style='margin:0' />
       <br>
 
-      <textarea id="noteInput" placeholder="Note..."
-        style="width: 100%; height: 44%;margin-bottom: 10px"></textarea>
+      <textarea id="noteInput" placeholder="Notes..."></textarea>
 
       <!-- Saving the event -->
       <div style="text-align: center">
@@ -255,6 +245,7 @@
           onclick="deleteEvent()">Delete Event</button>
       </div>
 
+      <img class='mobile-popup-background' src='pop-up.png'>
     </div>
   </body>
 
