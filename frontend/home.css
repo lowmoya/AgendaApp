@@ -321,7 +321,11 @@
     border-style: solid;
     border-color: darkgray;
     border-width: 2px;
-  }
+}
+
+#openWeeklyNoteModal{
+    
+}
 
 
 /* Font for month and year */

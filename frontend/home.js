@@ -299,19 +299,55 @@ function getWeekNumber(date) {
     return Math.ceil(offsetDate / 7);
 }
 
+function loadCurrentWeekNote() {
+    const today = new Date();
+    const monthYear = (today.getMonth() + 1) + '_' + today.getFullYear();
+    const weekId = 'w' + getWeekNumber(today);
+    const events = JSON.parse(localStorage.getItem('events')) || {};
+    
+    if (events[monthYear] && events[monthYear][weekId] && events[monthYear][weekId].length > 0) {
+        return events[monthYear][weekId][events[monthYear][weekId].length - 1].note;
+    }
+    return "No note for this week";
+}
+
 function getWeeklyNote() {
     const editWeeklyNoteInput = document.getElementById('weeklyNoteInput');
     const weeklyNoteModal = document.getElementById('weeklyNoteModal');
+    const currentWeekNoteDisplay = document.getElementById('currentWeekNote');
 
     // Open the weekly note modal
-    document.getElementById('openWeeklyNoteModal').addEventListener('click', () => {
-        weeklyNoteModal.style.display = 'block';
-        weeklyNoteModal.style.opacity = 1;
-        weeklyNoteModal.style.visibility = 'visible';
-        backDrop.style.display = 'block';
-        weekOfNote.style.display = 'block';
+    const today = new Date();
+    const dateString = today.toISOString().substring(0, 10);
+
+    weeklyNoteModal.style.display = 'block';
+    weeklyNoteModal.style.opacity = 1;
+    weeklyNoteModal.style.visibility = 'visible';
+    backDrop.style.display = 'block';
+    weekOfNote.style.display = 'block';
+    weekOfNote.value = dateString;
+
+    weekOfNote.dispatchEvent(new Event('change'));
+
+
+    weekOfNote.addEventListener('change', () => {
+        const datePieces = weekOfNote.value.split('-');
+        const date = new Date(parseInt(datePieces[0]), parseInt(datePieces[1]) - 1, parseInt(datePieces[2]));
+        const monthYear = (date.getMonth() + 1) + '_' + date.getFullYear();
+        const weekNumber = getWeekNumber(date);
+        const weekId = 'w' + weekNumber;
+        
+        // Clear existing note in input box
+        editWeeklyNoteInput.value = '';
+
+        // Load existing note if available
+        if (events[monthYear] && events[monthYear][weekId] && events[monthYear][weekId].length > 0) {
+            const lastEvent = events[monthYear][weekId][events[monthYear][weekId].length - 1];
+            editWeeklyNoteInput.value = lastEvent.note;
+        }
     });
 
+    
     // Submit the weekly note
     document.getElementById('submitWeeklyNote').addEventListener('click', () => {
         const updatedWeeklyNote = editWeeklyNoteInput.value.trim();
@@ -323,8 +359,7 @@ function getWeeklyNote() {
         const weekNumber = getWeekNumber(date);
         const weekId = 'w' + weekNumber;
 
-        //const firstDayOfWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 1); // Adjust for first day of week assuming Sunday is start
-        //const day = firstDayOfWeek.getDate();
+        let weeklyNote = "No note for this week";
         if (!events[monthYear]) {
             events[monthYear] = {};
             events[monthYear][weekId] = [];
@@ -333,9 +368,15 @@ function getWeeklyNote() {
         }
         var weeklyHome = events[monthYear][weekId];
 
-        // Save to local storage (optional, if you want to cache or use locally)
+        // Save to local storage 
         weeklyHome.push({ note: updatedWeeklyNote });
         localStorage.setItem('events', JSON.stringify(events));
+        if (getWeekNumber(currentDate) == weekNumber){
+            weeklyNote = events[monthYear][weekId][0];
+            console.log(weeklyNote);
+            currentWeekNoteDisplay.textContent = "Current Note: " + weeklyNote;
+        }
+        
 
         // Send the note to the server
         fetch('/home', {
