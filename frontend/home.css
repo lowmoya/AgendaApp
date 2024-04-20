@@ -1,23 +1,23 @@
 /* Both views */
 /* pop ups */
 #modalBackDrop {
-  display: none;
-  top: 0px;
-  left: 0px;
-  z-index: 10;
-  width: 100vw;
-  height: 100vh;
-  position: absolute;
-  background-color: rgba(0,0,0,0.8);
+    display: none;
+    top: 0px;
+    left: 0px;
+    z-index: 10;
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    background-color: rgba(0,0,0,0.8);
 }
 
 #modalBackDrop.active {
-  display: block; 
+    display: block; 
 }
 
 .modal.show {
-  opacity: 1;
-  visibility: visible;
+    opacity: 1;
+    visibility: visible;
 }
 
 /* modals */
@@ -74,14 +74,14 @@
 }
 
 .mobile-popup-background {
-  display: none;
+    display: none;
 }
 
 #categoriesList {
-  max-height: 200px;
-  overflow-y: auto;
-  width: 300px;
-  scrollbar-color: #495f4b #b97f45;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 300px;
+    scrollbar-color: #495f4b #b97f45;
 }
 
 #categoriesList > div > input {
@@ -95,25 +95,25 @@
 }
 
 #categoriesList > div > input[type='color'] {
-  width: 24px;
-  height: 24px;
-  top: 4px;
-  position: relative;
-  padding: 0px;
+    width: 24px;
+    height: 24px;
+    top: 4px;
+    position: relative;
+    padding: 0px;
 }
 
 #categoriesList > div > .no-button {
-  width: 24px;
-  height: 24px;
+    width: 24px;
+    height: 24px;
 }
 
 #settings-section-close {
-  text-align: center;
-  margin-top: 60px;
-  margin-bottom: 20px;
-  position: relative;
-  left: 0;
-  width: 100%;
+    text-align: center;
+    margin-top: 60px;
+    margin-bottom: 20px;
+    position: relative;
+    left: 0;
+    width: 100%;
 }
 
 /* New event modal */
@@ -134,9 +134,9 @@
 }
 
 #eventsList {
-  max-height: 53%;
-  overflow-y: auto;
-  scrollbar-color: #495f4b #b97f45;
+    max-height: 53%;
+    overflow-y: auto;
+    scrollbar-color: #495f4b #b97f45;
 }
 
 .event-button {
@@ -148,12 +148,15 @@
     height: fit-content;
     margin: 5px;
 }
+
 .event-button:hover {
     filter: brightness(.70);
 }
+
 .event-button:active {
     filter: brightness(.40);
 }
+
 .event-button > p {
     margin: 3px
 }
@@ -161,6 +164,7 @@
 #apple:hover {
     filter: brightness(1.2);
 }
+
 #apple:active {
     filter: brightness(.8);
 }
@@ -168,10 +172,10 @@
 #weekly-note-label:hover {
     filter: brightness(1.2);
 }
+
 #weekly-note-label:active {
     filter: brightness(.8);
 }
-
 
 /* Edit event modal */
 #editEventModalHeader > input, #editEventModalHeader > select {
@@ -185,6 +189,7 @@
 #editEventModal {
     font: 18px 'Madimi One', sans-serif;
 }
+
 #editEventModal > select, #editEventModal > input,
         #editEventModal > textarea {
     background-color: whitesmoke;
@@ -194,6 +199,7 @@
     font: 16px 'Madimi One', sans-serif;
     margin: 5px auto;
 }
+
 #edit-event-image-label {
     min-width: 100px;
     padding: 0 10px;
@@ -205,27 +211,29 @@
     background-color: whitesmoke;
     text-shadow: none;
 }
+
 #edit-event-image-remove {
     position: relative;
     top: 1px;
         width: 26px;
     height: 24px;
 }
+
 #newCategory {
-  display: none;
-  align-items: center;
-  margin: 5px auto;
-}
-#newCategory > input, #edit-event-custom-alarm-widget > input{
-  font: 16px 'Madimi One', sans-serif;
-  background-color: whitesmoke;
-  border-color: gray;
-  border-width: 2px;
-  border-style: solid;
-  padding: 0px;
-  margin-left:5px;
+    display: none;
+    align-items: center;
+    margin: 5px auto;
 }
 
+#newCategory > input, #edit-event-custom-alarm-widget > input{
+    font: 16px 'Madimi One', sans-serif;
+    background-color: whitesmoke;
+    border-color: gray;
+    border-width: 2px;
+    border-style: solid;
+    padding: 0px;
+    margin-left:5px;
+}
 
 .searchResults {
     height: 100%;
@@ -236,6 +244,7 @@
     overflow-y: scroll;
     scrollbar-color: #495f4b #b97f45;
 }
+
 #searchResultsList > button {
     font: 18px 'Madimi One', sans-serif;
     background-color: white;
@@ -246,26 +255,33 @@
     height: fit-content;
     margin: 4px 0;
 }
+
 #searchResultsList > button:hover {
     filter: brightness(.70);
 }
+
 #searchResultsList > button:active {
     filter: brightness(.40);
 }
+
 #searchResultsList > button > p {
     width: 100%;
     margin: 2px;
 }
+
 #searchResultsList > button > img {
     height: 60px;
 }
+
 .search-event-button-date {
     color: gray;
     font-size: 14px;
 }
+
 .search-event-button-title {
     font-size: 20px;
 }
+
 .search-event-button-notes {
     font-size: 16px;
     color: slategray;
@@ -273,14 +289,17 @@
 
 /* events */
 .day-event-container > button {
-  background-color: lightyellow;
+    background-color: lightyellow;
 }
+
 .day-event-container > button:hover {
-  filter: brightness(.9);
+    filter: brightness(.9);
 }
+
 .day-event-container > button:active {
-  filter: brightness(.7);
+    filter: brightness(.7);
 }
+
 .day-event-container > h2 {
     font-size: 16px;
     text-shadow: none;
@@ -288,10 +307,11 @@
     width: 100%;
     overflow: clip;
 }
+
 .day-event-container-time {
-  color: slategray;
-  margin-top: 2px;
-  margin-bottom: -14px;
+    color: slategray;
+    margin-top: 2px;
+    margin-bottom: -14px;
 }
 
 /* buttons */
@@ -302,19 +322,24 @@
     border-color: gray;
     border-width: 2px;
 }
+
 .ok-button:hover, .no-button:hover, .submit-button:hover {
     opacity: .7;
 }
+
 .ok-button:active, .no-button:active, .submit-button:active {
     opacity: 1;
     filter: brightness(.7);
 }
+
 .ok-button {
     background-color: #7c90ff;
 }
+
 .no-button {
     background-color: #d36c6c;
 }
+
 .submit-button {
     background-color: #4fd864;
 }
@@ -327,11 +352,6 @@
     border-color: darkgray;
     border-width: 2px;
 }
-
-#openWeeklyNoteModal{
-    
-}
-
 
 /* Font for month and year */
 #top-text{
@@ -357,7 +377,6 @@
                -2px 0px aliceblue, 2px 0px aliceblue, 0px -2px aliceblue,
                0px 2px aliceblue;
 }
-
 
 /* Font for the weekdays */
 .weekday {
@@ -409,68 +428,73 @@
 	position: absolute;
 }
 
-
 #apple {
 	position: relative;
 	margin: 5px;
 }
-
 
 #magnif-glass {
 	position: relative;
 	margin: 5px;
 }
 #magnif-glass:hover {
-  opacity: .7;
+    opacity: .7;
 }
 #magnif-glass:active {
-  opacity: 1;
-  filter: brightness(.7);
+    opacity: 1;
+    filter: brightness(.7);
 }
 
 #search-widget {
-  position: relative;
-  width: 460px;
-  display: none;
+    position: relative;
+    width: 460px;
+    display: none;
 }
+
 #search-input {
-  height: 26px;
-  width: 400px;
-  left: 0;
-  position: absolute;
-  top: 6px;
-  font: 16px 'Madimi One', sans-serif;
+    height: 26px;
+    width: 400px;
+    left: 0;
+    position: absolute;
+    top: 6px;
+    font: 16px 'Madimi One', sans-serif;
 }
+
 #search-start-date {
-  top: 35px;
-  position: absolute;
-  left: 0;
-  height: 20px;
-  width: 190px;
-  font: 16px 'Madimi One', sans-serif;
+    top: 35px;
+    position: absolute;
+    left: 0;
+    height: 20px;
+    width: 190px;
+    font: 16px 'Madimi One', sans-serif;
 }
+
 #search-end-date {
-  position: absolute;
-  left: 203px;
-  top: 35px;
-  height: 20px;
-  width: 190px;
-  font: 16px 'Madimi One', sans-serif;
+    position: absolute;
+    left: 203px;
+    top: 35px;
+    height: 20px;
+    width: 190px;
+    font: 16px 'Madimi One', sans-serif;
 }
+
 #search-submit {
-  height: 50px;
-  width: 50px;
-  left: 410px;
-  position: absolute;
-  top: 8px;
-  font: 16px 'Madimi One', sans-serif;
+    height: 50px;
+    width: 50px;
+    left: 410px;
+    position: absolute;
+    top: 8px;
+    font: 16px 'Madimi One', sans-serif;
 }
+
 #last-week:hover, #next-week:hover {
-  filter: hue-rotate(200deg);
+    filter: hue-rotate(200deg);
 }
+
 #last-week:active, #next-week:active {
-  filter: hue-rotate(200deg) brightness(.7);
+    filter: hue-rotate(200deg) brightness(.7);
 }
+
 #last-week{
 	z-index: 4;
 	position: relative;
@@ -484,7 +508,6 @@
 	max-width: 100%;
 	max-height: 100%;
 }
-
 
 /* General */
 html {
@@ -502,7 +525,7 @@ body {
 	margin: 0;
 
     background-image: url('main_tree.png');
-    background-size: auto;
+    background-size: contain;
     background-position: top left;
     background-repeat: no-repeat;
 }
@@ -547,25 +570,21 @@ body {
 		width: 64%;
 	}
 
-
     #desktop-weekly {
         position: relative;
-        z-index:1; /* puts img in front of background */
+        z-index:1; 
 		width: 100%;
 		border-radius: 20px;
     }
 
     /* navigational arrows on weekly calendar */
     #weekly-arrows {
-      position: relative;
-      z-index: 5;
-      width: 120px;
-      top: 111px;
-      left: -167px;
+        position: relative;
+        z-index: 5;
+        width: 120px;
+        top: 111px;
+        left: -167px;
     }
-
-	
-
 
 	.weekday {
         padding-left: 2.37%;
@@ -606,8 +625,6 @@ body {
         margin-top: 0;
     }
 
-
-
 	#weekend-days {
 		position: relative;
 		left: 1.05%;
@@ -628,8 +645,6 @@ body {
 		scrollbar-color: #495f4b #b97f45;
     }
 
-
-
     .day-event-container > button {
         width: 100%;
         padding: 1px;
@@ -643,8 +658,8 @@ body {
     }
 
     .day-event-container > button > img {
-      object-fit: contain;
-      height: 100px;
+        object-fit: contain;
+        height: 100px;
     }
 
     #day6 > .day-event-container {
@@ -655,9 +670,6 @@ body {
         max-height: 58.5%;
         position: relative;
         top:-3%;
-    }
-
-    #weekend-days > .day-section > .day-event-container > button {
     }
 
     #month-text, #year-text{
@@ -702,8 +714,6 @@ body {
       border-color: #b97f45;
       border-width: 8px;
     }
-
-
 }
 
 /* Mobile view */
@@ -744,50 +754,53 @@ body {
         z-index: 7;
     }
 
-
     #weekly-arrows {
-      position: relative;
-      z-index: 5;
-      top: 55px;
-      left: -85px;
+        position: relative;
+        z-index: 5;
+        top: 55px;
+        left: -85px;
     }
 
     #search-widget {
-      position: relative;
-      width: 260px;
-      height: 65px;
-      display: none;
-      background-color: tan;
+        position: relative;
+        width: 260px;
+        height: 65px;
+        display: none;
+        background-color: tan;
     }
+
     #search-input {
-      height: 26px;
-      width: 200px;
-      left: 2.5px;
-      position: absolute;
-      top: 6px;
+        height: 26px;
+        width: 200px;
+        left: 2.5px;
+        position: absolute;
+        top: 6px;
     }
+
     #search-start-date {
-      top: 35px;
-      position: absolute;
-      left: 2.5px;
-      height: 20px;
-      width: 90px;
-      font-size: 12px;
+        top: 35px;
+        position: absolute;
+        left: 2.5px;
+        height: 20px;
+        width: 90px;
+        font-size: 12px;
     }
+
     #search-end-date {
-      position: absolute;
-      left: 105.5px;
-      top: 35px;
-      height: 20px;
-      width: 90px;
-      font-size: 12px;
+        position: absolute;
+        left: 105.5px;
+        top: 35px;
+        height: 20px;
+        width: 90px;
+        font-size: 12px;
     }
+
     #search-submit {
-      height: 50px;
-      width: 50px;
-      left: 205px;
-      position: absolute;
-      top: 8px;
+        height: 50px;
+        width: 50px;
+        left: 205px;
+        position: absolute;
+        top: 8px;
     }
 
     #weekly-section {
@@ -852,16 +865,14 @@ body {
     }
 
     .day-event-container {
-      display: inline-flex;
-      flex-direction: row;
-      height: 100%;
-      max-width: 75.5%;
-      overflow-x: auto;
-      overflow-y: clip;
-      scrollbar-color: #495f4b #b97f45;
+        display: inline-flex;
+        flex-direction: row;
+        height: 100%;
+        max-width: 75.5%;
+        overflow-x: auto;
+        overflow-y: clip;
+        scrollbar-color: #495f4b #b97f45;
     }
-
-
 
     .day-event-container > button {
         height: 100%;
@@ -883,8 +894,8 @@ body {
     }
 
     .day-event-container > button > img{
-      object-fit: contain;
-      height: 60%;
+        object-fit: contain;
+        height: 60%;
     }
 
     .day-event-container > h2 {
@@ -908,6 +919,7 @@ body {
     #day6 {
         width: 49.2%;
     }
+
     #day7 {
         margin-left: -5%;
         width: 50.3%;
@@ -925,58 +937,57 @@ body {
     }
 
     #settingsModal {
-      background-size: contain;
-      border-radius: 0;
-      border-width: 0;
+        background-size: contain;
+        border-radius: 0;
+        border-width: 0;
     }
 
     #categoriesList {
-      max-height: 147px;
+        max-height: 147px;
     }
 
     #noteInput {
-      width: 80%;
-      height: 28%;
-      margin-bottom: 10px;
+        width: 80%;
+        height: 28%;
+        margin-bottom: 10px;
     }
 
     #editEventModal > div > input:not([type = 'text']),
         #editEventModal > div > button {
-      font-size: 16px;
-      width: 120px;
+        font-size: 16px;
+        width: 120px;
     }
 
     #editEventTitleInput {
-      font-size: 20px;
-      width: 200px;
+        font-size: 20px;
+        width: 200px;
     }
 
     #newEventModal {
-      width: 90%;
-      height: 80%;
-      padding: 10% 5%;
+        width: 90%;
+        height: 80%;
+        padding: 10% 5%;
     }
 
     #editEventModal {
-      height: 60%;
-      padding: 20% 5%;
+        height: 60%;
+        padding: 20% 5%;
     }
     
-  .mobile-popup-background {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    display: block;
-    top: 0;
-    left: 0;
-    z-index: -1;
-  }
+    .mobile-popup-background {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        display: block;
+        top: 0;
+        left: 0;
+        z-index: -1;
+    }
 
-  #modalBackDrop {
-    width:0;
-    height:0;
-  }
-
+    #modalBackDrop {
+        width:0;
+        height:0;
+    }
 }
 
 

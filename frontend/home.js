@@ -25,23 +25,27 @@ let currentWeek = null;
 let editEventModalImagePath = undefined;
 let editEventModalImageContent;
 
+// List of predefined categories to start the user with
 var categories = localStorage.categories != undefined ? JSON.parse(localStorage.categories) : {
     'work': '#FF0000',
     'personal': '#00FF00',
     'school': '#0000FF'
 };
 
+
+/* In this section of code we are creating events and editing them so that we
+can create, delete, add components, or take away components of each event */
 function openModal(day) {
     // Get date info
     const currentDay = currentDate.getDay();
     const sectionDate = new Date(currentDate);
     sectionDate.setDate(currentDate.getDate() + day - currentDay)
     
+    // Saving the month and year (4_2024)
     const monthYear = sectionDate.getMonth() + 1 + '_'
         + sectionDate.getFullYear();
     const date = sectionDate.getDate();
 
-
     // Create a container for this event
     if (events[monthYear] == undefined) {
         events[monthYear] = {};
@@ -52,7 +56,6 @@ function openModal(day) {
     clicked.events = events[monthYear][date];
     clicked.monthYear = monthYear;
     clicked.day = date;
-
 
     newEventModal.style.display = 'block';
 
@@ -74,469 +77,8 @@ function openModal(day) {
         eventElement.style.borderColor = categories[event.category];
         eventsList.appendChild(eventElement);
     });
-
     backDrop.style.display = 'block';
 }
-
-function openWeeklyEventsModal() {
-    // Get date info
-    const monthYear = currentWeek.getMonth() + 1 + '_'
-        + currentWeek.getFullYear();
-    const date = 'w' + currentWeek.getDate();
-
-
-    // Create a container for this event
-    if (events[monthYear] == undefined) {
-        events[monthYear] = {};
-        events[monthYear][date] = [];
-    } else if (events[monthYear][date] == undefined) {
-        events[monthYear][date] = [];
-    }
-    clicked.events = events[monthYear][date];
-    clicked.monthYear = monthYear;
-    clicked.day = date;
-
-
-    newEventModal.style.display = 'block';
-
-    // Display existing events in the modal
-    const eventsList = document.getElementById('eventsList'); 
-    eventsList.innerHTML = ''; 
-
-    clicked.events.forEach((event, index) => {
-        const eventElement = document.createElement('button');
-        eventElement.classList.add('event-button');
-        const eventText = document.createElement('p');
-        eventText.innerText = event.title;
-        eventElement.appendChild(eventText);
-        eventElement.addEventListener('click', (e) => {
-            // Prevent the openModal event
-            e.stopPropagation(); 
-            showEditEventModal(clicked, index, event);
-        });
-        eventElement.style.borderColor = categories[event.category];
-        eventsList.appendChild(eventElement);
-    });
-
-    backDrop.style.display = 'block';
-}
-
-async function exportEvents() 
-{
-    /* Make call to export API */
-	const response = await fetch("/home", {
-	    method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            session: localStorage.session,
-        },
-        body: JSON.stringify({
-            type: "export",
-            start: document.getElementById('settings-data-start').value,
-            end: document.getElementById('settings-data-end').value,
-            date: new Date(),
-        }),
-    });
-
-    const output = await response.text();
-    const txtBlob = new Blob([output], {type: 'text/plain'});
-
-    // download url
-    const url = document.createElement('a');
-    url.href = URL.createObjectURL(txtBlob);
-    url.download = 'MyEvents.txt';
-
-    document.body.appendChild(url);
-    url.click();
-
-    // delete temporary link to download
-    document.body.removeChild(url);
-    URL.revokeObjectURL(url.href);
-
-	document.getElementById('settings-data-widget').style.display = 'none';
-	document.getElementById('settings-export-button').classList
-		.remove('clicked');
-}
-
-
-function toggleSearchWidget() {
-    const searchWidget = document.getElementById("search-widget");
-    searchWidget.style.display = searchWidget.style.display == 'block'
-        ? 'none' : 'block';
-
-    document.getElementById("search-input").value = '';
-}
-
-function searchEvents() {
-  const startDate = document.getElementById("search-start-date").value;
-  const endDate = document.getElementById("search-end-date").value;
-  const searchQuery = document.getElementById("search-input").value;
-
-  const searchModal = document.getElementById("searchModal");
-  const closeButton = document.getElementById("close-search-button");
-  const exportButton = document.getElementById("export-search-button");
-
-  const startDateObj = new Date(startDate);
-  const endDateObj = new Date(endDate);
-
-  let txt = '';
-
-  if (startDateObj > endDateObj) {
-    alert("End date cannot be earlier than start date");
-    return;
-  }
-
-  fetch("/home", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      session: localStorage.session,
-    },
-    body: JSON.stringify({
-      type: "search",
-      startDate: startDate,
-      endDate: endDate,
-      searchQuery: searchQuery,
-    }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("Received search response:", data);
-
-      const eventsList = data.events;
-
-      // Show the search results modal
-      searchModal.style.display = "block";
-      backDrop.style.display = "block";
-      searchModal.style.opacity = 1;
-      searchModal.style.visibility = "visible";
-
-      const eventsListElement = document.getElementById("searchResultsList");
-      // Clear previous results
-      eventsListElement.innerHTML = "";
-      eventsList.forEach((entry) => {
-        const button = document.createElement("button");
-        const date = document.createElement("p");
-        const title = document.createElement("p");
-        const notes = document.createElement("p");
-
-        date.innerText = `${entry.month}/${entry.day}/${entry.year}`;
-        date.classList.add('search-event-button-date');
-        title.innerText = entry.event.title;
-        title.classList.add('search-event-button-title');
-        notes.innerText = entry.event.notes;
-        notes.classList.add('search-event-button-notes');
-
-        button.appendChild(date);
-        button.appendChild(title);
-        button.appendChild(notes);
-        button.style.borderColor = categories[entry.event.category];
-
-        if (entry.event.imageContent != undefined) {
-          const image = document.createElement("img");
-          image.src = entry.event.imageContent;
-          button.appendChild(image);
-        }
-
-        button.addEventListener("click", () => {
-            const monthYear = entry.month+"_"+entry.year
-            searchModal.style.display = "none";
-            
-            clicked.events = events[monthYear][entry.day];
-            clicked.monthYear = monthYear;
-            clicked.day = entry.day;
-            showEditEventModal(clicked, entry.index, entry.event);
-        });
-        eventsListElement.appendChild(button);
-      });
-
-      exportButton.onclick = () => {
-            eventsList.forEach((entry) => {
-              txt += `Date: ${entry.month}/${entry.day}/${entry.year}\nTitle: ${entry.event.title}\nCategory: ${entry.event.category}\n`;
-              if (entry.event.imagePath != undefined)
-                txt += 'Image: ' + entry.event.imagePath + '\n';
-              if (entry.event.notes.length != 0)
-                txt += 'Notes: ' + entry.event.notes + '\n';
-              txt += '\n';
-            });
-            const txtBlob = new Blob([txt], {type: 'text/plain'});
-            // download url
-            const url = document.createElement('a');
-            url.href = URL.createObjectURL(txtBlob);
-            url.download = 'MyEvents.txt';
-
-            document.body.appendChild(url);
-            url.click();
-
-            // delete temporary link to download
-            document.body.removeChild(url);
-            URL.revokeObjectURL(url.href);
-        }
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-
-    
-
-  // Close search results modal
-  closeButton.onclick = () => {
-    searchModal.style.display = "none";
-    backDrop.style.display = "none";
-  };
-}
-
-async function shareEvents() {
-    const username = document.getElementById("settings-share-username").value;
-	if (username.length == 0) {
-		alert("Must provide a username");
-		return;
-	}
-
-	if (!confirm("Are you sure you want to send a copy to " + username + "?"))
-		return;
-
-
-	const startDate = document.getElementById("settings-data-start").value;
-	const endDate = document.getElementById("settings-data-end").value;
-	const startDateObj = new Date(startDate);
-	const endDateObj = new Date(endDate);
-
-	if (startDateObj > endDateObj) {
-		alert("End date cannot be earlier than start date");
-		console.log("end date cannot be earlier");
-		return;
-	}
-
-	if (startDate == "" || endDate == "")
-	{
-		alert("Please select a valid date range");
-		console.log("invalid date range");
-		return;
-	}
-
-	const response = await fetch("/share", {
-		method: "POST",
-		headers: {
-		  "Content-Type": "application/json",
-		  Session: localStorage.session,
-		},
-		body: JSON.stringify({
-		  type: "share",
-		  username: username,
-		  startDate: startDate,
-		  endDate: endDate
-		}),
-	});
-
-	if (response.status == 404) {
-		alert("No user found with that username.");
-	} else {
-		alert("Share request to " + username +" was sent.");
-		document.getElementById('settings-data-widget').style.display = 'none';
-		document.getElementById('settings-share-button').classList
-			.remove('clicked');
-	}
-
-}
-
-// Below are the functions for the weekly note modal functionality
-function getWeekNumber(date) {
-    const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
-    const firstDayOfWeek = firstDayOfMonth.getDay();
-
-    const offsetDate = date.getDate() + firstDayOfWeek - 1;
-    return Math.ceil(offsetDate / 7);
-}
-
-
-/* Fill the nationalHolidays structure with the holidays for the provided year,
- * as specified by https://www.usa.gov/holidays */
-function populateNationalHolidays(year) {
-    const date = new Date();
-    date.setDate(1);
-    date.setFullYear(year);
-    var day;
-
-    /* New Year's Day. January 1 */
-    nationalHolidays[1 + '_' + year] = {};
-    nationalHolidays[1 + '_' + year][1] = "New Year's Day";
-
-    /* Birthday of Martin Luther King, Jr. Third Monday in January */
-    date.setDate(1);
-    date.setMonth(0);
-    nationalHolidays[1 + '_' + year][
-        1 + (date.getDay() < 2 ? 1 : 8) - date.getDay() + 14
-    ] = "Martin Luther King Jr. Day";
-
-    /* Presidents Day. Third Monday in February */
-    date.setDate(1);
-    date.setMonth(1);
-    nationalHolidays[2 + '_' + year] = {};
-    nationalHolidays[2 + '_' + year][
-        1 + (date.getDay() < 2 ? 1 : 8) - date.getDay() + 14
-    ] = "Presidents Day";
-
-    /* Memorial Day. Last Monday in May */
-    date.setDate(1);
-    date.setMonth(5);
-    date.setDate(0);
-    nationalHolidays[5 + '_' + year] = {};
-    nationalHolidays[5 + '_' + year][
-        date.getDate() + (date.getDay() > 0 ? 1 - date.getDay() : -6)
-    ] = "Memorial Day";
-
-    /* Juneteenth National Independence Day. June 19 */
-    nationalHolidays[6 + '_' + year] = {};
-    nationalHolidays[6 + '_' + year][19]
-        = "Juneteenth National Independence Day";
-
-    /* Independence Day. July 4 */
-    nationalHolidays[7 + '_' + year] = {};
-    nationalHolidays[7 + '_' + year][4] = "Independence Day";
-
-    /* Labor Day. First Monday in September */
-    date.setDate(1);
-    date.setMonth(8);
-    nationalHolidays[9 + '_' + year] = {};
-    nationalHolidays[9 + '_' + year][
-        1 + (date.getDay() < 2 ? 1 : 8) - date.getDay()
-    ] = "Labor Day";
-
-    /* Columbus Day. Second Monday in October */
-    date.setDate(1);
-    date.setMonth(9);
-    nationalHolidays[10 + '_' + year] = {};
-    nationalHolidays[10 + '_' + year][
-        1 + (date.getDay() < 2 ? 1 : 8) - date.getDay() + 7
-    ] = "Columbus Day";
-
-    /* Veterans Day. November 11 */
-    nationalHolidays[11 + '_' + year] = {};
-    nationalHolidays[11 + '_' + year][11] = "Veterans Day";
-
-    /* Thanksgiving Day. Fourth Thursday in November */
-    date.setDate(1);
-    date.setMonth(10);
-    nationalHolidays[11 + '_' + year][
-        1 + (date.getDay() < 5 ? 4 : 11) - date.getDay() + 21
-    ] = "Thanksgiving Day";
-
-    /* Christmas Day (December 25) */
-    nationalHolidays[12 + '_' + year] = {};
-    nationalHolidays[12 + '_' + year][25] = "Christmas Day";
-
-    nationalHolidays[year] = true;
-}
-
-function loadCurrentWeekNote() {
-    const today = new Date();
-    const monthYear = (today.getMonth() + 1) + '_' + today.getFullYear();
-    const weekId = 'w' + getWeekNumber(today);
-    const events = JSON.parse(localStorage.getItem('events')) || {};
-    
-    if (events[monthYear] && events[monthYear][weekId] && events[monthYear][weekId].length > 0) {
-        return events[monthYear][weekId][events[monthYear][weekId].length - 1].note;
-    }
-    return "No note for this week";
-}
-
-function getWeeklyNote() {
-    const editWeeklyNoteInput = document.getElementById('weeklyNoteInput');
-    const weeklyNoteModal = document.getElementById('weeklyNoteModal');
-    const currentWeekNoteDisplay = document.getElementById('currentWeekNote');
-
-    // Open the weekly note modal
-    const today = new Date();
-    const dateString = today.toISOString().substring(0, 10);
-
-    weeklyNoteModal.style.display = 'block';
-    weeklyNoteModal.style.opacity = 1;
-    weeklyNoteModal.style.visibility = 'visible';
-    backDrop.style.display = 'block';
-    weekOfNote.style.display = 'block';
-    weekOfNote.value = dateString;
-
-    weekOfNote.dispatchEvent(new Event('change'));
-
-
-    weekOfNote.addEventListener('change', () => {
-        const datePieces = weekOfNote.value.split('-');
-        const date = new Date(parseInt(datePieces[0]), parseInt(datePieces[1]) - 1, parseInt(datePieces[2]));
-        const monthYear = (date.getMonth() + 1) + '_' + date.getFullYear();
-        const weekNumber = getWeekNumber(date);
-        const weekId = 'w' + weekNumber;
-        
-        // Clear existing note in input box
-        editWeeklyNoteInput.value = '';
-
-        // Load existing note if available
-        if (events[monthYear] && events[monthYear][weekId] && events[monthYear][weekId].length > 0) {
-            const lastEvent = events[monthYear][weekId][events[monthYear][weekId].length - 1];
-            editWeeklyNoteInput.value = lastEvent.note;
-        }
-    });
-
-    
-    // Submit the weekly note
-    document.getElementById('submitWeeklyNote').addEventListener('click', () => {
-        const updatedWeeklyNote = editWeeklyNoteInput.value.trim();
-        const datePieces = weekOfNote.value.split('-');
-        const date = new Date(parseInt(datePieces[0]),
-            parseInt(datePieces[1]) - 1, parseInt(datePieces[2]));
-
-        const monthYear = (date.getMonth() + 1) + '_' + date.getFullYear();
-        const weekNumber = getWeekNumber(date);
-        const weekId = 'w' + weekNumber;
-
-        let weeklyNote = "No note for this week";
-        if (!events[monthYear]) {
-            events[monthYear] = {};
-            events[monthYear][weekId] = [];
-        } else if (!events[monthYear][weekId]){
-            events[monthYear][weekId] = [];
-        }
-        var weeklyHome = events[monthYear][weekId];
-
-        // Save to local storage 
-        weeklyHome.push({ note: updatedWeeklyNote });
-        localStorage.setItem('events', JSON.stringify(events));
-        if (getWeekNumber(currentDate) == weekNumber){
-            weeklyNote = events[monthYear][weekId][0];
-            console.log(weeklyNote);
-            currentWeekNoteDisplay.textContent = "Current Note: " + weeklyNote;
-        }
-        
-
-        // Send the note to the server
-        fetch('/home', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Session': localStorage.session
-            },
-            body: JSON.stringify({
-                'type': 'insert',
-                'monthYear': monthYear,
-                'day': weekId,
-                'index': weeklyHome.length - 1,
-                'event': weeklyHome[weeklyHome.length - 1]
-            })
-        })
-
-        // Close the modal after submission
-        weeklyNoteModal.style.display = 'none';
-        backDrop.style.display = 'none';
-    });
-
-
-    // Cancel the note input and close the modal
-    document.getElementById('cancelWeeklyNote').addEventListener('click', () => {
-        weeklyNoteModal.style.display = 'none';
-        backDrop.style.display = 'none';
-    });
-}
-
 
 // Adding the event to the list
 function addEvent() {
@@ -550,8 +92,7 @@ function addEvent() {
         else
             showEditEventModal(clicked, clicked.events.length,
                 {title: eventTitleInput.value}, newEvent=true);
-        
-        
+
         closeModal();
     } else {
         eventTitleInput.classList.add('error');
@@ -575,7 +116,6 @@ function deleteEvent() {
     }
     localStorage.setItem('alarms', JSON.stringify(alarms));
 
-
     // Remove event
     if (clicked.events && clicked.events.length > 0) {
         clicked.events.splice(currentEventIndex, 1); 
@@ -598,7 +138,6 @@ function deleteEvent() {
         });
     }
 
-
     localStorage.setItem('events', JSON.stringify(events));
     closeEditModal();
 }
@@ -611,7 +150,6 @@ function closeModal() {
   
     load(shouldSync = false);
 }
-
 
 // This converts the time so that it doesn't show in military time, but 12-hour clock time
 function convertTo12HourFormat(time) {
@@ -633,13 +171,13 @@ function convertTo12HourFormat(time) {
     return `${hours}:${minutes} ${period}`;
 }
 
-const alarmTime = document.getElementById('customAlarmTime');
+// Ability to add categories in an event and loading them in the modal
 function processCategories()
 {
     const categoryDropdown = document.getElementById('eventCat');
     categoryDropdown.addEventListener('change', function() {
         const chosenCat = categoryDropdown.value;
-        // check if the user would like to create a custom category
+        // Check if the user would like to create a custom category
         if (chosenCat === 'custom')
         {
             const newCatSection = document.getElementById('newCategory');
@@ -653,7 +191,6 @@ function processCategories()
         }
     });
 }
-
 
 function loadCategories() {
     const catDropdown = document.getElementById('eventCat');
@@ -669,6 +206,12 @@ function loadCategories() {
 	customOption.textContent = 'custom';
 	catDropdown.appendChild(customOption);
 }
+
+// Global variable to reference across functions and to constantly check for time
+// will check every 6000
+const alarmTime = document.getElementById('customAlarmTime');
+setInterval(checkForAlarms, 6000);
+
 
 function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
     const editEventModal = document.getElementById('editEventModal');
@@ -699,8 +242,8 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
     // Set the alarm-related fields
     const alarmSelect = document.getElementById('edit-event-alarm');
 
-    const customAlarmWidget = document
-            .getElementById('edit-event-custom-alarm-widget');
+    const customAlarmWidget = document.
+        getElementById('edit-event-custom-alarm-widget');
     const alarmTimeInput = document.
         getElementById('edit-event-custom-alarm-time');
     const alarmDateInput = document.
@@ -741,8 +284,6 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
             ? 'inline-block' : 'none';
     });
 
-
-
     // Default custom category values
     const catColor = document.getElementById('categoryColor');
     catColor.value = "#444444";
@@ -750,8 +291,8 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
 
     // Load set category values
     const categorySelector = document.getElementById('eventCat');
-
     var categoryFound = false;
+
     if (event.category != undefined) {
         for (key in categories) {
             if (key.toLowerCase() == event.category.toLowerCase()) {
@@ -882,8 +423,6 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
             // Get the mins before event and convert to milliseconds
             const minutesBeforeEvent = parseInt(alarmType, 10); 
             const msBeforeEvent = minutesBeforeEvent * 60000; 
-
-            // Subtract the milliseconds to get the alarm time
             alarmTime = new Date(startTimeDate.getTime() - msBeforeEvent);
 
             // Manually format the date to local ISO string with zero milliseconds
@@ -891,8 +430,6 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
             const localISOTime = `${alarmTime.getHours().toString().padStart(2, '0')}:${alarmTime.getMinutes().toString().padStart(2, '0')}`;
             alarmTime = `${localISODate}T${localISOTime}:00.000`;
         }
-
-
 
         // Adjust alarms list
         if (alarmTime != undefined) {
@@ -914,8 +451,6 @@ function showEditEventModal(clicked, eventIndex, event, newEvent=false) {
             };
             localStorage.setItem('alarms', JSON.stringify(alarms));
         }
-
-
 
         // Update the event with the new alarm info
         events[clicked.monthYear][clicked.day][currentEventIndex] = {
@@ -972,6 +507,7 @@ function closeEditModal() {
   load((shouldSync = false));
 }
 
+// Setting alarms in the edit event modal
 function checkForAlarms() {
     const now = new Date();
     var changed = false;
@@ -992,9 +528,525 @@ function checkForAlarms() {
         localStorage.setItem('alarms', JSON.stringify(alarms));
 }
 
-// Continue setting the interval as before
-setInterval(checkForAlarms, 6000);
 
+/* In this section the functions are organized by functionality of the 
+settings modal. This includes categorical editing, logging out, sharing,
+and exporting data as well as rendering the holidays and other settings for
+page refreshing*/
+function openSettingsMenu() {
+    const settingsModal = document.getElementById('settingsModal');
+    settingsModal.style.display = 'block';
+	backDrop.style.display = 'block';
+
+	// Data section
+	const dataWidget = document.getElementById('settings-data-widget');
+	const exportButton = document.getElementById('settings-export-button');
+	const shareButton = document.getElementById('settings-share-button');
+	dataWidget.style.display = 'none';
+	exportButton.classList.remove('clicked');
+	shareButton.classList.remove('clicked');
+
+    // Calendar section
+    document.getElementById('settings-render-holidays').checked
+        = renderNationalHolidays;
+    document.getElementById('settings-save-position').checked
+        = savePosition;
+
+	// Category list
+    const categoriesList = document.getElementById('categoriesList');
+    categoriesList.innerHTML = '';
+
+    // Iterate through categories object to populate the categories list
+    for (const key in categories) {
+		const element = document.createElement('div');
+		const titleInput = document.createElement('input');
+		const colorInput = document.createElement('input');
+		const deleteButton = document.createElement('input');
+		const listLength = categoriesList.childElementCount;
+		
+        // Setup the text input to put in the name
+		titleInput.type = 'text';
+		titleInput.placeholder = 'Name';
+		titleInput.value = key;
+		element.appendChild(titleInput);
+
+        // Setup the color input for category colors
+		colorInput.type = 'color';
+		colorInput.value = categories[key];
+		element.appendChild(colorInput);
+
+        // Setup a delete button for removing categories
+		deleteButton.type = 'button';
+		deleteButton.value = 'X';
+		element.appendChild(deleteButton);
+		deleteButton.classList.add('no-button');
+
+        categoriesList.appendChild(element);
+
+		deleteButton.onclick = () => {
+			categoriesList.removeChild(element);
+		};
+    }
+
+    // Add a button for creating new categories
+	const newButton = document.createElement('input');
+	newButton.type = 'button';
+	newButton.value = '+';
+	newButton.style.width = '24px';
+	newButton.style.height = '24px';
+	newButton.style.marginTop = '4px';
+	newButton.classList.add('ok-button');
+	newButton.onclick = settingsModalNewCategory;
+
+	const newDiv = document.createElement('div');
+	newDiv.appendChild(newButton);
+	categoriesList.appendChild(newDiv);
+}
+
+function settingsShareButton() {
+	const exportButton = document.getElementById('settings-export-button');
+	const shareButton = document.getElementById('settings-share-button');
+	const dataWidget = document.getElementById('settings-data-widget');
+	const usernameField = document.getElementById('settings-share-username');
+
+    // Check if the share button currently has the 'clicked' class
+	if (shareButton.classList.contains('clicked')) {
+		shareButton.classList.remove('clicked');
+		dataWidget.style.display = 'none';
+	} else {
+		if (exportButton.classList.contains('clicked')) {
+			exportButton.classList.remove('clicked');
+		} else {
+			dataWidget.style.display = 'block';
+		}
+		usernameField.style.display = 'block';
+		shareButton.classList.add('clicked');
+	}
+}
+
+// Sharing the events in someone's calendar by username
+async function shareEvents() {
+    const username = document.getElementById("settings-share-username").value;
+	if (username.length == 0) {
+		alert("Must provide a username");
+		return;
+	}
+
+    // Confirmation alert
+	if (!confirm("Are you sure you want to send a copy to " + username + "?"))
+		return;
+
+
+	const startDate = document.getElementById("settings-data-start").value;
+	const endDate = document.getElementById("settings-data-end").value;
+	const startDateObj = new Date(startDate);
+	const endDateObj = new Date(endDate);
+
+	if (startDateObj > endDateObj) {
+		alert("End date cannot be earlier than start date");
+		console.log("end date cannot be earlier");
+		return;
+	}
+
+	if (startDate == "" || endDate == "")
+	{
+		alert("Please select a valid date range");
+		console.log("invalid date range");
+		return;
+	}
+
+	const response = await fetch("/share", {
+		method: "POST",
+		headers: {
+		  "Content-Type": "application/json",
+		  Session: localStorage.session,
+		},
+		body: JSON.stringify({
+		  type: "share",
+		  username: username,
+		  startDate: startDate,
+		  endDate: endDate
+		}),
+	});
+
+    // Handling an invalid username
+	if (response.status == 404) {
+		alert("No user found with that username.");
+	} else {
+		alert("Share request to " + username +" was sent.");
+		document.getElementById('settings-data-widget').style.display = 'none';
+		document.getElementById('settings-share-button').classList
+			.remove('clicked');
+	}
+
+}
+
+// Exporting the events from the calendar to a .txt file
+async function exportEvents() 
+{
+    /* Make call to export API */
+	const response = await fetch("/home", {
+	    method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            session: localStorage.session,
+        },
+        body: JSON.stringify({
+            type: "export",
+            start: document.getElementById('settings-data-start').value,
+            end: document.getElementById('settings-data-end').value,
+            date: new Date(),
+        }),
+    });
+
+    const output = await response.text();
+    const txtBlob = new Blob([output], {type: 'text/plain'});
+
+    // Downloading the url
+    const url = document.createElement('a');
+    url.href = URL.createObjectURL(txtBlob);
+    url.download = 'MyEvents.txt';
+
+    document.body.appendChild(url);
+    url.click();
+
+    // Deleting temporary link to download
+    document.body.removeChild(url);
+    URL.revokeObjectURL(url.href);
+
+	document.getElementById('settings-data-widget').style.display = 'none';
+	document.getElementById('settings-export-button').classList
+		.remove('clicked');
+}
+
+// Define a function named settingsExportButton to handle the click event of the export button
+function settingsExportButton() {
+	const exportButton = document.getElementById('settings-export-button');
+	const shareButton = document.getElementById('settings-share-button');
+	const dataWidget = document.getElementById('settings-data-widget');
+	const usernameField = document.getElementById('settings-share-username');
+
+    // Check if the export button has the class 'clicked'
+	if (exportButton.classList.contains('clicked')) {
+		exportButton.classList.remove('clicked');
+		dataWidget.style.display = 'none';
+	} else {
+        // Check if the share button has the 'clicked' class
+		if (shareButton.classList.contains('clicked')) {
+			shareButton.classList.remove('clicked');
+		} else {
+			dataWidget.style.display = 'block';
+		}
+
+		usernameField.style.display = 'none';
+		exportButton.classList.add('clicked');
+	}
+}
+
+// Define a function to handle sharing and exporting
+function settingsDataSubmitButton() {
+	const exportButton = document.getElementById('settings-export-button');
+	const shareButton = document.getElementById('settings-share-button');
+
+	if (exportButton.classList.contains('clicked')) {
+		exportEvents();
+	} else if (shareButton.classList.contains('clicked')) {
+		shareEvents();
+	}
+}
+
+// Adds a new category section to the categories list in settings
+function settingsModalNewCategory() {
+	const categoriesList = document.getElementById('categoriesList');
+	const listLength = categoriesList.childElementCount;
+
+	const newCategorySection = document.createElement('div');
+	const title = document.createElement('input');
+	const color = document.createElement('input');
+	const deleteButton = document.createElement('input');
+
+	title.type = 'text';
+	title.placeholder = 'Name';
+
+	color.type = 'color';
+	color.value = '#444444';
+		
+	deleteButton.type = 'button';
+	deleteButton.value = 'X';
+	deleteButton.classList.add('no-button');
+
+    // Add the title, color, and delete button to the new category section
+	newCategorySection.appendChild(title);
+	newCategorySection.appendChild(color);
+	newCategorySection.appendChild(deleteButton);
+
+	categoriesList.insertBefore(newCategorySection,
+		categoriesList.childNodes[listLength - 1]);
+
+	deleteButton.onclick = () => {
+		categoriesList.removeChild(newCategorySection);
+	}
+}
+
+function settingsModalDeleteCategory(index) {
+	const categoriesList = document.getElementById('categoriesList');
+	categoriesList.removeChild(categoriesList.childNodes[index]);
+}
+
+async function saveSettings() {
+    // Calendar
+    renderNationalHolidays = document
+        .getElementById('settings-render-holidays').checked;
+    localStorage.setItem('renderNationalHolidays',
+        String(renderNationalHolidays));
+    savePosition = document
+        .getElementById('settings-save-position').checked;
+    localStorage.setItem('savePosition', savePosition);
+
+    // Categories
+	const categoriesList = document.getElementById('categoriesList');
+	const newCategories = {};
+	for (let d = 0; d < categoriesList.childElementCount - 1; ++d) {
+		const div = categoriesList.childNodes[d];
+		const title = div.childNodes[0].value;
+		const color = div.childNodes[1].value;
+		if (title != '') {
+			newCategories[title.toLowerCase()] = color;
+		}
+	}
+	categories = newCategories;
+	localStorage.setItem('categories', JSON.stringify(categories));
+
+	await fetch('/home', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Session': localStorage.session
+		},
+		body: JSON.stringify({
+			'type': 'insertCategories',
+			categories: categories
+		})
+	});
+
+	loadCategories();
+	load();
+	closeSettings();
+}
+
+function closeSettings() {
+    settingsModal.style.display = 'none';
+	backDrop.style.display = 'none';
+}
+
+/* Fill the nationalHolidays structure with the holidays for the provided year,
+ * as specified by https://www.usa.gov/holidays */
+function populateNationalHolidays(year) {
+    const date = new Date();
+    date.setDate(1);
+    date.setFullYear(year);
+    var day;
+
+    /* New Year's Day. January 1 */
+    nationalHolidays[1 + '_' + year] = {};
+    nationalHolidays[1 + '_' + year][1] = "New Year's Day";
+
+    /* Birthday of Martin Luther King, Jr. Third Monday in January */
+    date.setDate(1);
+    date.setMonth(0);
+    nationalHolidays[1 + '_' + year][
+        1 + (date.getDay() < 2 ? 1 : 8) - date.getDay() + 14
+    ] = "Martin Luther King Jr. Day";
+
+    /* Presidents Day. Third Monday in February */
+    date.setDate(1);
+    date.setMonth(1);
+    nationalHolidays[2 + '_' + year] = {};
+    nationalHolidays[2 + '_' + year][
+        1 + (date.getDay() < 2 ? 1 : 8) - date.getDay() + 14
+    ] = "Presidents Day";
+
+    /* Memorial Day. Last Monday in May */
+    date.setDate(1);
+    date.setMonth(5);
+    date.setDate(0);
+    nationalHolidays[5 + '_' + year] = {};
+    nationalHolidays[5 + '_' + year][
+        date.getDate() + (date.getDay() > 0 ? 1 - date.getDay() : -6)
+    ] = "Memorial Day";
+
+    /* Juneteenth National Independence Day. June 19 */
+    nationalHolidays[6 + '_' + year] = {};
+    nationalHolidays[6 + '_' + year][19]
+        = "Juneteenth National Independence Day";
+
+    /* Independence Day. July 4 */
+    nationalHolidays[7 + '_' + year] = {};
+    nationalHolidays[7 + '_' + year][4] = "Independence Day";
+
+    /* Labor Day. First Monday in September */
+    date.setDate(1);
+    date.setMonth(8);
+    nationalHolidays[9 + '_' + year] = {};
+    nationalHolidays[9 + '_' + year][
+        1 + (date.getDay() < 2 ? 1 : 8) - date.getDay()
+    ] = "Labor Day";
+
+    /* Columbus Day. Second Monday in October */
+    date.setDate(1);
+    date.setMonth(9);
+    nationalHolidays[10 + '_' + year] = {};
+    nationalHolidays[10 + '_' + year][
+        1 + (date.getDay() < 2 ? 1 : 8) - date.getDay() + 7
+    ] = "Columbus Day";
+
+    /* Veterans Day. November 11 */
+    nationalHolidays[11 + '_' + year] = {};
+    nationalHolidays[11 + '_' + year][11] = "Veterans Day";
+
+    /* Thanksgiving Day. Fourth Thursday in November */
+    date.setDate(1);
+    date.setMonth(10);
+    nationalHolidays[11 + '_' + year][
+        1 + (date.getDay() < 5 ? 4 : 11) - date.getDay() + 21
+    ] = "Thanksgiving Day";
+
+    /* Christmas Day (December 25) */
+    nationalHolidays[12 + '_' + year] = {};
+    nationalHolidays[12 + '_' + year][25] = "Christmas Day";
+
+    nationalHolidays[year] = true;
+}
+
+/* Searching events/notes/images in the application*/
+function toggleSearchWidget() {
+    const searchWidget = document.getElementById("search-widget");
+    searchWidget.style.display = searchWidget.style.display == 'block'
+        ? 'none' : 'block';
+
+    document.getElementById("search-input").value = '';
+}
+
+function searchEvents() {
+    // Getting the dates and 
+    const startDate = document.getElementById("search-start-date").value;
+    const endDate = document.getElementById("search-end-date").value;
+    const searchQuery = document.getElementById("search-input").value;
+
+    const searchModal = document.getElementById("searchModal");
+    const closeButton = document.getElementById("close-search-button");
+    const exportButton = document.getElementById("export-search-button");
+
+    const startDateObj = new Date(startDate);
+    const endDateObj = new Date(endDate);
+
+    let txt = '';
+
+    if (startDateObj > endDateObj) {
+        alert("End date cannot be earlier than start date");
+        return;
+    }
+
+    fetch("/home", {
+        method: "POST",
+        headers: {
+        "Content-Type": "application/json",
+        session: localStorage.session,
+        },
+        body: JSON.stringify({
+        type: "search",
+        startDate: startDate,
+        endDate: endDate,
+        searchQuery: searchQuery,
+        }),
+    }).then((response) => response.json())
+    .then((data) => {
+        console.log("Received search response:", data);
+
+        const eventsList = data.events;
+
+        // Show the search results modal
+        searchModal.style.display = "block";
+        backDrop.style.display = "block";
+        searchModal.style.opacity = 1;
+        searchModal.style.visibility = "visible";
+
+        const eventsListElement = document.getElementById("searchResultsList");
+        // Clear previous results
+        eventsListElement.innerHTML = "";
+        eventsList.forEach((entry) => {
+            const button = document.createElement("button");
+            const date = document.createElement("p");
+            const title = document.createElement("p");
+            const notes = document.createElement("p");
+
+            date.innerText = `${entry.month}/${entry.day}/${entry.year}`;
+            date.classList.add('search-event-button-date');
+            title.innerText = entry.event.title;
+            title.classList.add('search-event-button-title');
+            notes.innerText = entry.event.notes;
+            notes.classList.add('search-event-button-notes');
+
+            button.appendChild(date);
+            button.appendChild(title);
+            button.appendChild(notes);
+            button.style.borderColor = categories[entry.event.category];
+
+            if (entry.event.imageContent != undefined) {
+                const image = document.createElement("img");
+                image.src = entry.event.imageContent;
+                button.appendChild(image);
+            }
+
+            button.addEventListener("click", () => {
+                const monthYear = entry.month+"_"+entry.year
+                searchModal.style.display = "none";
+                
+                clicked.events = events[monthYear][entry.day];
+                clicked.monthYear = monthYear;
+                clicked.day = entry.day;
+                showEditEventModal(clicked, entry.index, entry.event);
+            });
+            eventsListElement.appendChild(button);
+        });
+
+        exportButton.onclick = () => {
+            eventsList.forEach((entry) => {
+                txt += `Date: ${entry.month}/${entry.day}/${entry.year}\nTitle: ${entry.event.title}\nCategory: ${entry.event.category}\n`;
+                if (entry.event.imagePath != undefined)
+                    txt += 'Image: ' + entry.event.imagePath + '\n';
+                if (entry.event.notes.length != 0)
+                    txt += 'Notes: ' + entry.event.notes + '\n';
+                txt += '\n';
+            });
+            const txtBlob = new Blob([txt], {type: 'text/plain'});
+            // download url
+            const url = document.createElement('a');
+            url.href = URL.createObjectURL(txtBlob);
+            url.download = 'MyEvents.txt';
+
+            document.body.appendChild(url);
+            url.click();
+
+            // delete temporary link to download
+            document.body.removeChild(url);
+            URL.revokeObjectURL(url.href);
+        }
+    }).catch((error) => {
+        console.error("Error:", error);
+    });
+
+        
+
+    // Close search results modal
+    closeButton.onclick = () => {
+        searchModal.style.display = "none";
+        backDrop.style.display = "none";
+    };
+}
+
+/* The load function will render the weekly view calendar along
+with the dates and share requesting*/
 async function load(shouldSync = true) {
     const date = new Date();
 
@@ -1149,7 +1201,6 @@ async function load(shouldSync = true) {
 
                         })
                     });
-                    //alert("Share request accepted!")
                 
                     for (eventInfo of request.events)
                     {
@@ -1284,213 +1335,49 @@ async function load(shouldSync = true) {
     };
 }
 
-function openSettingsMenu() {
+function openWeeklyEventsModal() {
+    // Get date info
+    const monthYear = currentWeek.getMonth() + 1 + '_'
+        + currentWeek.getFullYear();
+    const date = 'w' + currentWeek.getDate();
 
-    const settingsModal = document.getElementById('settingsModal');
-    settingsModal.style.display = 'block';
-	backDrop.style.display = 'block';
-
-
-	// Data section
-	const dataWidget = document.getElementById('settings-data-widget');
-	const exportButton = document.getElementById('settings-export-button');
-	const shareButton = document.getElementById('settings-share-button');
-	dataWidget.style.display = 'none';
-	exportButton.classList.remove('clicked');
-	shareButton.classList.remove('clicked');
-
-
-    // Calendar section
-    document.getElementById('settings-render-holidays').checked
-        = renderNationalHolidays;
-    document.getElementById('settings-save-position').checked
-        = savePosition;
-
-	// Category list
-    const categoriesList = document.getElementById('categoriesList');
-    categoriesList.innerHTML = '';
-
-    for (const key in categories) {
-		const element = document.createElement('div');
-		const titleInput = document.createElement('input');
-		const colorInput = document.createElement('input');
-		const deleteButton = document.createElement('input');
-		const listLength = categoriesList.childElementCount;
-		
-		titleInput.type = 'text';
-		titleInput.placeholder = 'Name';
-		titleInput.value = key;
-		element.appendChild(titleInput);
-
-		colorInput.type = 'color';
-		colorInput.value = categories[key];
-		element.appendChild(colorInput);
-
-		deleteButton.type = 'button';
-		deleteButton.value = 'X';
-		element.appendChild(deleteButton);
-		deleteButton.classList.add('no-button');
-
-        categoriesList.appendChild(element);
-
-		deleteButton.onclick = () => {
-			categoriesList.removeChild(element);
-		};
+    // Create a container for this event
+    if (events[monthYear] == undefined) {
+        events[monthYear] = {};
+        events[monthYear][date] = [];
+    } else if (events[monthYear][date] == undefined) {
+        events[monthYear][date] = [];
     }
+    clicked.events = events[monthYear][date];
+    clicked.monthYear = monthYear;
+    clicked.day = date;
 
-	const newButton = document.createElement('input');
-	newButton.type = 'button';
-	newButton.value = '+';
-	newButton.style.width = '24px';
-	newButton.style.height = '24px';
-	newButton.style.marginTop = '4px';
-	newButton.classList.add('ok-button');
-	newButton.onclick = settingsModalNewCategory;
 
-	const newDiv = document.createElement('div');
-	newDiv.appendChild(newButton);
-	categoriesList.appendChild(newDiv);
+    newEventModal.style.display = 'block';
+
+    // Display existing events in the modal
+    const eventsList = document.getElementById('eventsList'); 
+    eventsList.innerHTML = ''; 
+
+    clicked.events.forEach((event, index) => {
+        const eventElement = document.createElement('button');
+        eventElement.classList.add('event-button');
+        const eventText = document.createElement('p');
+        eventText.innerText = event.title;
+        eventElement.appendChild(eventText);
+        eventElement.addEventListener('click', (e) => {
+            // Prevent the openModal event
+            e.stopPropagation(); 
+            showEditEventModal(clicked, index, event);
+        });
+        eventElement.style.borderColor = categories[event.category];
+        eventsList.appendChild(eventElement);
+    });
+
+    backDrop.style.display = 'block';
 }
 
-function settingsShareButton() {
-	const exportButton = document.getElementById('settings-export-button');
-	const shareButton = document.getElementById('settings-share-button');
-	const dataWidget = document.getElementById('settings-data-widget');
-	const usernameField = document.getElementById('settings-share-username');
-
-	if (shareButton.classList.contains('clicked')) {
-		shareButton.classList.remove('clicked');
-		dataWidget.style.display = 'none';
-	} else {
-		if (exportButton.classList.contains('clicked')) {
-			exportButton.classList.remove('clicked');
-		} else {
-			dataWidget.style.display = 'block';
-		}
-		usernameField.style.display = 'block';
-		shareButton.classList.add('clicked');
-	}
-
-}
-
-function settingsExportButton() {
-	const exportButton = document.getElementById('settings-export-button');
-	const shareButton = document.getElementById('settings-share-button');
-	const dataWidget = document.getElementById('settings-data-widget');
-	const usernameField = document.getElementById('settings-share-username');
-
-	if (exportButton.classList.contains('clicked')) {
-		exportButton.classList.remove('clicked');
-		dataWidget.style.display = 'none';
-	} else {
-		if (shareButton.classList.contains('clicked')) {
-			shareButton.classList.remove('clicked');
-		} else {
-			dataWidget.style.display = 'block';
-		}
-
-		usernameField.style.display = 'none';
-		exportButton.classList.add('clicked');
-	}
-}
-
-function settingsDataSubmitButton() {
-	const exportButton = document.getElementById('settings-export-button');
-	const shareButton = document.getElementById('settings-share-button');
-
-	if (exportButton.classList.contains('clicked')) {
-		exportEvents();
-	} else if (shareButton.classList.contains('clicked')) {
-		shareEvents();
-	}
-}
-
-function settingsModalNewCategory() {
-	const categoriesList = document.getElementById('categoriesList');
-	const listLength = categoriesList.childElementCount;
-
-	const newCategorySection = document.createElement('div');
-	const title = document.createElement('input');
-	const color = document.createElement('input');
-	const deleteButton = document.createElement('input');
-
-	title.type = 'text';
-	title.placeholder = 'Name';
-
-	color.type = 'color';
-	color.value = '#444444';
-		
-	deleteButton.type = 'button';
-	deleteButton.value = 'X';
-	deleteButton.classList.add('no-button');
-
-	newCategorySection.appendChild(title);
-	newCategorySection.appendChild(color);
-	newCategorySection.appendChild(deleteButton);
-
-	categoriesList.insertBefore(newCategorySection,
-		categoriesList.childNodes[listLength - 1]);
-
-	deleteButton.onclick = () => {
-		categoriesList.removeChild(newCategorySection);
-	}
-}
-
-
-function settingsModalDeleteCategory(index) {
-	const categoriesList = document.getElementById('categoriesList');
-	categoriesList.removeChild(categoriesList.childNodes[index]);
-}
-
-
-async function saveSettings() {
-    // Calendar
-    renderNationalHolidays = document
-        .getElementById('settings-render-holidays').checked;
-    localStorage.setItem('renderNationalHolidays',
-        String(renderNationalHolidays));
-    savePosition = document
-        .getElementById('settings-save-position').checked;
-    localStorage.setItem('savePosition', savePosition);
-
-    // Categories
-	const categoriesList = document.getElementById('categoriesList');
-	const newCategories = {};
-	for (let d = 0; d < categoriesList.childElementCount - 1; ++d) {
-		const div = categoriesList.childNodes[d];
-		const title = div.childNodes[0].value;
-		const color = div.childNodes[1].value;
-		if (title != '') {
-			newCategories[title.toLowerCase()] = color;
-		}
-	}
-	categories = newCategories;
-	localStorage.setItem('categories', JSON.stringify(categories));
-
-	await fetch('/home', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			'Session': localStorage.session
-		},
-		body: JSON.stringify({
-			'type': 'insertCategories',
-			categories: categories
-		})
-	});
-
-	loadCategories();
-	load();
-	closeSettings();
-}
-
-function closeSettings() {
-    settingsModal.style.display = 'none';
-	backDrop.style.display = 'none';
-}
-
-
-
+// Processing the image and being able to remove and load it into the event
 function editModalLoadImage() {
     const selector = document.getElementById('image');
     const label = document.getElementById('edit-event-image-label');
@@ -1515,9 +1402,7 @@ function editModalRemoveImage() {
 	editEventModalImageContent = undefined;
 }
 
-
 document.addEventListener('DOMContentLoaded', function() {
-    //getWeeklyNote();
     loadCategories();
     load();
 });
